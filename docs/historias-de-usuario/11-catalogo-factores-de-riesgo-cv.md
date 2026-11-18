@@ -9,7 +9,7 @@ Esta épica abarca el mantenimiento y administración del catálogo de Factores 
 
 ### HU-39: Crear factor de riesgo cardiovascular
 - **Código SRS:** `RF-16`
-- **Rol:** Usuario Administrador / Servicio
+- **Rol:** Usuario del Servicio
 
 #### Descripción
 **Como** usuario del sistema  
@@ -26,7 +26,7 @@ Esta épica abarca el mantenimiento y administración del catálogo de Factores 
 
 ### HU-40: Listar y buscar factores de riesgo cardiovascular
 - **Código SRS:** `RF-17`, `RF-17.1`
-- **Rol:** Usuario del sistema
+- **Rol:** Usuario del Servicio
 
 #### Descripción
 **Como** usuario del sistema  
@@ -43,7 +43,7 @@ Esta épica abarca el mantenimiento y administración del catálogo de Factores 
 
 ### HU-41: Modificar factor de riesgo cardiovascular
 - **Código SRS:** `RF-18`
-- **Rol:** Usuario Administrador / Servicio
+- **Rol:** Usuario del Servicio
 
 #### Descripción
 **Como** usuario del sistema  
@@ -60,7 +60,7 @@ Esta épica abarca el mantenimiento y administración del catálogo de Factores 
 
 ### HU-42: Eliminar factor de riesgo cardiovascular
 - **Código SRS:** `RF-19`
-- **Rol:** Usuario Administrador / Servicio
+- **Rol:** Usuario del Servicio
 
 #### Descripción
 **Como** usuario del sistema  

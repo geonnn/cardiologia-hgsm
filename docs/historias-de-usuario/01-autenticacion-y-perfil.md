@@ -14,7 +14,7 @@ Esta épica abarca los mecanismos de acceso seguro al sistema (tanto para usuari
 #### Descripción
 **Como** usuario administrador  
 **Quiero** autenticarme con mis credenciales en el acceso al panel de administración  
-**Para** gestionar los parámetros globales y usuarios del sistema de forma segura.
+**Para** gestionar las cuentas de usuario del sistema de forma segura.
 
 #### Criterios de Aceptación
 - [ ] Debe solicitar **Correo electrónico** con formato válido (`usuario@dominio`).

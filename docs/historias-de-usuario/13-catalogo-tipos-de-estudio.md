@@ -9,7 +9,7 @@ Esta épica abarca la gestión integral del nomenclador de tipos de estudios dia
 
 ### HU-47: Crear tipo de estudio
 - **Código SRS:** `RF-31`
-- **Rol:** Usuario Administrador / Servicio
+- **Rol:** Usuario del Servicio
 
 #### Descripción
 **Como** usuario del sistema  
@@ -26,7 +26,7 @@ Esta épica abarca la gestión integral del nomenclador de tipos de estudios dia
 
 ### HU-48: Listar y buscar tipos de estudios
 - **Código SRS:** `RF-32`, `RF-32.1`
-- **Rol:** Usuario del sistema
+- **Rol:** Usuario del Servicio
 
 #### Descripción
 **Como** usuario del sistema  
@@ -43,7 +43,7 @@ Esta épica abarca la gestión integral del nomenclador de tipos de estudios dia
 
 ### HU-49: Modificar tipo de estudio
 - **Código SRS:** `RF-33`
-- **Rol:** Usuario Administrador / Servicio
+- **Rol:** Usuario del Servicio
 
 #### Descripción
 **Como** usuario del sistema  
@@ -60,7 +60,7 @@ Esta épica abarca la gestión integral del nomenclador de tipos de estudios dia
 
 ### HU-50: Eliminar tipo de estudio
 - **Código SRS:** `RF-34`
-- **Rol:** Usuario Administrador / Servicio
+- **Rol:** Usuario del Servicio
 
 #### Descripción
 **Como** usuario del sistema  

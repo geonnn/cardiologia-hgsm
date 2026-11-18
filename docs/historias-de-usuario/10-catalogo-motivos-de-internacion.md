@@ -9,7 +9,7 @@ Esta épica comprende la gestión completa (CRUD) de la tabla maestra de Motivos
 
 ### HU-35: Crear motivo de internación
 - **Código SRS:** `RF-12`
-- **Rol:** Usuario Administrador / Servicio
+- **Rol:** Usuario del Servicio
 
 #### Descripción
 **Como** usuario del sistema  
@@ -26,7 +26,7 @@ Esta épica comprende la gestión completa (CRUD) de la tabla maestra de Motivos
 
 ### HU-36: Listar y buscar motivos de internación
 - **Código SRS:** `RF-13`, `RF-13.1`
-- **Rol:** Usuario del sistema
+- **Rol:** Usuario del Servicio
 
 #### Descripción
 **Como** usuario del sistema  
@@ -43,7 +43,7 @@ Esta épica comprende la gestión completa (CRUD) de la tabla maestra de Motivos
 
 ### HU-37: Modificar motivo de internación
 - **Código SRS:** `RF-14`
-- **Rol:** Usuario Administrador / Servicio
+- **Rol:** Usuario del Servicio
 
 #### Descripción
 **Como** usuario del sistema  
@@ -60,7 +60,7 @@ Esta épica comprende la gestión completa (CRUD) de la tabla maestra de Motivos
 
 ### HU-38: Eliminar motivo de internación
 - **Código SRS:** `RF-15`
-- **Rol:** Usuario Administrador / Servicio
+- **Rol:** Usuario del Servicio
 
 #### Descripción
 **Como** usuario del sistema  

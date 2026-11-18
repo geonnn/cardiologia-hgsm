@@ -9,7 +9,7 @@ Esta épica comprende la gestión completa de las Obras Sociales, Prepagas y cob
 
 ### HU-43: Crear obra social
 - **Código SRS:** `RF-20`
-- **Rol:** Usuario Administrador / Servicio
+- **Rol:** Usuario del Servicio
 
 #### Descripción
 **Como** usuario del sistema  
@@ -26,7 +26,7 @@ Esta épica comprende la gestión completa de las Obras Sociales, Prepagas y cob
 
 ### HU-44: Listar y buscar obras sociales
 - **Código SRS:** `RF-21`, `RF-21.1`
-- **Rol:** Usuario del sistema
+- **Rol:** Usuario del Servicio
 
 #### Descripción
 **Como** usuario del sistema  
@@ -43,7 +43,7 @@ Esta épica comprende la gestión completa de las Obras Sociales, Prepagas y cob
 
 ### HU-45: Modificar obra social
 - **Código SRS:** `RF-22`
-- **Rol:** Usuario Administrador / Servicio
+- **Rol:** Usuario del Servicio
 
 #### Descripción
 **Como** usuario del sistema  
@@ -60,7 +60,7 @@ Esta épica comprende la gestión completa de las Obras Sociales, Prepagas y cob
 
 ### HU-46: Eliminar obra social
 - **Código SRS:** `RF-23`
-- **Rol:** Usuario Administrador / Servicio
+- **Rol:** Usuario del Servicio
 
 #### Descripción
 **Como** usuario del sistema  
