@@ -19,7 +19,7 @@ Esta épica comprende la prescripción y registro de las indicaciones médicas y
 #### Criterios de Aceptación
 - [ ] Debe asociarse obligatoriamente a un paciente internado.
 - [ ] **Descripción:** campo de texto obligatorio con el detalle del esquema de tratamiento e indicaciones.
-- [ ] **Fecha:** por defecto se carga con la fecha actual.
+- [ ] **Fecha y hora:** por defecto se carga con la fecha y hora actual.
 - [ ] **Validación de rango de fecha:** el sistema no admite fechas que se encuentren a más de 2 meses anteriores o posteriores a la fecha actual.
 - [ ] Al registrarse, el nuevo tratamiento pasa a ser la indicación vigente más reciente del paciente.
 
@@ -37,7 +37,7 @@ Esta épica comprende la prescripción y registro de las indicaciones médicas y
 #### Criterios de Aceptación
 - [ ] Muestra la lista de tratamientos con:
   - Descripción de las indicaciones.
-  - Fecha del tratamiento.
+  - Fecha y hora del tratamiento.
 - [ ] **Ordenamiento (RF-41.1):** Permite ordenar por fecha de carga de la más reciente a la más antigua o viceversa.
 - [ ] **Filtrado (RF-41.2):** Permite filtrar por rango de fechas (desde / hasta), mostrando los tratamientos comprendidos en dicho período.
 - [ ] Destaca visualmente cuál es la indicación más reciente (tratamiento activo).
@@ -57,7 +57,7 @@ Esta épica comprende la prescripción y registro de las indicaciones médicas y
 - [ ] Solo se permite la modificación sobre el **último tratamiento registrado** del paciente internado. Los tratamientos anteriores no son editables (se preserva la trazabilidad histórica).
 - [ ] Permite modificar:
   - **Descripción:** texto obligatorio.
-  - **Fecha:** opcional; si se modifica, no admite fechas de más de 2 meses anteriores o posteriores a la actual.
+  - **Fecha y hora:** opcional; si se modifica, no admite fechas de más de 2 meses anteriores o posteriores a la actual.
 - [ ] Al guardar los cambios, se actualiza la descripción y/o fecha de la última indicación médica.
 
 ---

@@ -23,10 +23,9 @@ Esta épica modela el flujo integral del episodio de internación del paciente e
   - **Fecha de ingreso:** formato `día/mes/año`, no debe ser posterior a la fecha actual. Por defecto toma la fecha actual.
   - **Cama:** seleccionable únicamente de la lista de camas en estado `"Disponible"`. Al confirmarse el ingreso, la cama pasa a estado `"Ocupada"`.
   - **Tipo de tratamiento:** seleccionable entre `UCO` o `Sala`. Por defecto toma el sector de la cama elegida, pero puede cambiarse independientemente.
-  - **Obra social:** seleccionable del catálogo de obras sociales.
   - **Motivos de internación:** selección múltiple del catálogo de motivos; debe seleccionarse al menos uno obligatoriamente.
-  - **Enfermedad actual:** campo de texto descriptivo obligatorio.
 - [ ] **Campos opcionales:**
+  - **Obra social:** opcional (0 o 1), seleccionable del catálogo de obras sociales.
   - **Aislamiento:** descripción de la precaución médica, texto de hasta 50 caracteres.
   - **Cama a bloquear por aislamiento:** seleccionable de la lista de camas disponibles. Si se indica, dicha cama pasa a estado `"En aislamiento"` (ver RF-27).
   - **Parámetros / Antropometría:** texto libre (superficie corporal, peso, altura, etc.).
@@ -53,11 +52,10 @@ Esta épica modela el flujo integral del episodio de internación del paciente e
 - [ ] **Otros campos editables:**
   - Fecha de ingreso (no posterior a hoy).
   - Motivo(s) de internación (al menos uno).
-  - Obra social.
+  - Obra social (opcional, 0 o 1).
   - Tipo de tratamiento (`UCO` o `Sala`).
   - Aislamiento (máx 50 caracteres) y cama a bloquear por aislamiento.
   - Parámetros / Antropometría.
-  - Enfermedad actual.
   - Tratamiento previo.
   - Observaciones.
 

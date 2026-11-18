@@ -22,6 +22,7 @@ Esta épica comprende la gestión completa de las cuentas de usuario por parte d
   - **Apellido:** texto, obligatorio, máximo 50 caracteres.
   - **Correo electrónico:** obligatorio, formato válido (`usuario@dominio`). Debe ser único en el sistema.
   - **Contraseña inicial:** obligatoria, texto de 6 a 12 caracteres, debe contener al menos una letra minúscula y un número.
+  - **Rol:** obligatorio, seleccionable de los roles registrados en el sistema (por ejemplo, Administrador o Usuario).
 - [ ] Si el correo electrónico ya existe registrado en otro usuario, debe rechazar el alta e informar la duplicidad.
 - [ ] Debe validar en tiempo real o al enviar que la contraseña cumpla los requisitos de longitud y complejidad.
 - [ ] Registra automáticamente la fecha de carga del usuario.
@@ -62,6 +63,7 @@ Esta épica comprende la gestión completa de las cuentas de usuario por parte d
   - Nombre
   - Apellido
   - Correo electrónico
+  - Rol
   - Fecha de carga
 - [ ] **Ordenamiento (RF-08.1):** Permite ordenar los resultados por:
   - Alfabéticamente por apellido y nombre (ascendente y descendente).

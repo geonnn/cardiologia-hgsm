@@ -24,12 +24,12 @@ Esta épica abarca el registro maestro y administración de los pacientes del Se
   - **DNI:** 7 a 9 caracteres alfanuméricos. Debe ser único en el sistema.
   - **Fecha de nacimiento:** formato `día/mes/año`, obligatoria, no debe ser posterior a la fecha actual. El sistema calcula la edad automáticamente.
 - [ ] **Datos opcionales:**
-  - **Médico de cabecera:** texto, opcional, máximo 100 caracteres.
+  - **Médico de cabecera:** opcional (0 o 1), seleccionable del listado/catálogo de médicos de cabecera registrados.
   - **Contactos del paciente:** opcional, permite registrar de 1 hasta un máximo de 5 contactos. Por cada contacto:
     - Nombre: obligatorio (del contacto), máximo 50 caracteres.
     - Apellido: opcional, máximo 50 caracteres.
     - Número de teléfono: obligatorio (del contacto), numérico de hasta 15 dígitos.
-    - Parentesco: obligatorio (del contacto), texto, máximo 15 caracteres.
+    - Parentesco: opcional (del contacto), texto, máximo 15 caracteres.
   - **Antecedentes:** campo de texto libre, opcional.
   - **Factores de riesgo cardiovascular (FRCV):** selección múltiple desde el catálogo de FRCV precargado, opcional.
 - [ ] Si se ingresa un DNI ya existente en el sistema, debe rechazar el alta notificando la colisión.
@@ -47,9 +47,9 @@ Esta épica abarca el registro maestro y administración de los pacientes del Se
 **Para** mantener actualizada y corregida su información filiatoria y clínica básica.
 
 #### Criterios de Aceptación
-- [ ] Permite editar todos los campos definidos en el alta: Nombre (máx 50), Apellido (máx 50), Sexo (`M`/`F`), DNI (7-9 caracteres alfanuméricos), Fecha de nacimiento (no posterior a hoy), Médico de cabecera (máx 100), Contactos (hasta 5 con sus subcampos), Antecedentes y FRCV asociados.
+- [ ] Permite editar todos los campos definidos en el alta: Nombre (máx 50), Apellido (máx 50), Sexo (`M`/`F`), DNI (7-9 caracteres alfanuméricos), Fecha de nacimiento (no posterior a hoy), Antecedentes (opcional), Médico de cabecera (opcional, 0 o 1 seleccionable del listado/catálogo), Contactos (hasta 5 con sus subcampos, siendo obligatorios Nombre y Teléfono, y opcionales Apellido y Parentesco) y FRCV asociados.
 - [ ] Si se modifica el DNI, valida nuevamente que el nuevo valor sea único entre todos los pacientes registrados.
-- [ ] Mantiene la integridad de los contactos (no permite agregar más de 5 ni dejar campos requeridos del contacto vacíos).
+- [ ] Mantiene la integridad de los contactos (no permite agregar más de 5 ni dejar campos obligatorios del contacto vacíos: Nombre y Teléfono).
 - [ ] Guarda los cambios y actualiza la vista de inmediato.
 
 ---

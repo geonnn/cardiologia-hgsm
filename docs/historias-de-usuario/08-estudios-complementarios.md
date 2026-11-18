@@ -18,7 +18,7 @@ Esta épica abarca el registro, consulta y administración de todos los estudios
 
 #### Criterios de Aceptación
 - [ ] Debe solicitar los siguientes datos:
-  - **Fecha de estudio:** formato `día/mes/año`, obligatoria. No debe ser posterior a la fecha actual.
+  - **Fecha y hora de estudio:** formato `día/mes/año HH:mm`, obligatoria. No debe ser posterior a la fecha y hora actual.
   - **Tipo de estudio:** obligatorio, seleccionable desde el catálogo de tipos de estudio precargados.
   - **Título de estudio:** texto obligatorio, máximo 100 caracteres.
   - **Descripción:** campo de texto libre obligatorio para el informe detallado del resultado o conclusión del estudio.
@@ -37,7 +37,7 @@ Esta épica abarca el registro, consulta y administración de todos los estudios
 
 #### Criterios de Aceptación
 - [ ] Muestra la lista de estudios del paciente incluyendo:
-  - Fecha del estudio.
+  - Fecha y hora del estudio.
   - Tipo de estudio.
   - Título.
   - Descripción / Informe.

@@ -18,10 +18,10 @@ Esta épica abarca el seguimiento médico diario del paciente internado mediante
 
 #### Criterios de Aceptación
 - [ ] Debe solicitar los siguientes datos:
-  - **Fecha de evolución:** formato `día/mes/año`, obligatoria. No debe ser posterior a la fecha actual.
-  - **Descripción:** campo de texto libre, obligatorio.
+  - **Fecha y hora de evolución:** formato `día/mes/año HH:mm`, obligatoria. No debe ser posterior a la fecha y hora actual.
+  - **Detalle:** campo de texto libre, obligatorio.
 - [ ] La nota se asocia de forma unívoca al paciente y a su internación actual.
-- [ ] Se valida que la descripción no esté vacía ni compuesta exclusivamente por espacios.
+- [ ] Se valida que el detalle no esté vacío ni compuesto exclusivamente por espacios.
 
 ---
 
@@ -36,8 +36,8 @@ Esta épica abarca el seguimiento médico diario del paciente internado mediante
 
 #### Criterios de Aceptación
 - [ ] **Visualización:** Muestra el listado de evoluciones con:
-  - Fecha de la evolución.
-  - Descripción de la nota.
+  - Fecha y hora de la evolución.
+  - Detalle de la nota.
 - [ ] **Ordenamiento por defecto:** Por defecto se presentan ordenadas cronológicamente de la más reciente a la más antigua.
 - [ ] **Ordenamiento configurable (RF-39.1):** Permite invertir el orden para visualizar de la más antigua a la más reciente o viceversa.
 - [ ] **Filtrado temporal (RF-39.2):** Permite filtrar por rango de fechas (desde / hasta), mostrando únicamente las evoluciones comprendidas en dicho intervalo.
