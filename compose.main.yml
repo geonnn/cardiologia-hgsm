@@ -1,0 +1,61 @@
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_HTTP_PORTS: 5000
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB:?Falta POSTGRES_DB};Username=${POSTGRES_USER:?Falta POSTGRES_USER};Password=${POSTGRES_PASSWORD:?Falta POSTGRES_PASSWORD}"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - api
+      - pgadmin
+    ports:
+      - "80:80"
+    restart: unless-stopped
+
+  db:
+    image: postgres:18-alpine
+    container_name: cardiologia-hgsm-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Falta POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:?Falta POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Falta POSTGRES_PASSWORD}
+      TZ: America/Argentina/Buenos_Aires
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:?Falta POSTGRES_USER} -d ${POSTGRES_DB:?Falta POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: cardiologia-hgsm-pgadmin
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:?Falta PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:?Falta PGADMIN_DEFAULT_PASSWORD}
+      SCRIPT_NAME: /pgadmin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  pgdata:
+  pgadmin_data:

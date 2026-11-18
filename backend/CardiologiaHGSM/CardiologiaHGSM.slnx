@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CardiologiaHGSM.Application/CardiologiaHGSM.Application.csproj" />
+    <Project Path="src/CardiologiaHGSM.Domain/CardiologiaHGSM.Domain.csproj" />
+    <Project Path="src/CardiologiaHGSM.Infrastructure/CardiologiaHGSM.Infrastructure.csproj" />
+    <Project Path="src/CardiologiaHGSM.WebApi/CardiologiaHGSM.WebApi.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,6 @@
+@CardiologiaHGSM.WebApi_HostAddress = http://localhost:5000
+
+GET {{CardiologiaHGSM.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
