@@ -1,6 +1,6 @@
 paciente = (id, nombre, dni, fecha_de_nacimiento, antecedentes?, apellido, fecha_de_carga, id_sexo (fk)).
 contacto = (id, tel, nombre, parentesco?, apellido?, id_paciente (fk)).
-internación = (id, fecha_de_internación, aislamiento?, parámetros_/_antropometría?, tratamiento_previo?, fecha_fin_de_internación?, observaciones?, id_paciente (fk), id_cama (fk), id_manejo (fk)).
+internación = (id, fecha_de_internación, enfermedad_actual, aislamiento?, parámetros_/_antropometría?, tratamiento_previo?, fecha_fin_de_internación?, observaciones?, id_paciente (fk), id_cama (fk), id_manejo (fk)).
 cama = (id, número_de_cama, id_estado_de_cama (fk), id_manejo (fk)).
 motivo_de_internación = (id, motivo).
 estudio = (id, título, descripción, fecha_y_hora, id_paciente (fk), id_tipo_de_estudio (fk)).
