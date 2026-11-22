@@ -1,6 +1,5 @@
 using CardiologiaHGSM.Domain.Camas;
 using CardiologiaHGSM.Domain.Camas.EstadoCama;
-using CardiologiaHGSM.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,6 +9,8 @@ public class CamaConfiguration : IEntityTypeConfiguration<Cama>
 {
     public void Configure(EntityTypeBuilder<Cama> builder)
     {
+        builder.Property(c => c.Id).ValueGeneratedNever();
+
         builder.Property(c => c.EstadoCama)
             .HasColumnName("Estado")
             .HasMaxLength(30)

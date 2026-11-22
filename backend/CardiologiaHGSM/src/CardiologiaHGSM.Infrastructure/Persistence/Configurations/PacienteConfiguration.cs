@@ -9,6 +9,8 @@ public class PacienteConfiguration : IEntityTypeConfiguration<Paciente>
 {
     public void Configure(EntityTypeBuilder<Paciente> builder)
     {
+        builder.Property(p => p.Id).ValueGeneratedNever();
+
         builder.Property(p => p.Dni)
             .HasColumnName("Dni")
             .HasMaxLength(Dni.MaxLongitud)
