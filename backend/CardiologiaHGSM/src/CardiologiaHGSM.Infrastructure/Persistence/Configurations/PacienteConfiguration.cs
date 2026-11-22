@@ -32,7 +32,7 @@ public class PacienteConfiguration : IEntityTypeConfiguration<Paciente>
         builder.HasOne(p => p.MedicoDeCabecera)
             .WithMany()
             .HasForeignKey(p => p.MedicoDeCabeceraId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(p => p.FactoresDeRiesgo)
             .WithMany()
