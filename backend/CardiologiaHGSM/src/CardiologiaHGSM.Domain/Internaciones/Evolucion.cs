@@ -4,6 +4,7 @@ public class Evolucion
 {
     public Guid Id { get; private set; }
     public Guid InternacionId { get; private set; }
+    public Internacion Internacion { get; private set; } = null!;
     public string Detalle { get; private set; } = null!;
     public DateTime Fecha { get; private set; }
 
