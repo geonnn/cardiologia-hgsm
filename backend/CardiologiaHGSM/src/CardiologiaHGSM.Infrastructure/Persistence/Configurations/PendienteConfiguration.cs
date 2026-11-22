@@ -12,6 +12,9 @@ public class PendienteConfiguration : IEntityTypeConfiguration<Pendiente>
 
         builder.Property(p => p.Titulo).HasMaxLength(Pendiente.MaxLongitudTitulo);
 
+        // Relación N:1 con Internacion.
+        // WithMany() va vacío porque Internacion no expone una colección de Pendientes;
+        // la navegación existe solo desde Pendiente hacia Internacion.
         builder.HasOne(p => p.Internacion)
             .WithMany()
             .HasForeignKey(p => p.InternacionId)

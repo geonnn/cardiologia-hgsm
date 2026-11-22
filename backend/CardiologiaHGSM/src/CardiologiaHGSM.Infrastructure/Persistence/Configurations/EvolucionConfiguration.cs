@@ -10,6 +10,9 @@ public class EvolucionConfiguration : IEntityTypeConfiguration<Evolucion>
     {
         builder.Property(e => e.Id).ValueGeneratedNever();
 
+        // Relación N:1 con Internacion.
+        // WithMany() va vacío porque Internacion no expone una colección de Evoluciones;
+        // la navegación existe solo desde Evolucion hacia Internacion.
         builder.HasOne(e => e.Internacion)
             .WithMany()
             .HasForeignKey(e => e.InternacionId)
