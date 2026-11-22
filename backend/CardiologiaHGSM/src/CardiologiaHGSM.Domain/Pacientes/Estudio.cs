@@ -8,6 +8,7 @@ public class Estudio
 
     public Guid Id { get; private init; }
     public Guid PacienteId { get; private set; }
+    public Paciente Paciente { get; private set; } = null!;
     public int TipoEstudioId { get; private set; }
     public TipoEstudio TipoEstudio { get; private set; } = null!;
     public string Titulo { get; private set; } = null!;
