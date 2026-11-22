@@ -8,7 +8,7 @@ public class Cama
     public Guid Id { get; private set; }
     public int NumeroCama { get; private set; }
     public IEstadoCama EstadoCama { get; internal set; } = new DisponibleState();
-    public Manejo Manejo { get; private set; }
+    public Manejo Sector { get; private set; }
 
     private Cama() { }
 
@@ -22,7 +22,7 @@ public class Cama
             Id = Guid.CreateVersion7(),
             NumeroCama = numeroCama,
             EstadoCama = new DisponibleState(),
-            Manejo = manejo
+            Sector = manejo
         };
     }
 
