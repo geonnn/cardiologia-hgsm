@@ -1,5 +1,7 @@
 using CardiologiaHGSM.Application.Common.Interfaces;
+using CardiologiaHGSM.Application.Pacientes;
 using CardiologiaHGSM.Infrastructure.Persistence;
+using CardiologiaHGSM.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +21,7 @@ public static class DependencyInjection
 
         // registro de servicios:
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IPacienteRepository, PacienteRepository>();
 
         return services;
     }
