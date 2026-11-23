@@ -41,4 +41,8 @@ public static class PacienteErrors
     public static readonly Error FactorDeRiesgoNoEncontrado = Error.NotFound(
         code: "Paciente.FactorDeRiesgoNoEncontrado",
         description: "No se encontró el factor de riesgo especificado en el paciente.");
+
+    public static readonly Error NoEncontrado = Error.NotFound(
+        code: "Paciente.NoEncontrado",
+        description: "No se encontró el paciente especificado.");
 }
