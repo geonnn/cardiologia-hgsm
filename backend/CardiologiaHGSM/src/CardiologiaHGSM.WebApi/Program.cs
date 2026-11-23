@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using CardiologiaHGSM.Application.Common;
 using CardiologiaHGSM.Infrastructure.Common;
 
@@ -5,7 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    // enums como texto en el JSON ("UCO", "Disponible", ...) en vez de números
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
