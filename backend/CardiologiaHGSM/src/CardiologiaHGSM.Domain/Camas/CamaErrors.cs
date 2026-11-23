@@ -6,6 +6,14 @@ public static class CamaErrors
         code: "Cama.NumeroInvalido",
         description: "El número de cama debe ser mayor a 0.");
 
+    public static readonly Error NumeroDuplicado = Error.Conflict(
+        code: "Cama.NumeroDuplicado",
+        description: "Ya existe una cama con ese número en el sector indicado.");
+
+    public static readonly Error NoEncontrada = Error.NotFound(
+        code: "Cama.NoEncontrada",
+        description: "No se encontró la cama especificada.");
+
     public static readonly Error YaOcupada = Error.Conflict(
         code: "Cama.YaOcupada",
         description: "La cama ya se encuentra ocupada.");

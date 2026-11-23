@@ -2,6 +2,8 @@ namespace CardiologiaHGSM.Domain.Camas.EstadoCama;
 
 public interface IEstadoCama
 {
+    EstadoCamaTipo Tipo { get; }
+
     ErrorOr<Success> Ocupar(Cama cama);
     ErrorOr<Success> Liberar(Cama cama);
     ErrorOr<Success> BloquearPorAislamiento(Cama cama);

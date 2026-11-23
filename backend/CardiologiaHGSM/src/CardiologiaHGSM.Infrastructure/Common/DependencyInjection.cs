@@ -1,3 +1,4 @@
+using CardiologiaHGSM.Application.Camas;
 using CardiologiaHGSM.Application.Common.Interfaces;
 using CardiologiaHGSM.Application.Pacientes;
 using CardiologiaHGSM.Infrastructure.Persistence;
@@ -22,6 +23,7 @@ public static class DependencyInjection
         // registro de servicios:
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IPacienteRepository, PacienteRepository>();
+        services.AddScoped<ICamaRepository, CamaRepository>();
 
         return services;
     }

@@ -1,6 +1,35 @@
-@CardiologiaHGSM.WebApi_HostAddress = http://localhost:5000
+@host = http://localhost:5000
+@camaId = 00000000-0000-0000-0000-000000000000
 
-GET {{CardiologiaHGSM.WebApi_HostAddress}}/weatherforecast/
+### Crear cama (RF-10)
+POST {{host}}/api/camas
+Content-Type: application/json
+
+{
+  "numeroCama": 1,
+  "sector": "UCO"
+}
+
+### Listar camas (RF-11)
+GET {{host}}/api/camas
 Accept: application/json
 
-###
+### Listar camas filtrando por sector y estado (RF-11.1)
+GET {{host}}/api/camas?sector=Sala&estado=Disponible
+Accept: application/json
+
+### Obtener cama por id
+GET {{host}}/api/camas/{{camaId}}
+Accept: application/json
+
+### Bloquear cama por aislamiento (RF-27)
+POST {{host}}/api/camas/{{camaId}}/bloquear
+
+### Desbloquear cama (RF-28)
+POST {{host}}/api/camas/{{camaId}}/desbloquear
+
+### Deshabilitar cama (RF-29)
+POST {{host}}/api/camas/{{camaId}}/deshabilitar
+
+### Habilitar cama (RF-30)
+POST {{host}}/api/camas/{{camaId}}/habilitar
