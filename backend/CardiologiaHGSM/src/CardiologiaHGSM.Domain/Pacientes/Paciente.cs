@@ -13,7 +13,7 @@ public class Paciente
     public string Nombre { get; private set; } = null!;
     public string Apellido { get; private set; } = null!;
     public Dni Dni { get; private set; } = null!;
-    public DateTime FechaNacimiento { get; private set; }
+    public DateOnly FechaNacimiento { get; private set; }
     public Sexo Sexo { get; private set; }
     public string? Antecedentes { get; private set; }
     public DateTime FechaCarga { get; private set; }
@@ -33,7 +33,7 @@ public class Paciente
         string nombre,
         string apellido,
         Dni dni,
-        DateTime fechaNacimiento,
+        DateOnly fechaNacimiento,
         Sexo sexo,
         string? antecedentes = null,
         Guid? medicoDeCabeceraId = null)
@@ -56,10 +56,10 @@ public class Paciente
         };
     }
 
-    public int CalcularEdad(DateTime? fechaReferencia = null)
+    public int CalcularEdad(DateOnly? fechaReferencia = null)
     {
-        var hoy = (fechaReferencia ?? DateTime.UtcNow).Date;
-        var nacimiento = this.FechaNacimiento.Date;
+        var hoy = fechaReferencia ?? DateOnly.FromDateTime(DateTime.UtcNow);
+        var nacimiento = this.FechaNacimiento;
         var edad = hoy.Year - nacimiento.Year;
 
         if (nacimiento > hoy.AddYears(-edad))
@@ -72,7 +72,7 @@ public class Paciente
         string nombre,
         string apellido,
         Dni dni,
-        DateTime fechaNacimiento,
+        DateOnly fechaNacimiento,
         Sexo sexo,
         string? antecedentes = null,
         Guid? medicoDeCabeceraId = null)
@@ -136,7 +136,7 @@ public class Paciente
         _factoresDeRiesgo.AddRange(factores);
     }
 
-    private static List<Error> ValidarDatosPersonales(string nombre, string apellido, DateTime fechaNacimiento)
+    private static List<Error> ValidarDatosPersonales(string nombre, string apellido, DateOnly fechaNacimiento)
     {
         var errores = new List<Error>();
 
@@ -176,8 +176,8 @@ public class Paciente
         return null;
     }
 
-    private static Error? ValidarFechaNacimiento(DateTime fechaNacimiento) =>
-        fechaNacimiento.Date > DateTime.UtcNow.Date
+    private static Error? ValidarFechaNacimiento(DateOnly fechaNacimiento) =>
+        fechaNacimiento > DateOnly.FromDateTime(DateTime.UtcNow)
             ? PacienteErrors.FechaNacimientoFutura
             : null;
 }
