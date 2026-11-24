@@ -13,8 +13,11 @@ public class PacienteRepository : RepositoryBase<Paciente, Guid>, IPacienteRepos
     public PacienteRepository(CardiologiaDbContext context) : base(context)
     { }
 
+    public override async Task<Paciente?> GetByIdAsync(Guid id, CancellationToken ct = default)
+        => await ConAgregadoCompleto().FirstOrDefaultAsync(p => p.Id == id, ct);
+
     public async Task<Paciente?> GetByDniAsync(Dni dni, CancellationToken ct = default)
-        => await _dbSet.FirstOrDefaultAsync(p => p.Dni == dni, ct);
+        => await ConAgregadoCompleto().FirstOrDefaultAsync(p => p.Dni == dni, ct);
 
     public async Task<bool> ExisteDniAsync(Dni dni, CancellationToken ct = default)
         => await _dbSet.AnyAsync(p => p.Dni == dni, ct);
@@ -52,4 +55,11 @@ public class PacienteRepository : RepositoryBase<Paciente, Guid>, IPacienteRepos
             .ThenBy(p => p.Nombre)
             .ToPaginatedListAsync(page, pageSize, ct);
     }
+
+    private IQueryable<Paciente> ConAgregadoCompleto()
+        => _dbSet
+            .Include(p => p.MedicoDeCabecera)
+            .Include(p => p.Contactos)
+            .Include(p => p.FactoresDeRiesgo)
+            .AsSplitQuery();
 }
