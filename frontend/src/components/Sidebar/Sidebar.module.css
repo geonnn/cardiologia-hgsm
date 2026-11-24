@@ -1,0 +1,130 @@
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  height: 100%;
+  background-color: var(--secondary);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 8px var(--border-color);
+  user-select: none;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 18px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.brandLogo {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  object-fit: cover;
+  background-color: #ffffff;
+}
+
+.brandInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.brandTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 0;
+  color: #ffffff;
+}
+
+.brandSubtitle {
+  font-size: 0.75rem;
+  color: #bdc3c7;
+  margin: 0;
+}
+
+.nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 12px;
+  overflow-y: auto;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  color: #ecf0f1;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.navItem:hover {
+  background-color: var(--secondary-hover);
+  color: #ffffff;
+}
+
+.active {
+  background-color: var(--primary) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.footer {
+  padding: 16px;
+  border-top: 1px solid var(--border-color);
+  background-color: #0000001f;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.userName {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.userRole {
+  font-size: 0.72rem;
+  color: #bdc3c7;
+}
+
+.logoutButton {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: #ecf0f1;
+  padding: 6px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  transition: all 0.15s ease;
+}
+
+.logoutButton:hover {
+  background-color: var(--primary-hover);
+  border-color: transparent;
+  color: #ffffff;
+}
