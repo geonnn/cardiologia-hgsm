@@ -8,4 +8,11 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  server: {
+    // En desarrollo el front (5173) y la API (5000) quedan en el mismo origen, igual que en prod con nginx,
+    // así la cookie de sesión (SameSite=Strict) funciona sin configurar CORS.
+    proxy: {
+      '/api': 'http://localhost:5000',
+    },
+  },
 })
