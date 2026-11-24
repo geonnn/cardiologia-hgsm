@@ -1,5 +1,72 @@
 @host = http://localhost:5000
 @camaId = 00000000-0000-0000-0000-000000000000
+@usuarioId = 00000000-0000-0000-0000-000000000000
+
+# Todos los endpoints exigen sesión: primero ejecutá el login.
+# REST Client / Rider guardan la cookie y la mandan en los requests siguientes.
+
+### Login (RF-01, RF-03) - admin de desarrollo de appsettings.Development.json
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@hgsm.local",
+  "password": "admin123"
+}
+
+### Usuario actual
+GET {{host}}/api/auth/me
+
+### Modificar mis datos (RF-05)
+PUT {{host}}/api/auth/me
+Content-Type: application/json
+
+{
+  "nombre": "Administrador",
+  "apellido": "Sistema"
+}
+
+### Cambiar mi contraseña (RF-06)
+PUT {{host}}/api/auth/me/password
+Content-Type: application/json
+
+{
+  "passwordActual": "admin123",
+  "passwordNueva": "admin123",
+  "confirmacionPassword": "admin123"
+}
+
+### Logout (RF-04)
+POST {{host}}/api/auth/logout
+
+### Listar usuarios (RF-08) - solo administrador
+GET {{host}}/api/usuarios?orden=ApellidoAsc&page=1&pageSize=10
+
+### Buscar y filtrar usuarios (RF-08.2, RF-08.3)
+GET {{host}}/api/usuarios?email=hgsm&nombre=ju&fechaDesde=2026-01-01&fechaHasta=2026-12-31
+
+### Crear usuario (RF-02)
+POST {{host}}/api/usuarios
+Content-Type: application/json
+
+{
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "email": "juan@hgsm.local",
+  "password": "juan1234"
+}
+
+### Cambiar contraseña de un usuario (RF-07)
+PUT {{host}}/api/usuarios/{{usuarioId}}/password
+Content-Type: application/json
+
+{
+  "passwordNueva": "nueva123",
+  "confirmacionPassword": "nueva123"
+}
+
+### Eliminar usuario (RF-09)
+DELETE {{host}}/api/usuarios/{{usuarioId}}
 
 ### Crear cama (RF-10)
 POST {{host}}/api/camas

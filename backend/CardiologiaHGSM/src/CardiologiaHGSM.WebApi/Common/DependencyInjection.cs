@@ -50,7 +50,11 @@ public static class DependencyInjection
         services.Configure<SecurityStampValidatorOptions>(options =>
             options.ValidationInterval = TimeSpan.FromMinutes(1));
 
-        services.AddAuthorization();
+        // Seguridad (RNF): todos los endpoints exigen sesión salvo los marcados con [AllowAnonymous] (login).
+        services.AddAuthorizationBuilder()
+            .SetFallbackPolicy(new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build());
 
         services.AddHttpContextAccessor();
         services.AddScoped<IUsuarioActual, UsuarioActual>();
