@@ -1,6 +1,6 @@
 namespace CardiologiaHGSM.Domain.Catalogos;
 
-public class MotivoInternacion
+public class MotivoInternacion : ICatalogo<MotivoInternacion, int>
 {
     public const int MaxLongitudNombre = 30;
 

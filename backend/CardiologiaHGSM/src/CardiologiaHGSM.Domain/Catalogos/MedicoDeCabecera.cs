@@ -1,6 +1,6 @@
 namespace CardiologiaHGSM.Domain.Catalogos;
 
-public class MedicoDeCabecera
+public class MedicoDeCabecera : ICatalogo<MedicoDeCabecera, Guid>
 {
     public const int MaxLongitudNombre = 100;
 

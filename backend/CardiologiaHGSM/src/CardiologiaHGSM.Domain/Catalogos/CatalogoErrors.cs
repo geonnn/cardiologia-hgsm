@@ -17,4 +17,8 @@ public static class CatalogoErrors
     public static readonly Error EnUso = Error.Conflict(
         code: "Catalogo.EnUso",
         description: "No se puede eliminar el registro porque se encuentra en uso.");
+
+    public static readonly Error NoEncontrado = Error.NotFound(
+        code: "Catalogo.NoEncontrado",
+        description: "No se encontró el registro especificado en el catálogo.");
 }
