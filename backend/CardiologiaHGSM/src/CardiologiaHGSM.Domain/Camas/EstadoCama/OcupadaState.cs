@@ -2,6 +2,8 @@ namespace CardiologiaHGSM.Domain.Camas.EstadoCama;
 
 public sealed record OcupadaState : IEstadoCama
 {
+    public EstadoCamaTipo Tipo => EstadoCamaTipo.Ocupada;
+
     public ErrorOr<Success> Ocupar(Cama cama) => CamaErrors.YaOcupada;
 
     public ErrorOr<Success> Liberar(Cama cama)
