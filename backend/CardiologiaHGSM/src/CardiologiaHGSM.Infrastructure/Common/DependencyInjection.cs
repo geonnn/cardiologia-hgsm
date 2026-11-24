@@ -2,6 +2,7 @@ using CardiologiaHGSM.Application.Camas;
 using CardiologiaHGSM.Application.Catalogos.Interfaces;
 using CardiologiaHGSM.Application.Common.Interfaces;
 using CardiologiaHGSM.Application.Pacientes;
+using CardiologiaHGSM.Application.Usuarios;
 using CardiologiaHGSM.Domain.Catalogos;
 using CardiologiaHGSM.Domain.Usuarios;
 using CardiologiaHGSM.Infrastructure.Identity;
@@ -79,6 +80,8 @@ public static class DependencyInjection
             .AddDefaultTokenProviders()
             .AddErrorDescriber<IdentityErrorDescriberEs>()
             .AddPasswordValidator<PasswordLongitudMaximaValidator>();
+
+        services.AddScoped<ISesionService, SesionService>();
 
         return services;
     }

@@ -1,3 +1,4 @@
+using CardiologiaHGSM.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -37,12 +38,22 @@ public static class DependencyInjection
             };
         });
 
+        // Sesiones guardadas en el servidor para que el logout las invalide (ver MemoryCacheTicketStore)
+        services.AddMemoryCache();
+        services.AddSingleton<ITicketStore, MemoryCacheTicketStore>();
+        services
+            .AddOptions<CookieAuthenticationOptions>(IdentityConstants.ApplicationScheme)
+            .Configure<ITicketStore>((options, store) => options.SessionStore = store);
+
         // Si a un usuario le cambian la contraseña o lo eliminan, sus sesiones abiertas
         // dejan de ser válidas en a lo sumo 1 minuto (por defecto son 30).
         services.Configure<SecurityStampValidatorOptions>(options =>
             options.ValidationInterval = TimeSpan.FromMinutes(1));
 
         services.AddAuthorization();
+
+        services.AddHttpContextAccessor();
+        services.AddScoped<IUsuarioActual, UsuarioActual>();
 
         return services;
     }
