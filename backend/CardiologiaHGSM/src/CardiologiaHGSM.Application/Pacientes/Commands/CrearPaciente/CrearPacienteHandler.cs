@@ -18,12 +18,16 @@ public class CrearPacienteHandler(
         if (await pacienteRepository.ExisteDniAsync(dniResult.Value, ct))
             return PacienteErrors.DniDuplicado;
 
+        // TODO: Validar que command.MedicoDeCabeceraId exista en la BD cuando se implemente IMedicoDeCabeceraRepository (módulo Catalogos).
+
         var pacienteResult = Paciente.Crear(
             command.Nombre,
             command.Apellido,
             dniResult.Value,
             command.FechaNacimiento,
-            command.Sexo
+            command.Sexo,
+            command.Antecedentes,
+            command.MedicoDeCabeceraId
         );
 
         if (pacienteResult.IsError)
