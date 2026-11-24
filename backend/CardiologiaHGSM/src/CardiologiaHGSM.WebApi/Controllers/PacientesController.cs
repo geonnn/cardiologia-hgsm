@@ -1,11 +1,14 @@
 using CardiologiaHGSM.Application.Common.Interfaces;
 using CardiologiaHGSM.Application.Common.Models;
 using CardiologiaHGSM.Application.Pacientes.Commands.AgregarContacto;
+using CardiologiaHGSM.Application.Pacientes.Commands.CrearEstudio;
 using CardiologiaHGSM.Application.Pacientes.Commands.CrearPaciente;
 using CardiologiaHGSM.Application.Pacientes.Commands.EliminarContacto;
+using CardiologiaHGSM.Application.Pacientes.Commands.EliminarEstudio;
 using CardiologiaHGSM.Application.Pacientes.Commands.ModificarPaciente;
 using CardiologiaHGSM.Application.Pacientes.Commands.ReemplazarFactoresDeRiesgo;
 using CardiologiaHGSM.Application.Pacientes.Dtos;
+using CardiologiaHGSM.Application.Pacientes.Queries.ListarEstudiosPorPaciente;
 using CardiologiaHGSM.Application.Pacientes.Queries.ListarPacientes;
 using CardiologiaHGSM.Application.Pacientes.Queries.ObtenerPacientePorDni;
 using CardiologiaHGSM.Application.Pacientes.Queries.ObtenerPacientePorId;
@@ -151,6 +154,61 @@ public class PacientesController : ApiControllerBase
     {
         var command = new ReemplazarFactoresDeRiesgoCommand(id, request.FactorDeRiesgoIds);
         var result = await handler.HandleAsync(command, ct);
+        return result.Match(_ => NoContent(), Problem);
+    }
+
+    [HttpGet("{id:guid}/estudios")]
+    [ProducesResponseType(typeof(PaginatedList<EstudioDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ListarEstudios(
+        Guid id,
+        [FromServices] IQueryHandler<ListarEstudiosPorPacienteQuery, PaginatedList<EstudioDto>> handler,
+        CancellationToken ct,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] int? tipoEstudioId = null,
+        [FromQuery] DateTime? fechaDesde = null,
+        [FromQuery] DateTime? fechaHasta = null)
+    {
+        var query = new ListarEstudiosPorPacienteQuery(id, page, pageSize, tipoEstudioId, fechaDesde, fechaHasta);
+        var result = await handler.HandleAsync(query, ct);
+        return result.Match(Ok, Problem);
+    }
+
+    [HttpPost("{id:guid}/estudios")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CrearEstudio(
+        Guid id,
+        [FromBody] CrearEstudioRequest request,
+        [FromServices] ICommandHandler<CrearEstudioCommand, Guid> handler,
+        CancellationToken ct)
+    {
+        var command = new CrearEstudioCommand(
+            id,
+            request.TipoEstudioId!.Value,
+            request.Titulo,
+            request.Fecha!.Value,
+            request.Descripcion);
+
+        var result = await handler.HandleAsync(command, ct);
+        return result.Match(
+            estudioId => StatusCode(StatusCodes.Status201Created, new { id = estudioId }),
+            Problem);
+    }
+
+    [HttpDelete("{id:guid}/estudios/{estudioId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> EliminarEstudio(
+        Guid id,
+        Guid estudioId,
+        [FromServices] ICommandHandler<EliminarEstudioCommand> handler,
+        CancellationToken ct)
+    {
+        var result = await handler.HandleAsync(new EliminarEstudioCommand(id, estudioId), ct);
         return result.Match(_ => NoContent(), Problem);
     }
 }
