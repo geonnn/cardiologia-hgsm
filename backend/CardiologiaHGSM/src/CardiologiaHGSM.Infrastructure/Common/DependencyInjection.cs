@@ -25,6 +25,7 @@ public static class DependencyInjection
         // registro de servicios:
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IPacienteRepository, PacienteRepository>();
+        services.AddScoped<IEstudioRepository, EstudioRepository>();
 
         // catálogos:
         services.AddScoped<IMotivoInternacionRepository, MotivoInternacionRepository>();

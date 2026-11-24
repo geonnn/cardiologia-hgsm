@@ -21,4 +21,12 @@ public static class EstudioErrors
     public static readonly Error FechaFutura = Error.Validation(
         code: "Estudio.FechaFutura",
         description: "La fecha del estudio no puede ser posterior a la fecha actual.");
+
+    public static readonly Error TipoEstudioNoEncontrado = Error.NotFound(
+        code: "Estudio.TipoEstudioNoEncontrado",
+        description: "No se encontró el tipo de estudio especificado.");
+
+    public static readonly Error RangoFechasInvalido = Error.Validation(
+        code: "Estudio.RangoFechasInvalido",
+        description: "La fecha desde no puede ser posterior a la fecha hasta.");
 }
