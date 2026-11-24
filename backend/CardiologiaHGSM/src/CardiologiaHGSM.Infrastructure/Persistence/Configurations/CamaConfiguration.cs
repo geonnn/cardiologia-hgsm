@@ -27,21 +27,11 @@ public class CamaConfiguration : IEntityTypeConfiguration<Cama>
         builder.HasIndex(c => new { c.NumeroCama, c.Sector }).IsUnique();
     }
 
-    private static string EstadoToDb(IEstadoCama estado) => estado switch
-    {
-        DisponibleState => "Disponible",
-        OcupadaState => "Ocupada",
-        EnAislamientoState => "EnAislamiento",
-        DeshabilitadaState => "Deshabilitada",
-        _ => throw new InvalidOperationException($"Estado no soportado: {estado.GetType().Name}")
-    };
+    // Se persiste el nombre del estado ("Disponible", "Ocupada", "EnAislamiento", "Deshabilitada").
+    private static string EstadoToDb(IEstadoCama estado) => estado.Tipo.ToString();
 
-    private static IEstadoCama EstadoFromDb(string valor) => valor switch
-    {
-        "Disponible" => new DisponibleState(),
-        "Ocupada" => new OcupadaState(),
-        "EnAislamiento" => new EnAislamientoState(),
-        "Deshabilitada" => new DeshabilitadaState(),
-        _ => throw new InvalidOperationException($"Estado inválido en BD: {valor}")
-    };
+    private static IEstadoCama EstadoFromDb(string valor) =>
+        Enum.TryParse<EstadoCamaTipo>(valor, out var tipo)
+            ? EstadoCamaFactory.Crear(tipo)
+            : throw new InvalidOperationException($"Estado inválido en BD: {valor}");
 }

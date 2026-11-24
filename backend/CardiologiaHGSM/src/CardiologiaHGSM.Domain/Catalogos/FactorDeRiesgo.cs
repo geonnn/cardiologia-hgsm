@@ -1,6 +1,6 @@
 namespace CardiologiaHGSM.Domain.Catalogos;
 
-public class FactorDeRiesgo
+public class FactorDeRiesgo : ICatalogo<FactorDeRiesgo, int>
 {
     public const int MaxLongitudNombre = 30;
 

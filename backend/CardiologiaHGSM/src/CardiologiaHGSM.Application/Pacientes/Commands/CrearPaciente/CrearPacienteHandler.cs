@@ -1,3 +1,4 @@
+using CardiologiaHGSM.Application.Catalogos.Interfaces;
 using CardiologiaHGSM.Application.Common.Interfaces;
 using CardiologiaHGSM.Domain.Pacientes;
 using ErrorOr;
@@ -6,6 +7,7 @@ namespace CardiologiaHGSM.Application.Pacientes.Commands.CrearPaciente;
 
 public class CrearPacienteHandler(
     IPacienteRepository pacienteRepository,
+    IMedicoDeCabeceraRepository medicoDeCabeceraRepository,
     IUnitOfWork unitOfWork
 ) : ICommandHandler<CrearPacienteCommand, Guid>
 {
@@ -18,12 +20,18 @@ public class CrearPacienteHandler(
         if (await pacienteRepository.ExisteDniAsync(dniResult.Value, ct))
             return PacienteErrors.DniDuplicado;
 
+        if (command.MedicoDeCabeceraId is { } medicoId &&
+            !await medicoDeCabeceraRepository.ExisteAsync(medicoId, ct))
+            return PacienteErrors.MedicoDeCabeceraNoEncontrado;
+
         var pacienteResult = Paciente.Crear(
             command.Nombre,
             command.Apellido,
             dniResult.Value,
             command.FechaNacimiento,
-            command.Sexo
+            command.Sexo,
+            command.Antecedentes,
+            command.MedicoDeCabeceraId
         );
 
         if (pacienteResult.IsError)

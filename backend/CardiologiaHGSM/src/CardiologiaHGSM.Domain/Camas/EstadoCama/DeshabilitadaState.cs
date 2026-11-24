@@ -2,6 +2,8 @@ namespace CardiologiaHGSM.Domain.Camas.EstadoCama;
 
 public sealed record DeshabilitadaState : IEstadoCama
 {
+    public EstadoCamaTipo Tipo => EstadoCamaTipo.Deshabilitada;
+
     public ErrorOr<Success> Ocupar(Cama cama) => CamaErrors.Deshabilitada;
 
     public ErrorOr<Success> Liberar(Cama cama) => CamaErrors.Deshabilitada;

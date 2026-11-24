@@ -1,6 +1,6 @@
 namespace CardiologiaHGSM.Domain.Catalogos;
 
-public class ObraSocial
+public class ObraSocial : ICatalogo<ObraSocial, int>
 {
     public const int MaxLongitudNombre = 30;
 

@@ -1,5 +1,5 @@
+using CardiologiaHGSM.Application.Catalogos.Services;
 using CardiologiaHGSM.Application.Common.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CardiologiaHGSM.Application.Common;
@@ -25,6 +25,9 @@ public static class DependencyInjection
             foreach (var @interface in interfaces)
                 services.AddScoped(@interface, type);
         }
+
+        services.AddScoped(typeof(CatalogoService<,>));
+
         return services;
     }
 }
