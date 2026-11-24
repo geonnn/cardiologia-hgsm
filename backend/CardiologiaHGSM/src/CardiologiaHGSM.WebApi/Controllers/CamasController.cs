@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CardiologiaHGSM.WebApi.Controllers;
 
 [Route("api/camas")]
-public class CamasController : ApiController
+public class CamasController : ApiControllerBase
 {
     // RF-10
     [HttpPost]
