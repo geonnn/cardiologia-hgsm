@@ -1,6 +1,8 @@
 using CardiologiaHGSM.Application.Common.Interfaces;
+using CardiologiaHGSM.Application.Usuarios.Commands.CambiarMiPassword;
 using CardiologiaHGSM.Application.Usuarios.Commands.CerrarSesion;
 using CardiologiaHGSM.Application.Usuarios.Commands.IniciarSesion;
+using CardiologiaHGSM.Application.Usuarios.Commands.ModificarMisDatos;
 using CardiologiaHGSM.Application.Usuarios.Dtos;
 using CardiologiaHGSM.Application.Usuarios.Queries.ObtenerUsuarioActual;
 using CardiologiaHGSM.WebApi.Contracts.Auth;
@@ -49,5 +51,36 @@ public class AuthController : ApiControllerBase
     {
         var result = await handler.HandleAsync(new ObtenerUsuarioActualQuery(), ct);
         return result.Match(Ok, Problem);
+    }
+
+    // RF-05
+    [HttpPut("me")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ModificarMisDatos(
+        [FromBody] ModificarMisDatosRequest request,
+        [FromServices] ICommandHandler<ModificarMisDatosCommand> handler,
+        CancellationToken ct)
+    {
+        var result = await handler.HandleAsync(new ModificarMisDatosCommand(request.Nombre, request.Apellido), ct);
+        return result.Match(_ => NoContent(), Problem);
+    }
+
+    // RF-06
+    [HttpPut("me/password")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CambiarMiPassword(
+        [FromBody] CambiarMiPasswordRequest request,
+        [FromServices] ICommandHandler<CambiarMiPasswordCommand> handler,
+        CancellationToken ct)
+    {
+        var command = new CambiarMiPasswordCommand(
+            request.PasswordActual,
+            request.PasswordNueva,
+            request.ConfirmacionPassword);
+
+        var result = await handler.HandleAsync(command, ct);
+        return result.Match(_ => NoContent(), Problem);
     }
 }
