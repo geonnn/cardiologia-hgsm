@@ -13,6 +13,9 @@ public class PacienteRepository : RepositoryBase<Paciente, Guid>, IPacienteRepos
     public PacienteRepository(CardiologiaDbContext context) : base(context)
     { }
 
+    public async Task<bool> ExisteAsync(Guid id, CancellationToken ct = default)
+        => await _dbSet.AnyAsync(p => p.Id == id, ct);
+
     public override async Task<Paciente?> GetByIdAsync(Guid id, CancellationToken ct = default)
         => await ConAgregadoCompleto().FirstOrDefaultAsync(p => p.Id == id, ct);
 

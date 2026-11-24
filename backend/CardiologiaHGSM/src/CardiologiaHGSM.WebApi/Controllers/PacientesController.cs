@@ -4,6 +4,7 @@ using CardiologiaHGSM.Application.Pacientes.Commands.AgregarContacto;
 using CardiologiaHGSM.Application.Pacientes.Commands.CrearPaciente;
 using CardiologiaHGSM.Application.Pacientes.Commands.EliminarContacto;
 using CardiologiaHGSM.Application.Pacientes.Commands.ModificarPaciente;
+using CardiologiaHGSM.Application.Pacientes.Commands.ReemplazarFactoresDeRiesgo;
 using CardiologiaHGSM.Application.Pacientes.Dtos;
 using CardiologiaHGSM.Application.Pacientes.Queries.ListarPacientes;
 using CardiologiaHGSM.Application.Pacientes.Queries.ObtenerPacientePorDni;
@@ -55,6 +56,7 @@ public class PacientesController : ApiControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Crear(
         [FromBody] CrearPacienteRequest request,
@@ -134,6 +136,21 @@ public class PacientesController : ApiControllerBase
         CancellationToken ct)
     {
         var result = await handler.HandleAsync(new EliminarContactoCommand(id, contactoId), ct);
+        return result.Match(_ => NoContent(), Problem);
+    }
+
+    [HttpPut("{id:guid}/factores-de-riesgo")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ReemplazarFactoresDeRiesgo(
+        Guid id,
+        [FromBody] ReemplazarFactoresDeRiesgoRequest request,
+        [FromServices] ICommandHandler<ReemplazarFactoresDeRiesgoCommand> handler,
+        CancellationToken ct)
+    {
+        var command = new ReemplazarFactoresDeRiesgoCommand(id, request.FactorDeRiesgoIds);
+        var result = await handler.HandleAsync(command, ct);
         return result.Match(_ => NoContent(), Problem);
     }
 }
