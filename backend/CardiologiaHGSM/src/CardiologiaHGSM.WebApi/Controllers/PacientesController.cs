@@ -1,10 +1,12 @@
 using CardiologiaHGSM.Application.Common.Interfaces;
 using CardiologiaHGSM.Application.Common.Models;
 using CardiologiaHGSM.Application.Pacientes.Commands.CrearPaciente;
+using CardiologiaHGSM.Application.Pacientes.Commands.ModificarPaciente;
 using CardiologiaHGSM.Application.Pacientes.Dtos;
 using CardiologiaHGSM.Application.Pacientes.Queries.ListarPacientes;
 using CardiologiaHGSM.Application.Pacientes.Queries.ObtenerPacientePorDni;
 using CardiologiaHGSM.Application.Pacientes.Queries.ObtenerPacientePorId;
+using CardiologiaHGSM.WebApi.Contracts.Pacientes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CardiologiaHGSM.WebApi.Controllers;
@@ -61,5 +63,30 @@ public class PacientesController : ApiControllerBase
         return result.Match(
             id => CreatedAtAction(nameof(ObtenerPorId), new { id }, new { id }),
             Problem);
+    }
+
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Modificar(
+        Guid id,
+        [FromBody] ModificarPacienteRequest request,
+        [FromServices] ICommandHandler<ModificarPacienteCommand> handler,
+        CancellationToken ct)
+    {
+        var command = new ModificarPacienteCommand(
+            id,
+            request.Nombre,
+            request.Apellido,
+            request.Dni,
+            request.FechaNacimiento!.Value,
+            request.Sexo!.Value,
+            request.Antecedentes,
+            request.MedicoDeCabeceraId);
+
+        var result = await handler.HandleAsync(command, ct);
+        return result.Match(_ => NoContent(), Problem);
     }
 }
