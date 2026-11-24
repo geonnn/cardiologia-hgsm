@@ -9,7 +9,10 @@ public sealed record PacienteDetalleDto(
     string Apellido,
     string Dni,
     DateOnly FechaNacimiento,
-    Sexo Sexo)
+    int Edad,
+    Sexo Sexo,
+    string? Antecedentes = null,
+    string? MedicoDeCabecera = null)
 {
     public static PacienteDetalleDto FromEntity(Paciente paciente) => new(
         paciente.Id,
@@ -17,6 +20,9 @@ public sealed record PacienteDetalleDto(
         paciente.Apellido,
         paciente.Dni.Valor,
         paciente.FechaNacimiento,
-        paciente.Sexo
+        paciente.CalcularEdad(),
+        paciente.Sexo,
+        paciente.Antecedentes,
+        paciente.MedicoDeCabecera?.Nombre
     );
 }

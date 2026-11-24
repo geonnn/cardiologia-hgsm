@@ -23,7 +23,9 @@ public class CrearPacienteHandler(
             command.Apellido,
             dniResult.Value,
             command.FechaNacimiento,
-            command.Sexo
+            command.Sexo,
+            command.Antecedentes,
+            command.MedicoDeCabeceraId
         );
 
         if (pacienteResult.IsError)
