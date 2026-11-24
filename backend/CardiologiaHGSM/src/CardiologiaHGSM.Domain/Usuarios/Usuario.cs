@@ -6,6 +6,8 @@ public class Usuario : IdentityUser<Guid>
 {
     public const int MaxLongitudNombre = 50;
     public const int MaxLongitudApellido = 50;
+    public const int MinLongitudPassword = 6;
+    public const int MaxLongitudPassword = 12;
 
     public string Nombre { get; private set; } = null!;
     public string Apellido { get; private set; } = null!;

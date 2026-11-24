@@ -37,4 +37,28 @@ public static class UsuarioErrors
     public static readonly Error RolInvalido = Error.Validation(
         code: "Usuario.RolInvalido",
         description: "El rol especificado no es válido.");
+
+    public static readonly Error NoAutenticado = Error.Unauthorized(
+        code: "Usuario.NoAutenticado",
+        description: "No hay una sesión activa.");
+
+    public static readonly Error Bloqueado = Error.Unauthorized(
+        code: "Usuario.Bloqueado",
+        description: "La cuenta está bloqueada temporalmente por demasiados intentos fallidos. Intente nuevamente más tarde.");
+
+    public static readonly Error PasswordActualIncorrecta = Error.Validation(
+        code: "Usuario.PasswordActualIncorrecta",
+        description: "La contraseña actual es incorrecta.");
+
+    public static readonly Error PasswordsNoCoinciden = Error.Validation(
+        code: "Usuario.PasswordsNoCoinciden",
+        description: "La contraseña nueva y su reiteración no coinciden.");
+
+    public static readonly Error NoPuedeEliminarseASiMismo = Error.Conflict(
+        code: "Usuario.NoPuedeEliminarseASiMismo",
+        description: "Un administrador no puede eliminar su propia cuenta.");
+
+    public static readonly Error UltimoAdministrador = Error.Conflict(
+        code: "Usuario.UltimoAdministrador",
+        description: "No se puede eliminar al único administrador del sistema.");
 }
