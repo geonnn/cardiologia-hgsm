@@ -1,3 +1,4 @@
+using CardiologiaHGSM.Application.Catalogos.Interfaces;
 using CardiologiaHGSM.Application.Common.Interfaces;
 using CardiologiaHGSM.Domain.Pacientes;
 using ErrorOr;
@@ -6,6 +7,7 @@ namespace CardiologiaHGSM.Application.Pacientes.Commands.ModificarPaciente;
 
 public class ModificarPacienteHandler(
     IPacienteRepository pacienteRepository,
+    IMedicoDeCabeceraRepository medicoDeCabeceraRepository,
     IUnitOfWork unitOfWork
 ) : ICommandHandler<ModificarPacienteCommand>
 {
@@ -24,7 +26,10 @@ public class ModificarPacienteHandler(
         if (paciente.Dni != dniResult.Value && await pacienteRepository.ExisteDniAsync(dniResult.Value, ct))
             return PacienteErrors.DniDuplicado;
 
-        // TODO: Validar que command.MedicoDeCabeceraId exista en la BD cuando se implemente IMedicoDeCabeceraRepository (módulo Catalogos).
+        if (command.MedicoDeCabeceraId is { } medicoId &&
+            medicoId != paciente.MedicoDeCabeceraId &&
+            !await medicoDeCabeceraRepository.ExisteAsync(medicoId, ct))
+            return PacienteErrors.MedicoDeCabeceraNoEncontrado;
 
         var modificarResult = paciente.ModificarDatos(
             command.Nombre,
