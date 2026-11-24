@@ -7,5 +7,7 @@ public sealed record CrearPacienteCommand(
     string Apellido,
     string Dni,
     DateOnly FechaNacimiento,
-    Sexo Sexo
+    Sexo Sexo,
+    string? Antecedentes = null,
+    Guid? MedicoDeCabeceraId = null
 );

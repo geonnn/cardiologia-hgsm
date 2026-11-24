@@ -7,8 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers()
-    // enums como texto en el JSON ("UCO", "Disponible", ...) en vez de números
-    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter()
+        ));
+
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
