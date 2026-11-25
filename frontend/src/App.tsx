@@ -1,18 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
+import PacientesPage from './pages/Pacientes/PacientesPage';
+import NuevoPacientePage from './pages/Pacientes/NuevoPacientePage';
+import DetallePacientePage from './pages/Pacientes/DetallePacientePage';
 
-// Componentes temporales de prueba
+// Componentes temporales para las otras secciones
 const CamasPage = () => (
   <div>
     <h2>Mapa de Camas (UCO y Sala)</h2>
     <p>Visualización en tiempo real de ocupación de camas.</p>
-  </div>
-);
-
-const PacientesPage = () => (
-  <div>
-    <h2>Gestión de Pacientes</h2>
-    <p>Búsqueda, registro y consulta de historias clínicas.</p>
   </div>
 );
 
@@ -28,9 +24,11 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<MainLayout />}>
-          <Route index element={<Navigate to="/camas" replace />} />
+          <Route index element={<Navigate to="/pacientes" replace />} />
           <Route path="camas" element={<CamasPage />} />
           <Route path="pacientes" element={<PacientesPage />} />
+          <Route path="pacientes/nuevo" element={<NuevoPacientePage />} />
+          <Route path="pacientes/:id" element={<DetallePacientePage />} />
           <Route path="usuarios" element={<UsuariosPage />} />
         </Route>
       </Routes>
