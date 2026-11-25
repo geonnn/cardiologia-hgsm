@@ -8,6 +8,7 @@ namespace CardiologiaHGSM.Application.Pacientes.Commands.CrearPaciente;
 public class CrearPacienteHandler(
     IPacienteRepository pacienteRepository,
     IMedicoDeCabeceraRepository medicoDeCabeceraRepository,
+    IFactorDeRiesgoRepository factorDeRiesgoRepository,
     IUnitOfWork unitOfWork
 ) : ICommandHandler<CrearPacienteCommand, Guid>
 {
@@ -24,6 +25,14 @@ public class CrearPacienteHandler(
             !await medicoDeCabeceraRepository.ExisteAsync(medicoId, ct))
             return PacienteErrors.MedicoDeCabeceraNoEncontrado;
 
+        var idsFactores = command.FactorDeRiesgoIds?.Distinct().ToList() ?? [];
+        var factores = idsFactores.Count > 0
+            ? await factorDeRiesgoRepository.GetByIdsAsync(idsFactores, ct)
+            : [];
+
+        if (factores.Count != idsFactores.Count)
+            return PacienteErrors.FactorDeRiesgoNoEncontrado;
+
         var pacienteResult = Paciente.Crear(
             command.Nombre,
             command.Apellido,
@@ -37,9 +46,34 @@ public class CrearPacienteHandler(
         if (pacienteResult.IsError)
             return pacienteResult.Errors;
 
-        pacienteRepository.Add(pacienteResult.Value);
+        var paciente = pacienteResult.Value;
+
+        if (command.Contactos is { Count: > 0 })
+        {
+            foreach (var contactoInput in command.Contactos)
+            {
+                var contactoResult = Contacto.Crear(
+                    paciente.Id,
+                    contactoInput.Nombre,
+                    contactoInput.Telefono,
+                    contactoInput.Apellido,
+                    contactoInput.Parentesco);
+
+                if (contactoResult.IsError)
+                    return contactoResult.Errors;
+
+                var agregarResult = paciente.AgregarContacto(contactoResult.Value);
+                if (agregarResult.IsError)
+                    return agregarResult.Errors;
+            }
+        }
+
+        if (factores.Count > 0)
+            paciente.ReemplazarFactoresDeRiesgo(factores);
+
+        pacienteRepository.Add(paciente);
         await unitOfWork.SaveChangesAsync(ct);
 
-        return pacienteResult.Value.Id;
+        return paciente.Id;
     }
 }
