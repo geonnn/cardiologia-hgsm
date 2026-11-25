@@ -22,6 +22,7 @@ public class PacientesController : ApiControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(PaginatedList<PacienteResumenDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Listar(
         [FromQuery] ListarPacientesQuery query,
         [FromServices] IQueryHandler<ListarPacientesQuery, PaginatedList<PacienteResumenDto>> handler,
@@ -73,7 +74,11 @@ public class PacientesController : ApiControllerBase
             request.FechaNacimiento!.Value,
             request.Sexo!.Value,
             request.Antecedentes,
-            request.MedicoDeCabeceraId);
+            request.MedicoDeCabeceraId,
+            request.FactorDeRiesgoIds,
+            request.Contactos?
+                .Select(c => new CrearContactoInput(c.Nombre, c.Telefono, c.Apellido, c.Parentesco))
+                .ToList());
 
         var result = await handler.HandleAsync(command, ct);
         return result.Match(
