@@ -5,6 +5,7 @@ using CardiologiaHGSM.Application.Pacientes.Commands.CrearEstudio;
 using CardiologiaHGSM.Application.Pacientes.Commands.CrearPaciente;
 using CardiologiaHGSM.Application.Pacientes.Commands.EliminarContacto;
 using CardiologiaHGSM.Application.Pacientes.Commands.EliminarEstudio;
+using CardiologiaHGSM.Application.Pacientes.Commands.ModificarContacto;
 using CardiologiaHGSM.Application.Pacientes.Commands.ModificarPaciente;
 using CardiologiaHGSM.Application.Pacientes.Commands.ReemplazarFactoresDeRiesgo;
 using CardiologiaHGSM.Application.Pacientes.Dtos;
@@ -132,6 +133,29 @@ public class PacientesController : ApiControllerBase
         return result.Match(
             contactoId => StatusCode(StatusCodes.Status201Created, new { id = contactoId }),
             Problem);
+    }
+
+    [HttpPut("{id:guid}/contactos/{contactoId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ModificarContacto(
+        Guid id,
+        Guid contactoId,
+        [FromBody] ModificarContactoRequest request,
+        [FromServices] ICommandHandler<ModificarContactoCommand> handler,
+        CancellationToken ct)
+    {
+        var command = new ModificarContactoCommand(
+            id,
+            contactoId,
+            request.Nombre,
+            request.Telefono,
+            request.Apellido,
+            request.Parentesco);
+
+        var result = await handler.HandleAsync(command, ct);
+        return result.Match(_ => NoContent(), Problem);
     }
 
     [HttpDelete("{id:guid}/contactos/{contactoId:guid}")]
