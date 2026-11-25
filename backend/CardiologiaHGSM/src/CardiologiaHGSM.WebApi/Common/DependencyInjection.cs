@@ -61,4 +61,20 @@ public static class DependencyInjection
 
         return services;
     }
+
+    /// <summary>
+    /// CORS para cuando el front se sirva desde otro origen que la API (Cors:OrigenesPermitidos).
+    /// Vacío por defecto: con el nginx incluido front y API comparten origen y no hace falta.
+    /// </summary>
+    public static IServiceCollection AddCorsConfigurable(this IServiceCollection services, IConfiguration configuration)
+    {
+        var origenes = configuration.GetSection("Cors:OrigenesPermitidos").Get<string[]>() ?? [];
+
+        services.AddCors(options => options.AddDefaultPolicy(policy => policy
+            .WithOrigins(origenes)
+            .AllowAnyHeader()
+            .AllowAnyMethod()));
+
+        return services;
+    }
 }
