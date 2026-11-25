@@ -1,4 +1,17 @@
 services:
+  migrator:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: ["--migrate"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB:?Falta POSTGRES_DB};Username=${POSTGRES_USER:?Falta POSTGRES_USER};Password=${POSTGRES_PASSWORD:?Falta POSTGRES_PASSWORD}"
+    restart: "no"
+
   api:
     build:
       context: ./backend
@@ -6,6 +19,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_HTTP_PORTS: 5000
