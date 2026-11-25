@@ -49,4 +49,8 @@ public static class PacienteErrors
     public static readonly Error MedicoDeCabeceraNoEncontrado = Error.NotFound(
         code: "Paciente.MedicoDeCabeceraNoEncontrado",
         description: "No se encontró el médico de cabecera especificado.");
+
+    public static readonly Error RangoFechasInvalido = Error.Validation(
+        code: "Paciente.RangoFechasInvalido",
+        description: "La fecha desde no puede ser posterior a la fecha hasta.");
 }
