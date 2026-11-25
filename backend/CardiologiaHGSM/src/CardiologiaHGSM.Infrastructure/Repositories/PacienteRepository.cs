@@ -1,6 +1,5 @@
 using CardiologiaHGSM.Application.Common.Models;
 using CardiologiaHGSM.Application.Pacientes;
-using CardiologiaHGSM.Domain.Enums;
 using CardiologiaHGSM.Domain.Pacientes;
 using CardiologiaHGSM.Infrastructure.Extensions;
 using CardiologiaHGSM.Infrastructure.Persistence;
@@ -26,37 +25,55 @@ public class PacienteRepository : RepositoryBase<Paciente, Guid>, IPacienteRepos
         => await _dbSet.AnyAsync(p => p.Dni == dni, ct);
 
     public async Task<PaginatedList<Paciente>> ListarAsync(
-        int page = 1,
-        int pageSize = 10,
-        string? busqueda = null,
-        Sexo? sexo = null,
-        Guid? medicoDeCabeceraId = null,
-        int? factorDeRiesgoId = null,
+        PacienteFiltro filtro,
         CancellationToken ct = default)
     {
         var query = _dbSet.AsNoTracking();
 
-        if (!string.IsNullOrWhiteSpace(busqueda))
+        if (!string.IsNullOrWhiteSpace(filtro.Busqueda))
         {
-            var patron = $"%{busqueda.Trim()}%";
-            query = query.Where(p =>
-                EF.Functions.ILike(p.Nombre, patron) ||
-                EF.Functions.ILike(p.Apellido, patron));
+            var terminos = filtro.Busqueda.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var termino in terminos)
+            {
+                var patron = $"%{termino}%";
+                query = query.Where(p =>
+                    EF.Functions.ILike(p.Nombre, patron) ||
+                    EF.Functions.ILike(p.Apellido, patron) ||
+                    EF.Functions.ILike((string)(object)p.Dni, patron));
+            }
         }
 
-        if (sexo is not null)
+        if (filtro.Sexo is { } sexo)
             query = query.Where(p => p.Sexo == sexo);
 
-        if (medicoDeCabeceraId is not null)
-            query = query.Where(p => p.MedicoDeCabeceraId == medicoDeCabeceraId);
+        if (filtro.MedicoDeCabeceraId is { } medicoId)
+            query = query.Where(p => p.MedicoDeCabeceraId == medicoId);
 
-        if (factorDeRiesgoId is not null)
-            query = query.Where(p => p.FactoresDeRiesgo.Any(f => f.Id == factorDeRiesgoId));
+        if (filtro.FactorDeRiesgoId is { } factorId)
+            query = query.Where(p => p.FactoresDeRiesgo.Any(f => f.Id == factorId));
 
-        return await query
-            .OrderBy(p => p.Apellido)
-            .ThenBy(p => p.Nombre)
-            .ToPaginatedListAsync(page, pageSize, ct);
+        if (filtro.MotivoInternacionId is { } motivoId)
+            query = query.Where(p => _context.Internaciones.Any(i =>
+                i.PacienteId == p.Id &&
+                i.MotivosInternacion.Any(m => m.Id == motivoId)));
+
+        if (filtro.FechaCargaDesde is { } fechaDesde)
+            query = query.Where(p => p.FechaCarga >= fechaDesde);
+
+        if (filtro.FechaCargaHasta is { } fechaHasta)
+            query = query.Where(p => p.FechaCarga <= fechaHasta);
+
+        query = (filtro.OrdenarPor, filtro.Descendente) switch
+        {
+            (PacienteOrden.FechaCarga, false) => query.OrderBy(p => p.FechaCarga),
+            (PacienteOrden.FechaCarga, true) => query.OrderByDescending(p => p.FechaCarga),
+            (PacienteOrden.Edad, false) => query.OrderByDescending(p => p.FechaNacimiento),
+            (PacienteOrden.Edad, true) => query.OrderBy(p => p.FechaNacimiento),
+            (PacienteOrden.Alfabetico, true) => query.OrderByDescending(p => p.Apellido).ThenByDescending(p => p.Nombre),
+            _ => query.OrderBy(p => p.Apellido).ThenBy(p => p.Nombre)
+        };
+
+        return await query.ToPaginatedListAsync(filtro.Page, filtro.PageSize, ct);
     }
 
     private IQueryable<Paciente> ConAgregadoCompleto()

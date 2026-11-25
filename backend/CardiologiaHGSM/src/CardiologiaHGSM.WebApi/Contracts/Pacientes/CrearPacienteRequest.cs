@@ -12,5 +12,7 @@ public sealed record CrearPacienteRequest(
     [Required] DateOnly? FechaNacimiento,
     [Required] Sexo? Sexo,
     string? Antecedentes = null,
-    Guid? MedicoDeCabeceraId = null
+    Guid? MedicoDeCabeceraId = null,
+    IReadOnlyCollection<int>? FactorDeRiesgoIds = null,
+    IReadOnlyCollection<AgregarContactoRequest>? Contactos = null
 );

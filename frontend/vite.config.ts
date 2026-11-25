@@ -2,6 +2,8 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import { defineConfig } from 'vite'
 
+const apiProxyTarget = process.env.API_PROXY_TARGET ?? 'http://localhost:5000'
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -9,10 +11,11 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] })
   ],
   server: {
-    // En desarrollo el front (5173) y la API (5000) quedan en el mismo origen, igual que en prod con nginx,
-    // así el front puede llamar a /api/... con URLs relativas y sin configurar CORS.
     proxy: {
-      '/api': 'http://localhost:5000',
+      '/api': {
+        target: apiProxyTarget,
+        changeOrigin: true,
+      },
     },
   },
 })

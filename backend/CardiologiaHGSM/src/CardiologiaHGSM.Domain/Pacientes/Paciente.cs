@@ -111,6 +111,20 @@ public class Paciente
         return Result.Success;
     }
 
+    public ErrorOr<Success> ModificarContacto(
+        Guid contactoId,
+        string nombre,
+        string telefono,
+        string? apellido = null,
+        string? parentesco = null)
+    {
+        var contacto = _contactos.FirstOrDefault(c => c.Id == contactoId);
+        if (contacto is null)
+            return PacienteErrors.ContactoNoEncontrado;
+
+        return contacto.Modificar(nombre, telefono, apellido, parentesco);
+    }
+
     public ErrorOr<Success> AgregarFactorDeRiesgo(FactorDeRiesgo factor)
     {
         if (_factoresDeRiesgo.Any(f => f.Id == factor.Id && factor.Id != 0))
