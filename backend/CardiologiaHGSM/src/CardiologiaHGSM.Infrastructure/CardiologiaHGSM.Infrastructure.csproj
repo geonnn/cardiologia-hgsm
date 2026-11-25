@@ -5,12 +5,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- SignInManager, cookies de Identity y token providers viven en el shared framework de ASP.NET Core -->
+    <!-- SignInManager y token providers de Identity viven en el shared framework de ASP.NET Core -->
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.15" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.19.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.4" />
   </ItemGroup>
 

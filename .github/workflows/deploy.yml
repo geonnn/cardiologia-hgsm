@@ -23,5 +23,6 @@ jobs:
           PGADMIN_DEFAULT_PASSWORD: ${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
           ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          JWT_KEY: ${{ secrets.JWT_KEY }}
         run: |
           docker compose -p main -f compose.main.yml up -d --build --remove-orphans

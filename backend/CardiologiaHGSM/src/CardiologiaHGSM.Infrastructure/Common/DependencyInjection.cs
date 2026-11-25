@@ -9,10 +9,12 @@ using CardiologiaHGSM.Infrastructure.Identity;
 using CardiologiaHGSM.Infrastructure.Persistence;
 using CardiologiaHGSM.Infrastructure.Repositories;
 using CardiologiaHGSM.Infrastructure.Repositories.Catalogos;
+using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace CardiologiaHGSM.Infrastructure.Common;
 
@@ -49,12 +51,12 @@ public static class DependencyInjection
         services.AddScoped<IMedicoDeCabeceraRepository, MedicoDeCabeceraRepository>();
         services.AddScoped<ICatalogoRepository<MedicoDeCabecera, Guid>, MedicoDeCabeceraRepository>();
 
-        services.AddIdentidad();
+        services.AddIdentidad(configuration);
 
         return services;
     }
 
-    private static IServiceCollection AddIdentidad(this IServiceCollection services)
+    private static IServiceCollection AddIdentidad(this IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddIdentityCore<Usuario>(options =>
@@ -81,7 +83,16 @@ public static class DependencyInjection
             .AddErrorDescriber<IdentityErrorDescriberEs>()
             .AddPasswordValidator<PasswordLongitudMaximaValidator>();
 
+        services.AddOptions<JwtOptions>()
+            .Bind(configuration.GetSection(JwtOptions.SectionName))
+            .Validate(o => Encoding.UTF8.GetByteCount(o.Key) >= JwtOptions.MinBytesClave,
+                $"Jwt:Key es obligatoria y debe tener al menos {JwtOptions.MinBytesClave} bytes.")
+            .Validate(o => o.ExpiracionHoras > 0, "Jwt:ExpiracionHoras debe ser mayor a 0.")
+            .ValidateOnStart();
+
+        services.TryAddSingleton(TimeProvider.System);
         services.AddScoped<ISesionService, SesionService>();
+        services.AddScoped<ValidadorDeToken>();
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
         return services;

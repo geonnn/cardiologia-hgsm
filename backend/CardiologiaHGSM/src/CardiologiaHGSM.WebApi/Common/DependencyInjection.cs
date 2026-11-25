@@ -1,7 +1,10 @@
 using CardiologiaHGSM.Application.Common.Interfaces;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using CardiologiaHGSM.Infrastructure.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CardiologiaHGSM.WebApi.Common;
 
@@ -10,45 +13,42 @@ public static class DependencyInjection
     public static IServiceCollection AddAutenticacion(this IServiceCollection services)
     {
         services
-            .AddAuthentication(IdentityConstants.ApplicationScheme)
-            .AddIdentityCookies();
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer();
 
-        services.ConfigureApplicationCookie(options =>
-        {
-            options.Cookie.Name = "hgsm.auth";
-            options.Cookie.HttpOnly = true;               // el JS del front no puede leerla
-            options.Cookie.SameSite = SameSiteMode.Strict; // protección contra CSRF
-            // Secure si el request viene por HTTPS; hoy prod sirve HTTP en el puerto 80
-            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-            options.ExpireTimeSpan = TimeSpan.FromHours(12);
-            options.SlidingExpiration = true;
-
-            // Es una API: en vez de redirigir a /Account/Login, devolver 401/403.
-            // Se asignan solo estos dos eventos: reemplazar options.Events entero borraría el
-            // OnValidatePrincipal que Identity usa para validar el security stamp.
-            options.Events.OnRedirectToLogin = ctx =>
-            {
-                ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                return Task.CompletedTask;
-            };
-            options.Events.OnRedirectToAccessDenied = ctx =>
-            {
-                ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
-                return Task.CompletedTask;
-            };
-        });
-
-        // Sesiones guardadas en el servidor para que el logout las invalide (ver MemoryCacheTicketStore)
-        services.AddMemoryCache();
-        services.AddSingleton<ITicketStore, MemoryCacheTicketStore>();
+        // Se configura a partir de JwtOptions (validadas al arrancar) en vez de leer la configuración a mano.
         services
-            .AddOptions<CookieAuthenticationOptions>(IdentityConstants.ApplicationScheme)
-            .Configure<ITicketStore>((options, store) => options.SessionStore = store);
+            .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+            .Configure<IOptions<JwtOptions>>((options, jwtOptions) =>
+            {
+                var jwt = jwtOptions.Value;
 
-        // Si a un usuario le cambian la contraseña o lo eliminan, sus sesiones abiertas
-        // dejan de ser válidas en a lo sumo 1 minuto (por defecto son 30).
-        services.Configure<SecurityStampValidatorOptions>(options =>
-            options.ValidationInterval = TimeSpan.FromMinutes(1));
+                // Usar los nombres de claim del token tal cual ("sub", "role") en lugar de los de ClaimTypes.
+                options.MapInboundClaims = false;
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = jwt.Issuer,
+                    ValidAudience = jwt.Audience,
+                    IssuerSigningKey = jwt.ObtenerClaveDeFirma(),
+                    ValidAlgorithms = [SecurityAlgorithms.HmacSha256],
+                    NameClaimType = JwtRegisteredClaimNames.Sub,
+                    RoleClaimType = JwtClaims.Rol,
+                    ClockSkew = TimeSpan.FromSeconds(30),
+                };
+
+                // Además de firma y vencimiento: el usuario tiene que existir y no haber cerrado sesión
+                // ni cambiado la contraseña desde que se emitió el token.
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = async ctx =>
+                    {
+                        var validador = ctx.HttpContext.RequestServices.GetRequiredService<ValidadorDeToken>();
+                        if (ctx.Principal is null || !await validador.EsValidoAsync(ctx.Principal))
+                            ctx.Fail("La sesión ya no es válida.");
+                    },
+                };
+            });
 
         // Seguridad (RNF): todos los endpoints exigen sesión salvo los marcados con [AllowAnonymous] (login).
         services.AddAuthorizationBuilder()

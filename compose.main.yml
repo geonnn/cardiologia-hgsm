@@ -10,6 +10,8 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_HTTP_PORTS: 5000
       ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB:?Falta POSTGRES_DB};Username=${POSTGRES_USER:?Falta POSTGRES_USER};Password=${POSTGRES_PASSWORD:?Falta POSTGRES_PASSWORD}"
+      # clave para firmar los JWT (mínimo 32 caracteres); si cambia, se cierran todas las sesiones
+      Jwt__Key: ${JWT_KEY:?Falta JWT_KEY}
       # administrador inicial: solo se usa si todavía no existe ningún administrador
       Seed__Admin__Email: ${ADMIN_EMAIL:-}
       Seed__Admin__Password: ${ADMIN_PASSWORD:-}

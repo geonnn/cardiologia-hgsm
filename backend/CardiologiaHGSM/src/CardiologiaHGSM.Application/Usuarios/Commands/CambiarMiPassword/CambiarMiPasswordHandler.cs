@@ -1,4 +1,5 @@
 using CardiologiaHGSM.Application.Common.Interfaces;
+using CardiologiaHGSM.Application.Usuarios.Dtos;
 using CardiologiaHGSM.Domain.Usuarios;
 using ErrorOr;
 using Microsoft.AspNetCore.Identity;
@@ -9,9 +10,9 @@ public class CambiarMiPasswordHandler(
     UserManager<Usuario> userManager,
     IUsuarioActual usuarioActual,
     ISesionService sesionService
-) : ICommandHandler<CambiarMiPasswordCommand>
+) : ICommandHandler<CambiarMiPasswordCommand, SesionDto>
 {
-    public async Task<ErrorOr<Success>> HandleAsync(CambiarMiPasswordCommand command, CancellationToken ct = default)
+    public async Task<ErrorOr<SesionDto>> HandleAsync(CambiarMiPasswordCommand command, CancellationToken ct = default)
     {
         if (usuarioActual.Id is not { } id)
             return UsuarioErrors.NoAutenticado;
@@ -24,13 +25,12 @@ public class CambiarMiPasswordHandler(
             return UsuarioErrors.NoAutenticado;
 
         // Valida la contraseña actual y la política de la nueva; además renueva el security stamp,
-        // lo que cierra las demás sesiones abiertas del usuario.
+        // lo que invalida todos los tokens del usuario (también el que usó para este request).
         var resultado = await userManager.ChangePasswordAsync(usuario, command.PasswordActual, command.PasswordNueva);
         if (!resultado.Succeeded)
             return resultado.ToErrors();
 
-        // La sesión actual también quedó invalidada por el nuevo stamp: se reemite la cookie.
-        await sesionService.RefrescarSesionAsync(usuario);
-        return Result.Success;
+        // Se le emite un token nuevo para que siga trabajando en este dispositivo.
+        return await sesionService.EmitirTokenAsync(usuario);
     }
 }

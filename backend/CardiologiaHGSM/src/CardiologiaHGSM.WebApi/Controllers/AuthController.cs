@@ -18,19 +18,20 @@ public class AuthController : ApiControllerBase
     // RF-01 y RF-03: mismo login; el acceso al panel de administración se controla por rol.
     [HttpPost("login")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(UsuarioActualDto), StatusCodes.Status200OK)]
+    // Devuelve el JWT que el front tiene que mandar en Authorization: Bearer <token>.
+    [ProducesResponseType(typeof(SesionDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login(
         [FromBody] LoginRequest request,
-        [FromServices] ICommandHandler<IniciarSesionCommand, UsuarioActualDto> handler,
+        [FromServices] ICommandHandler<IniciarSesionCommand, SesionDto> handler,
         CancellationToken ct)
     {
         var result = await handler.HandleAsync(new IniciarSesionCommand(request.Email, request.Password), ct);
         return result.Match(Ok, Problem);
     }
 
-    // RF-04
+    // RF-04: invalida todos los tokens del usuario, también los de otros dispositivos.
     [HttpPost("logout")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Logout(
@@ -66,13 +67,13 @@ public class AuthController : ApiControllerBase
         return result.Match(_ => NoContent(), Problem);
     }
 
-    // RF-06
+    // RF-06: los tokens anteriores dejan de valer; la respuesta trae uno nuevo para seguir en este dispositivo.
     [HttpPut("me/password")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(SesionDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CambiarMiPassword(
         [FromBody] CambiarMiPasswordRequest request,
-        [FromServices] ICommandHandler<CambiarMiPasswordCommand> handler,
+        [FromServices] ICommandHandler<CambiarMiPasswordCommand, SesionDto> handler,
         CancellationToken ct)
     {
         var command = new CambiarMiPasswordCommand(
@@ -81,6 +82,6 @@ public class AuthController : ApiControllerBase
             request.ConfirmacionPassword);
 
         var result = await handler.HandleAsync(command, ct);
-        return result.Match(_ => NoContent(), Problem);
+        return result.Match(Ok, Problem);
     }
 }

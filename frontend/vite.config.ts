@@ -10,7 +10,7 @@ export default defineConfig({
   ],
   server: {
     // En desarrollo el front (5173) y la API (5000) quedan en el mismo origen, igual que en prod con nginx,
-    // así la cookie de sesión (SameSite=Strict) funciona sin configurar CORS.
+    // así el front puede llamar a /api/... con URLs relativas y sin configurar CORS.
     proxy: {
       '/api': 'http://localhost:5000',
     },

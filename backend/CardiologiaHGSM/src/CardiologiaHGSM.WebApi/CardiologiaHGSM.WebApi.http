@@ -1,11 +1,14 @@
 @host = http://localhost:5000
 @camaId = 00000000-0000-0000-0000-000000000000
 @usuarioId = 00000000-0000-0000-0000-000000000000
+@token = {{login.response.body.$.accessToken}}
 
 # Todos los endpoints exigen sesión: primero ejecutá el login.
-# REST Client / Rider guardan la cookie y la mandan en los requests siguientes.
+# El token de la respuesta queda en {{token}} y se manda en el header Authorization.
+# Después de cambiar la contraseña o hacer logout hay que volver a ejecutar el login.
 
 ### Login (RF-01, RF-03) - admin de desarrollo de appsettings.Development.json
+# @name login
 POST {{host}}/api/auth/login
 Content-Type: application/json
 
@@ -16,9 +19,11 @@ Content-Type: application/json
 
 ### Usuario actual
 GET {{host}}/api/auth/me
+Authorization: Bearer {{token}}
 
 ### Modificar mis datos (RF-05)
 PUT {{host}}/api/auth/me
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -28,6 +33,7 @@ Content-Type: application/json
 
 ### Cambiar mi contraseña (RF-06)
 PUT {{host}}/api/auth/me/password
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -38,15 +44,19 @@ Content-Type: application/json
 
 ### Logout (RF-04)
 POST {{host}}/api/auth/logout
+Authorization: Bearer {{token}}
 
 ### Listar usuarios (RF-08) - solo administrador
 GET {{host}}/api/usuarios?orden=ApellidoAsc&page=1&pageSize=10
+Authorization: Bearer {{token}}
 
 ### Buscar y filtrar usuarios (RF-08.2, RF-08.3)
 GET {{host}}/api/usuarios?email=hgsm&nombre=ju&fechaDesde=2026-01-01&fechaHasta=2026-12-31
+Authorization: Bearer {{token}}
 
 ### Crear usuario (RF-02)
 POST {{host}}/api/usuarios
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -58,6 +68,7 @@ Content-Type: application/json
 
 ### Cambiar contraseña de un usuario (RF-07)
 PUT {{host}}/api/usuarios/{{usuarioId}}/password
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -67,9 +78,11 @@ Content-Type: application/json
 
 ### Eliminar usuario (RF-09)
 DELETE {{host}}/api/usuarios/{{usuarioId}}
+Authorization: Bearer {{token}}
 
 ### Crear cama (RF-10)
 POST {{host}}/api/camas
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -79,24 +92,31 @@ Content-Type: application/json
 
 ### Listar camas (RF-11)
 GET {{host}}/api/camas
+Authorization: Bearer {{token}}
 Accept: application/json
 
 ### Listar camas filtrando por sector y estado (RF-11.1)
 GET {{host}}/api/camas?sector=Sala&estado=Disponible
+Authorization: Bearer {{token}}
 Accept: application/json
 
 ### Obtener cama por id
 GET {{host}}/api/camas/{{camaId}}
+Authorization: Bearer {{token}}
 Accept: application/json
 
 ### Bloquear cama por aislamiento (RF-27)
 POST {{host}}/api/camas/{{camaId}}/bloquear
+Authorization: Bearer {{token}}
 
 ### Desbloquear cama (RF-28)
 POST {{host}}/api/camas/{{camaId}}/desbloquear
+Authorization: Bearer {{token}}
 
 ### Deshabilitar cama (RF-29)
 POST {{host}}/api/camas/{{camaId}}/deshabilitar
+Authorization: Bearer {{token}}
 
 ### Habilitar cama (RF-30)
 POST {{host}}/api/camas/{{camaId}}/habilitar
+Authorization: Bearer {{token}}

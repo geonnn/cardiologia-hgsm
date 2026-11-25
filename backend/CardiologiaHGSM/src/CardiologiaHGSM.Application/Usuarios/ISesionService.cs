@@ -1,16 +1,20 @@
+using CardiologiaHGSM.Application.Usuarios.Dtos;
 using CardiologiaHGSM.Domain.Usuarios;
 using ErrorOr;
 
 namespace CardiologiaHGSM.Application.Usuarios;
 
 /// <summary>
-/// Manejo de la sesión (cookie) del usuario. La implementación vive en Infrastructure (SignInManager).
+/// Emisión y revocación de los tokens de acceso (JWT). La implementación vive en Infrastructure.
 /// </summary>
 public interface ISesionService
 {
-    Task<ErrorOr<Success>> IniciarSesionAsync(Usuario usuario, string password);
-    Task CerrarSesionAsync();
+    // Verifica la contraseña contando los intentos fallidos para el bloqueo temporal.
+    Task<ErrorOr<Success>> VerificarCredencialesAsync(Usuario usuario, string password);
 
-    // Reemite la cookie (p. ej. después de cambiar la contraseña, que invalida la sesión actual).
-    Task RefrescarSesionAsync(Usuario usuario);
+    // Emite un token nuevo para el usuario.
+    Task<SesionDto> EmitirTokenAsync(Usuario usuario);
+
+    // Invalida todos los tokens emitidos al usuario hasta ahora (en todos sus dispositivos).
+    Task CerrarSesionesAsync(Usuario usuario);
 }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CardiologiaHGSM.Application.Usuarios.Commands.EliminarUsuario;
 
-// RF-09: borrado físico. Sus sesiones abiertas dejan de valer al validar el security stamp.
+// RF-09: borrado físico. Sus tokens dejan de valer porque en cada request se verifica que el usuario exista.
 public class EliminarUsuarioHandler(
     UserManager<Usuario> userManager,
     IUsuarioActual usuarioActual
