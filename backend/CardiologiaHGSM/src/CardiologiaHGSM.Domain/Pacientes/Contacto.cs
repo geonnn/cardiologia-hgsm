@@ -38,6 +38,24 @@ public class Contacto
         };
     }
 
+    public ErrorOr<Success> Modificar(
+        string nombre,
+        string telefono,
+        string? apellido = null,
+        string? parentesco = null)
+    {
+        var errores = ValidarDatos(nombre, telefono, apellido, parentesco);
+        if (errores.Count > 0)
+            return errores;
+
+        this.Nombre = nombre.Trim();
+        this.Telefono = telefono.Trim();
+        this.Apellido = NormalizarOpcional(apellido);
+        this.Parentesco = NormalizarOpcional(parentesco);
+
+        return Result.Success;
+    }
+
     private static List<Error> ValidarDatos(string nombre, string telefono, string? apellido, string? parentesco)
     {
         var errores = new List<Error>();

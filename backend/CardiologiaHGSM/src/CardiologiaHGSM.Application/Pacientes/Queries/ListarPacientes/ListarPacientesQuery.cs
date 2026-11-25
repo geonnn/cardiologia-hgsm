@@ -8,5 +8,10 @@ public sealed record ListarPacientesQuery(
     string? Busqueda = null,
     Sexo? Sexo = null,
     Guid? MedicoDeCabeceraId = null,
-    int? FactorDeRiesgoId = null
+    int? FactorDeRiesgoId = null,
+    int? MotivoInternacionId = null,
+    DateTime? FechaCargaDesde = null,
+    DateTime? FechaCargaHasta = null,
+    PacienteOrden OrdenarPor = PacienteOrden.Alfabetico,
+    bool Descendente = false
 );
