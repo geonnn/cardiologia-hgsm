@@ -1,0 +1,821 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Healthcheck API — Cardiología HGSM</title>
+    <style>
+      :root {
+        --bg: #faf8f2;
+        --surface: #ffffff;
+        --surface-muted: #f3f0e8;
+        --ink: #171615;
+        --ink-muted: #5b6470;
+        --brand: #34485d;
+        --border: #e3dfd4;
+
+        --ok-fg: #1b6e3f;
+        --ok-bg: #e7f6ed;
+        --ok-dot: #22a05a;
+
+        --warn-fg: #9a4a06;
+        --warn-bg: #fef3dc;
+        --warn-dot: #d97706;
+
+        --err-fg: #a6261a;
+        --err-bg: #fdebec;
+        --err-dot: #c0392b;
+
+        --idle-fg: #34485d;
+        --idle-bg: #ebf0f5;
+        --idle-dot: #5b728a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.5;
+        padding: 2rem 1rem;
+      }
+
+      .container {
+        max-width: 760px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      .title-group h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: var(--brand);
+        letter-spacing: -0.02em;
+      }
+
+      .title-group p {
+        margin: 0.2rem 0 0;
+        font-size: 0.9rem;
+        color: var(--ink-muted);
+      }
+
+      .temp-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        background: var(--surface-muted);
+        border: 1px solid var(--border);
+        color: var(--ink-muted);
+        font-size: 0.78rem;
+        font-weight: 500;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+        box-shadow: 0 2px 8px rgba(23, 22, 21, 0.04);
+      }
+
+      .status-banner {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.15rem 1.25rem;
+        border-radius: 10px;
+        background: var(--idle-bg);
+        color: var(--idle-fg);
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+
+      .status-banner[data-state="healthy"] {
+        background: var(--ok-bg);
+        color: var(--ok-fg);
+      }
+
+      .status-banner[data-state="degraded"] {
+        background: var(--warn-bg);
+        color: var(--warn-fg);
+      }
+
+      .status-banner[data-state="unhealthy"],
+      .status-banner[data-state="error"] {
+        background: var(--err-bg);
+        color: var(--err-fg);
+      }
+
+      .status-main {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+      }
+
+      .dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--idle-dot);
+        flex-shrink: 0;
+      }
+
+      .status-banner[data-state="healthy"] .dot {
+        background: var(--ok-dot);
+      }
+
+      .status-banner[data-state="degraded"] .dot {
+        background: var(--warn-dot);
+      }
+
+      .status-banner[data-state="unhealthy"] .dot,
+      .status-banner[data-state="error"] .dot {
+        background: var(--err-dot);
+      }
+
+      .dot.pulse {
+        animation: pulse 1.2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.28);
+          opacity: 0.55;
+        }
+      }
+
+      .status-title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+
+      .status-detail {
+        margin: 0.15rem 0 0;
+        font-size: 0.88rem;
+        opacity: 0.9;
+      }
+
+      .countdown {
+        font-size: 0.82rem;
+        font-weight: 600;
+        padding: 0.35rem 0.7rem;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.72);
+        white-space: nowrap;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        margin-top: 1rem;
+      }
+
+      button {
+        appearance: none;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.5rem 0.95rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.15s ease, opacity 0.15s ease;
+      }
+
+      button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      .btn-primary {
+        background: var(--brand);
+        border-color: var(--brand);
+        color: #ffffff;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background: #283849;
+      }
+
+      .btn-secondary {
+        background: var(--surface);
+        color: var(--ink);
+      }
+
+      .btn-secondary:hover:not(:disabled) {
+        background: var(--surface-muted);
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+        margin-top: 1.1rem;
+      }
+
+      .metric {
+        background: var(--surface-muted);
+        border-radius: 10px;
+        padding: 0.75rem 0.9rem;
+      }
+
+      .metric-label {
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--ink-muted);
+      }
+
+      .metric-value {
+        margin-top: 0.2rem;
+        font-size: 0.98rem;
+        font-weight: 650;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        word-break: break-word;
+      }
+
+      .section-title {
+        margin: 0 0 0.85rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--brand);
+      }
+
+      .checks-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+      }
+
+      .check-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.65rem 0.9rem;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+      }
+
+      .check-name {
+        font-weight: 600;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.92rem;
+      }
+
+      .pill {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        background: var(--idle-bg);
+        color: var(--idle-fg);
+      }
+
+      .pill[data-state="healthy"] {
+        background: var(--ok-bg);
+        color: var(--ok-fg);
+      }
+
+      .pill[data-state="degraded"] {
+        background: var(--warn-bg);
+        color: var(--warn-fg);
+      }
+
+      .pill[data-state="unhealthy"],
+      .pill[data-state="error"] {
+        background: var(--err-bg);
+        color: var(--err-fg);
+      }
+
+      .empty-text {
+        margin: 0;
+        font-size: 0.88rem;
+        color: var(--ink-muted);
+      }
+
+      .history-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+
+      .history-table th,
+      .history-table td {
+        text-align: left;
+        padding: 0.5rem 0.55rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .history-table th {
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--ink-muted);
+      }
+
+      .history-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+
+      details {
+        margin-top: 1rem;
+      }
+
+      summary {
+        cursor: pointer;
+        font-size: 0.84rem;
+        font-weight: 600;
+        color: var(--brand);
+      }
+
+      pre {
+        margin: 0.6rem 0 0;
+        padding: 0.85rem;
+        border-radius: 9px;
+        background: #171615;
+        color: #faf8f2;
+        font-size: 0.8rem;
+        overflow-x: auto;
+      }
+
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: var(--ink-muted);
+      }
+
+      .footer a {
+        color: var(--brand);
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <header class="header">
+        <div class="title-group">
+          <h1>Healthcheck de la API</h1>
+          <p>Servicio de Cardiología — Hospital General San Martín</p>
+        </div>
+        <span class="temp-badge">Página temporal · public/health.html</span>
+      </header>
+
+      <section class="card" aria-live="polite">
+        <div id="status-banner" class="status-banner" data-state="idle">
+          <div class="status-main">
+            <span id="status-dot" class="dot pulse" aria-hidden="true"></span>
+            <div>
+              <h2 id="status-title" class="status-title">Consultando API...</h2>
+              <p id="status-detail" class="status-detail">
+                Ejecutando primera petición a /api/health
+              </p>
+            </div>
+          </div>
+          <span id="countdown" class="countdown">Consultando...</span>
+        </div>
+
+        <div class="controls">
+          <button id="btn-refresh" type="button" class="btn-primary">Consultar ahora</button>
+          <button id="btn-toggle" type="button" class="btn-secondary">Pausar (cada 5s)</button>
+        </div>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-label">Endpoint</div>
+            <div class="metric-value">GET /api/health</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">HTTP</div>
+            <div id="metric-http" class="metric-value">—</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Latencia</div>
+            <div id="metric-latency" class="metric-value">—</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Última consulta</div>
+            <div id="metric-time" class="metric-value">—</div>
+          </div>
+        </div>
+
+        <details>
+          <summary>Ver respuesta cruda</summary>
+          <pre id="raw-output">Sin datos todavía.</pre>
+        </details>
+      </section>
+
+      <section class="card">
+        <h3 class="section-title">Dependencias reportadas</h3>
+        <ul id="checks-list" class="checks-list"></ul>
+        <p id="checks-empty" class="empty-text">Esperando respuesta de la API...</p>
+      </section>
+
+      <section class="card">
+        <h3 class="section-title">Historial reciente (últimas 8 consultas)</h3>
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Hora</th>
+              <th>Estado</th>
+              <th>HTTP</th>
+              <th>Latencia</th>
+            </tr>
+          </thead>
+          <tbody id="history-body">
+            <tr>
+              <td colspan="5" class="empty-text">Sin registros todavía.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <footer class="footer">
+        <span>Polling automático cada 5 segundos sin autenticación.</span>
+        <a href="/">Volver a la aplicación</a>
+      </footer>
+    </main>
+
+    <script>
+      (() => {
+        const HEALTH_ENDPOINT = '/api/health'
+        const POLL_INTERVAL_MS = 5000
+        const REQUEST_TIMEOUT_MS = 4000
+        const MAX_HISTORY = 8
+
+        const els = {
+          banner: document.getElementById('status-banner'),
+          dot: document.getElementById('status-dot'),
+          title: document.getElementById('status-title'),
+          detail: document.getElementById('status-detail'),
+          countdown: document.getElementById('countdown'),
+          btnRefresh: document.getElementById('btn-refresh'),
+          btnToggle: document.getElementById('btn-toggle'),
+          metricHttp: document.getElementById('metric-http'),
+          metricLatency: document.getElementById('metric-latency'),
+          metricTime: document.getElementById('metric-time'),
+          checksList: document.getElementById('checks-list'),
+          checksEmpty: document.getElementById('checks-empty'),
+          historyBody: document.getElementById('history-body'),
+          rawOutput: document.getElementById('raw-output'),
+        }
+
+        let paused = false
+        let inFlight = false
+        let pollCount = 0
+        let nextPollTimer = null
+        let countdownTimer = null
+        let nextPollAt = 0
+        let activeController = null
+        const history = []
+
+        function formatTime(date) {
+          return date.toLocaleTimeString('es-AR', {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+          })
+        }
+
+        function normalizeState(statusText) {
+          if (typeof statusText !== 'string') return 'error'
+          const lower = statusText.toLowerCase()
+          if (lower === 'healthy') return 'healthy'
+          if (lower === 'degraded') return 'degraded'
+          if (lower === 'unhealthy') return 'unhealthy'
+          return 'error'
+        }
+
+        function clearTimers() {
+          if (nextPollTimer !== null) {
+            clearTimeout(nextPollTimer)
+            nextPollTimer = null
+          }
+          if (countdownTimer !== null) {
+            clearInterval(countdownTimer)
+            countdownTimer = null
+          }
+        }
+
+        function updateCountdownText() {
+          if (paused) {
+            els.countdown.textContent = 'Pausado'
+            return
+          }
+          if (inFlight) {
+            els.countdown.textContent = 'Consultando...'
+            return
+          }
+          const remainingSeconds = Math.max(1, Math.ceil((nextPollAt - Date.now()) / 1000))
+          els.countdown.textContent = `Próxima consulta en ${remainingSeconds}s`
+        }
+
+        function scheduleNextPoll() {
+          clearTimers()
+          if (paused) {
+            updateCountdownText()
+            return
+          }
+          nextPollAt = Date.now() + POLL_INTERVAL_MS
+          updateCountdownText()
+          countdownTimer = setInterval(updateCountdownText, 250)
+          nextPollTimer = setTimeout(() => {
+            void checkHealth()
+          }, POLL_INTERVAL_MS)
+        }
+
+        function renderChecks(checks, fallbackMessage) {
+          els.checksList.replaceChildren()
+          const entries = checks && typeof checks === 'object' ? Object.entries(checks) : []
+
+          if (entries.length === 0) {
+            els.checksEmpty.textContent = fallbackMessage
+            els.checksEmpty.style.display = 'block'
+            return
+          }
+
+          els.checksEmpty.style.display = 'none'
+          for (const [name, rawStatus] of entries) {
+            const li = document.createElement('li')
+            li.className = 'check-item'
+
+            const nameSpan = document.createElement('span')
+            nameSpan.className = 'check-name'
+            nameSpan.textContent = name
+
+            const pill = document.createElement('span')
+            pill.className = 'pill'
+            pill.dataset.state = normalizeState(String(rawStatus))
+            pill.textContent = String(rawStatus)
+
+            li.append(nameSpan, pill)
+            els.checksList.appendChild(li)
+          }
+        }
+
+        function renderHistory() {
+          els.historyBody.replaceChildren()
+          for (const entry of history) {
+            const tr = document.createElement('tr')
+
+            const tdNum = document.createElement('td')
+            tdNum.className = 'mono'
+            tdNum.textContent = `#${entry.number}`
+
+            const tdTime = document.createElement('td')
+            tdTime.className = 'mono'
+            tdTime.textContent = entry.time
+
+            const tdStatus = document.createElement('td')
+            const pill = document.createElement('span')
+            pill.className = 'pill'
+            pill.dataset.state = entry.state
+            pill.textContent = entry.statusLabel
+            tdStatus.appendChild(pill)
+
+            const tdHttp = document.createElement('td')
+            tdHttp.className = 'mono'
+            tdHttp.textContent = entry.http
+
+            const tdLatency = document.createElement('td')
+            tdLatency.className = 'mono'
+            tdLatency.textContent = `${entry.latencyMs} ms`
+
+            tr.append(tdNum, tdTime, tdStatus, tdHttp, tdLatency)
+            els.historyBody.appendChild(tr)
+          }
+        }
+
+        function recordResult({ state, title, detail, statusLabel, http, latencyMs, checks, rawText, checksFallback }) {
+          const now = formatTime(new Date())
+          pollCount += 1
+
+          els.banner.dataset.state = state
+          els.dot.classList.toggle('pulse', !paused)
+          els.title.textContent = title
+          els.detail.textContent = detail
+          els.metricHttp.textContent = http
+          els.metricLatency.textContent = `${latencyMs} ms`
+          els.metricTime.textContent = `${now} (#${pollCount})`
+          els.rawOutput.textContent = rawText
+
+          renderChecks(checks, checksFallback)
+
+          history.unshift({
+            number: pollCount,
+            time: now,
+            state,
+            statusLabel,
+            http,
+            latencyMs,
+          })
+          if (history.length > MAX_HISTORY) {
+            history.pop()
+          }
+          renderHistory()
+        }
+
+        async function checkHealth() {
+          if (inFlight) return
+
+          clearTimers()
+          inFlight = true
+          els.btnRefresh.disabled = true
+          els.dot.classList.add('pulse')
+          updateCountdownText()
+
+          const controller = new AbortController()
+          activeController = controller
+          const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+          const startedAt = performance.now()
+
+          try {
+            const response = await fetch(HEALTH_ENDPOINT, {
+              method: 'GET',
+              cache: 'no-store',
+              headers: { Accept: 'application/json' },
+              signal: controller.signal,
+            })
+
+            const latencyMs = Math.round(performance.now() - startedAt)
+            const bodyText = await response.text()
+            const httpLabel = `${response.status}${response.statusText ? ` ${response.statusText}` : ''}`
+
+            let parsed = null
+            if (bodyText) {
+              try {
+                parsed = JSON.parse(bodyText)
+              } catch {
+                parsed = null
+              }
+            }
+
+            const hasValidPayload =
+              parsed !== null &&
+              typeof parsed === 'object' &&
+              typeof parsed.status === 'string'
+
+            if (hasValidPayload) {
+              const state = normalizeState(parsed.status)
+              const formattedJson = JSON.stringify(parsed, null, 2)
+
+              if (state === 'healthy') {
+                recordResult({
+                  state,
+                  title: 'API Saludable (Healthy)',
+                  detail: 'La API y todas las dependencias respondieron correctamente.',
+                  statusLabel: parsed.status,
+                  http: httpLabel,
+                  latencyMs,
+                  checks: parsed.checks,
+                  rawText: formattedJson,
+                  checksFallback: 'La API no informó checks individuales.',
+                })
+              } else if (state === 'degraded') {
+                recordResult({
+                  state,
+                  title: 'API Degradada (Degraded)',
+                  detail: 'La API respondió, pero alguna dependencia está degradada.',
+                  statusLabel: parsed.status,
+                  http: httpLabel,
+                  latencyMs,
+                  checks: parsed.checks,
+                  rawText: formattedJson,
+                  checksFallback: 'Sin detalle de checks.',
+                })
+              } else {
+                recordResult({
+                  state: 'unhealthy',
+                  title: 'API No Saludable (Unhealthy)',
+                  detail: 'La API respondió, pero al menos una dependencia falló.',
+                  statusLabel: parsed.status,
+                  http: httpLabel,
+                  latencyMs,
+                  checks: parsed.checks,
+                  rawText: formattedJson,
+                  checksFallback: 'Sin detalle de checks.',
+                })
+              }
+            } else {
+              const isProxyUnavailable = response.status === 502 || response.status === 504
+              recordResult({
+                state: 'error',
+                title: isProxyUnavailable
+                  ? 'API no disponible'
+                  : 'Respuesta inesperada de la API',
+                detail: isProxyUnavailable
+                  ? 'El proxy no pudo comunicarse con la API. Verificá que el backend esté levantado.'
+                  : response.status >= 500
+                    ? 'La API o el proxy devolvieron un error interno.'
+                    : 'El endpoint no devolvió el formato JSON esperado del healthcheck.',
+                statusLabel: isProxyUnavailable ? `Sin API (${response.status})` : `Error ${response.status}`,
+                http: httpLabel,
+                latencyMs,
+                checks: null,
+                rawText: bodyText || '(respuesta vacía)',
+                checksFallback: isProxyUnavailable
+                  ? 'No se pudieron obtener checks porque la API no respondió al proxy.'
+                  : 'No hay checks disponibles porque la respuesta no es un JSON de healthcheck.',
+              })
+            }
+          } catch (error) {
+            const latencyMs = Math.round(performance.now() - startedAt)
+            const isTimeout = error instanceof DOMException && error.name === 'AbortError'
+            const message = isTimeout
+              ? `Tiempo de espera agotado (${REQUEST_TIMEOUT_MS / 1000}s).`
+              : error instanceof Error
+                ? error.message
+                : 'Error de red desconocido.'
+
+            recordResult({
+              state: 'error',
+              title: isTimeout ? 'Tiempo de espera agotado' : 'Sin conexión con la API',
+              detail: isTimeout
+                ? 'La API tardó demasiado en responder.'
+                : 'No se pudo completar la petición a /api/health. Verificá que la API esté levantada.',
+              statusLabel: isTimeout ? 'Timeout' : 'Sin conexión',
+              http: isTimeout ? 'Timeout' : 'Network Error',
+              latencyMs,
+              checks: null,
+              rawText: message,
+              checksFallback: 'No se pudieron obtener checks porque no hubo conexión con la API.',
+            })
+          } finally {
+            clearTimeout(timeoutId)
+            activeController = null
+            inFlight = false
+            els.btnRefresh.disabled = false
+            els.dot.classList.toggle('pulse', !paused)
+            scheduleNextPoll()
+          }
+        }
+
+        els.btnRefresh.addEventListener('click', () => {
+          void checkHealth()
+        })
+
+        els.btnToggle.addEventListener('click', () => {
+          paused = !paused
+          els.btnToggle.textContent = paused ? 'Reanudar (cada 5s)' : 'Pausar (cada 5s)'
+          els.dot.classList.toggle('pulse', !paused)
+
+          if (paused) {
+            clearTimers()
+            updateCountdownText()
+          } else {
+            void checkHealth()
+          }
+        })
+
+        window.addEventListener('beforeunload', () => {
+          clearTimers()
+          activeController?.abort()
+        })
+
+        void checkHealth()
+      })()
+    </script>
+  </body>
+</html>
