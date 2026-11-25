@@ -20,7 +20,10 @@ public class ListarPacientesHandler(
             query.Busqueda,
             query.Sexo,
             query.MedicoDeCabeceraId,
-            query.FactorDeRiesgoId
+            query.FactorDeRiesgoId,
+            query.MotivoInternacionId,
+            query.FechaDesde,
+            query.FechaHasta
         );
 
         return pacientes.Map(PacienteResumenDto.FromEntity);

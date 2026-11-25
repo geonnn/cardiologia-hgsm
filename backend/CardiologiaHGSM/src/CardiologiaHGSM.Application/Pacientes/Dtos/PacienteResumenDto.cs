@@ -8,7 +8,7 @@ public sealed record PacienteResumenDto(
     string Nombre,
     string Apellido,
     string Dni,
-    DateOnly FechaNacimiento,
+    DateTime FechaCarga,
     int Edad,
     Sexo Sexo)
 {
@@ -17,7 +17,7 @@ public sealed record PacienteResumenDto(
         paciente.Nombre,
         paciente.Apellido,
         paciente.Dni.Valor,
-        paciente.FechaNacimiento,
+        paciente.FechaCarga,
         paciente.CalcularEdad(),
         paciente.Sexo
     );

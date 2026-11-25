@@ -32,6 +32,9 @@ public class PacienteRepository : RepositoryBase<Paciente, Guid>, IPacienteRepos
         Sexo? sexo = null,
         Guid? medicoDeCabeceraId = null,
         int? factorDeRiesgoId = null,
+        int? motivoInternacionId = null,
+        DateTime? fechaDesde = null,
+        DateTime? fechaHasta = null,
         CancellationToken ct = default)
     {
         var query = _dbSet.AsNoTracking();
@@ -39,9 +42,10 @@ public class PacienteRepository : RepositoryBase<Paciente, Guid>, IPacienteRepos
         if (!string.IsNullOrWhiteSpace(busqueda))
         {
             var patron = $"%{busqueda.Trim()}%";
-            query = query.Where(p =>
-                EF.Functions.ILike(p.Nombre, patron) ||
-                EF.Functions.ILike(p.Apellido, patron));
+            query = _context.Pacientes
+                .FromSqlInterpolated(
+                    $"SELECT * FROM \"Pacientes\" WHERE \"Dni\" ILIKE {patron} OR \"Nombre\" ILIKE {patron} OR \"Apellido\" ILIKE {patron}")
+                .AsNoTracking();
         }
 
         if (sexo is not null)
@@ -52,6 +56,23 @@ public class PacienteRepository : RepositoryBase<Paciente, Guid>, IPacienteRepos
 
         if (factorDeRiesgoId is not null)
             query = query.Where(p => p.FactoresDeRiesgo.Any(f => f.Id == factorDeRiesgoId));
+
+        if (motivoInternacionId is not null)
+            query = query.Where(p => _context.Internaciones.Any(i =>
+                i.PacienteId == p.Id &&
+                i.MotivosInternacion.Any(m => m.Id == motivoInternacionId)));
+
+        if (fechaDesde is not null)
+        {
+            var desdeUtc = DateTime.SpecifyKind(fechaDesde.Value.Date, DateTimeKind.Utc);
+            query = query.Where(p => p.FechaCarga >= desdeUtc);
+        }
+
+        if (fechaHasta is not null)
+        {
+            var hastaUtcExclusivo = DateTime.SpecifyKind(fechaHasta.Value.Date.AddDays(1), DateTimeKind.Utc);
+            query = query.Where(p => p.FechaCarga < hastaUtcExclusivo);
+        }
 
         return await query
             .OrderBy(p => p.Apellido)

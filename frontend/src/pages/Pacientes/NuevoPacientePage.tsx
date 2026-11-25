@@ -156,8 +156,17 @@ export const NuevoPacientePage: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <div>
-        <h1 className={styles.headerTitle}>Registrar Nuevo Paciente</h1>
+
+      {/* Botón superior de retroceso */}
+      <div className={styles.topBar}>
+        <button
+          type="button"
+          className={styles.btnBack}
+          onClick={() => navigate('/pacientes')}
+          title="Regresar a la lista de pacientes"
+        >
+          ← Volver a Pacientes
+        </button>
       </div>
 
       {serverError && (
@@ -168,6 +177,9 @@ export const NuevoPacientePage: React.FC = () => {
 
       {/* Tarjeta de Formulario Principal */}
       <form onSubmit={handleSubmit} className={styles.formCard}>
+        <div>
+          <h1 className={styles.headerTitle}>Registrar Nuevo Paciente</h1>
+        </div>
         {/* 1. Datos Personales */}
         <section className={styles.section}>
           <div className={styles.sectionHeader}>

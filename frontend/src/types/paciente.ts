@@ -38,7 +38,6 @@ export interface PacienteResumen {
   nombre: string;
   apellido: string;
   dni: string;
-  fechaNacimiento?: string;
   edad: number;
   sexo: Sexo;
   fechaCarga?: string; // Fecha de registro en el sistema

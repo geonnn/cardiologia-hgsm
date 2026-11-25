@@ -6,46 +6,6 @@ import SearchSelect from '../../components/SearchSelect/SearchSelect';
 import type { PacienteResumen, Sexo, FactorDeRiesgo, MotivoInternacion } from '../../types/paciente';
 import styles from './PacientesPage.module.css';
 
-// Pacientes de demostración con fecha de registro
-const PACIENTES_DEMO: PacienteResumen[] = [
-  {
-    id: '1',
-    nombre: 'Carlos Alberto',
-    apellido: 'Gómez',
-    dni: '28456123',
-    edad: 45,
-    sexo: 'Masculino',
-    fechaCarga: '2026-11-15T09:30:00Z',
-  },
-  {
-    id: '2',
-    nombre: 'María Elena',
-    apellido: 'Rodríguez',
-    dni: '32987654',
-    edad: 39,
-    sexo: 'Femenino',
-    fechaCarga: '2026-11-18T14:15:00Z',
-  },
-  {
-    id: '3',
-    nombre: 'Juan Manuel',
-    apellido: 'Fernández',
-    dni: '18234567',
-    edad: 61,
-    sexo: 'Masculino',
-    fechaCarga: '2026-11-20T11:00:00Z',
-  },
-  {
-    id: '4',
-    nombre: 'Lucía Beatriz',
-    apellido: 'Sánchez',
-    dni: '41122334',
-    edad: 28,
-    sexo: 'Femenino',
-    fechaCarga: '2026-11-22T16:45:00Z',
-  },
-];
-
 /** Formatea fechas ISO a formato argentino DD/MM/AAAA */
 function formatearFecha(fechaStr?: string): string {
   if (!fechaStr) return '-';
@@ -104,24 +64,11 @@ export const PacientesPage: React.FC = () => {
       setPacientes(data.items);
       setTotalCount(data.totalCount);
       setTotalPages(data.totalPages || 1);
-    } catch {
-      // Modo demostración si el backend local no está corriendo
-      let filtrados = PACIENTES_DEMO;
-      if (busqueda.trim()) {
-        const q = busqueda.toLowerCase().trim();
-        filtrados = filtrados.filter(
-          (p) =>
-            p.dni.toLowerCase().includes(q) ||
-            p.apellido.toLowerCase().includes(q) ||
-            p.nombre.toLowerCase().includes(q)
-        );
-      }
-      if (sexoFiltro) {
-        filtrados = filtrados.filter((p) => p.sexo === sexoFiltro);
-      }
-      setPacientes(filtrados);
-      setTotalCount(filtrados.length);
+    } catch (loadError) {
+      setPacientes([]);
+      setTotalCount(0);
       setTotalPages(1);
+      setError(loadError instanceof Error ? loadError.message : 'No se pudieron cargar los pacientes.');
     } finally {
       setLoading(false);
     }

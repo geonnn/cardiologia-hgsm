@@ -8,5 +8,8 @@ public sealed record ListarPacientesQuery(
     string? Busqueda = null,
     Sexo? Sexo = null,
     Guid? MedicoDeCabeceraId = null,
-    int? FactorDeRiesgoId = null
+    int? FactorDeRiesgoId = null,
+    int? MotivoInternacionId = null,
+    DateTime? FechaDesde = null,
+    DateTime? FechaHasta = null
 );

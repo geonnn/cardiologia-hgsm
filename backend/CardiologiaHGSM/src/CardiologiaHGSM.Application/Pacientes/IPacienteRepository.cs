@@ -16,6 +16,9 @@ public interface IPacienteRepository : IRepositoryBase<Paciente, Guid>
         Sexo? sexo = null,
         Guid? medicoDeCabeceraId = null,
         int? factorDeRiesgoId = null,
+        int? motivoInternacionId = null,
+        DateTime? fechaDesde = null,
+        DateTime? fechaHasta = null,
         CancellationToken ct = default
     );
 }
