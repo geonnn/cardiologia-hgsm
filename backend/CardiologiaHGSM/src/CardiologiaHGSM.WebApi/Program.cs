@@ -1,9 +1,10 @@
 using System.Text.Json.Serialization;
 using CardiologiaHGSM.Application.Common;
 using CardiologiaHGSM.Infrastructure.Common;
+using CardiologiaHGSM.WebApi.Cli;
 using Scalar.AspNetCore;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(CliCommands.StripFromArgs(args));
 
 // Add services to the container.
 
@@ -26,6 +27,9 @@ builder.Services.AddApplication();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+if (await app.TryRunCliCommandsAsync(args))
+    return;
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
