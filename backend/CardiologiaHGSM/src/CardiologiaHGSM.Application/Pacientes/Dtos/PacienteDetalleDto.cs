@@ -13,18 +13,18 @@ public sealed record PacienteDetalleDto(
     int Edad,
     Sexo Sexo,
     string? Antecedentes,
-    DateTime FechaCarga,
+    DateTimeOffset FechaCarga,
     MedicoDeCabeceraDto? MedicoDeCabecera,
     IReadOnlyList<ContactoDto> Contactos,
     IReadOnlyList<FactorDeRiesgoDto> FactoresDeRiesgo)
 {
-    public static PacienteDetalleDto FromEntity(Paciente paciente) => new(
+    public static PacienteDetalleDto FromEntity(Paciente paciente, DateOnly hoy) => new(
         paciente.Id,
         paciente.Nombre,
         paciente.Apellido,
         paciente.Dni.Valor,
         paciente.FechaNacimiento,
-        paciente.CalcularEdad(),
+        paciente.CalcularEdad(hoy),
         paciente.Sexo,
         paciente.Antecedentes,
         paciente.FechaCarga,

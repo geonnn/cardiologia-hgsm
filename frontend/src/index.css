@@ -1,33 +1,110 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: Figtree, system-ui, sans-serif;
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+
+  /* Colores propios del proyecto (SRS · paleta del logo) */
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+
+  /* Estados de cama: bg-estado-* / text-estado-*-ink */
+  --color-estado-disponible: var(--estado-disponible);
+  --color-estado-disponible-ink: var(--estado-disponible-ink);
+  --color-estado-ocupada: var(--estado-ocupada);
+  --color-estado-ocupada-ink: var(--estado-ocupada-ink);
+  --color-estado-aislamiento: var(--estado-aislamiento);
+  --color-estado-aislamiento-ink: var(--estado-aislamiento-ink);
+  --color-estado-deshabilitada: var(--estado-deshabilitada);
+  --color-estado-deshabilitada-ink: var(--estado-deshabilitada-ink);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/*
+ * Paleta del SRS: rojo #C0392B · azul oscuro #34485D · blanco #FAF8F2 · negro #171615
+ * - primary: azul (selección, foco, títulos)
+ * - brand:   rojo (acción principal, ej. "Nueva cama")
+ */
 :root {
-  --primary: #C0392B;
-  --primary-hover: #a93226;
-  --secondary: #34485D;
-  --secondary-hover: #2c3e50;
-  --bg: #FAF8F2;
-  --bg-surface: #fff;
-  --border-color: #00000011;
-  --text-main: #171615;
-  --text-muted: #636b6f;
-  --text-on-primary: #fff;
+  color-scheme: light;
 
-  --bed-available: #27ae60;
-  --bed-occupied: #e74c3c;
-  --bed-isolated: #f39c12;
-  --bed-disabled: #95a5a6;
+  --background: #faf8f2;
+  --foreground: #171615;
+  --card: #ffffff;
+  --card-foreground: #171615;
+  --popover: #ffffff;
+  --popover-foreground: #171615;
+  --primary: #34485d;
+  --primary-foreground: #faf8f2;
+  --secondary: #f1eee6;
+  --secondary-foreground: #171615;
+  --muted: #f1eee6;
+  --muted-foreground: #5a5853;
+  --accent: #f1eee6;
+  --accent-foreground: #171615;
+  --destructive: #c0392b;
+  --border: #e4e0d6;
+  --input: #e4e0d6;
+  --ring: #34485d;
+  --radius: 0.75rem;
 
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  color: var(--text-main);
-  background-color: var(--bg);
+  --brand: #c0392b;
+  --brand-foreground: #ffffff;
+
+  --estado-disponible: #cfebd5;
+  --estado-disponible-ink: #124a24;
+  --estado-ocupada: #f7cfcb;
+  --estado-ocupada-ink: #7a1d14;
+  --estado-aislamiento: #fce7ae;
+  --estado-aislamiento-ink: #644300;
+  --estado-deshabilitada: #dcdcda;
+  --estado-deshabilitada-ink: #3a3c3f;
 }
 
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
-html, body, #root {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+  }
+  body {
+    @apply bg-background font-medium text-foreground;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
 }

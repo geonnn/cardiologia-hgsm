@@ -8,7 +8,7 @@ public sealed record EstudioDto(
     Guid PacienteId,
     TipoEstudioDto TipoEstudio,
     string Titulo,
-    DateTime Fecha,
+    DateOnly Fecha,
     string Descripcion)
 {
     public static EstudioDto FromEntity(Estudio estudio) => new(

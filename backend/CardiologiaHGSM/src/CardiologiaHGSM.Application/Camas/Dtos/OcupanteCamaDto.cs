@@ -13,18 +13,19 @@ public sealed record OcupanteCamaDto(
     IReadOnlyList<string> MotivosInternacion,
     int DiasInternado)
 {
-    public static OcupanteCamaDto FromEntity(Internacion internacion, DateTime ahoraUtc)
+    public static OcupanteCamaDto FromEntity(Internacion internacion, DateOnly hoy)
     {
         var paciente = internacion.Paciente;
+        var fechaIngreso = DateOnly.FromDateTime(internacion.FechaInternacion.ToLocalTime().DateTime);
 
         return new OcupanteCamaDto(
             internacion.Id,
             paciente.Id,
             paciente.Nombre,
             paciente.Apellido,
-            paciente.CalcularEdad(DateOnly.FromDateTime(ahoraUtc)),
+            paciente.CalcularEdad(hoy),
             paciente.Sexo,
             internacion.MotivosInternacion.Select(m => m.Nombre).ToList(),
-            Math.Max(0, (ahoraUtc.Date - internacion.FechaInternacion.Date).Days));
+            Math.Max(0, hoy.DayNumber - fechaIngreso.DayNumber));
     }
 }

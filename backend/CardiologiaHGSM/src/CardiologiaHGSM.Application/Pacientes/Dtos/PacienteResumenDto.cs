@@ -10,15 +10,17 @@ public sealed record PacienteResumenDto(
     string Dni,
     DateTime FechaCarga,
     int Edad,
-    Sexo Sexo)
+    Sexo Sexo,
+    DateTimeOffset FechaCarga)
 {
-    public static PacienteResumenDto FromEntity(Paciente paciente) => new(
+    public static PacienteResumenDto FromEntity(Paciente paciente, DateOnly hoy) => new(
         paciente.Id,
         paciente.Nombre,
         paciente.Apellido,
         paciente.Dni.Valor,
-        paciente.FechaCarga,
-        paciente.CalcularEdad(),
-        paciente.Sexo
+        paciente.FechaNacimiento,
+        paciente.CalcularEdad(hoy),
+        paciente.Sexo,
+        paciente.FechaCarga
     );
 }

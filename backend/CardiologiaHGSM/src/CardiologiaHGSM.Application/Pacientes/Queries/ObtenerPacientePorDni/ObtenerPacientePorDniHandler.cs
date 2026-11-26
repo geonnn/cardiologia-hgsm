@@ -20,6 +20,6 @@ public class ObtenerPacientePorDniHandler(
         if (paciente is null)
             return PacienteErrors.NoEncontrado;
 
-        return PacienteDetalleDto.FromEntity(paciente);
+        return PacienteDetalleDto.FromEntity(paciente, DateOnly.FromDateTime(DateTimeOffset.Now.DateTime));
     }
 }
