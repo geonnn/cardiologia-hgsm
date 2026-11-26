@@ -1,9 +1,7 @@
-import { diasDesde } from '@/lib/fechas'
 import { ESTADOS } from './constants'
 import type { Cama, FiltroEstado, Sexo } from './types'
 
-export const textoDiasInternacion = (fechaIngreso: string) => {
-  const dias = diasDesde(fechaIngreso)
+export const textoDiasInternacion = (dias: number) => {
   if (dias <= 0) return 'ingresó hoy'
   return dias === 1 ? '1 día' : `${dias} días`
 }

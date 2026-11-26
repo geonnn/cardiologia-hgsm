@@ -1,3 +1,5 @@
+import type { AccionEstadoApi } from './api/camasApi'
+
 /** Espeja el enum `Manejo` del dominio (backend). */
 export type Sector = 'UCO' | 'Sala'
 
@@ -7,15 +9,16 @@ export type EstadoCama = 'ocupada' | 'disponible' | 'aislamiento' | 'deshabilita
 /** Espeja el enum `Sexo` del dominio (backend). */
 export type Sexo = 'Masculino' | 'Femenino'
 
+/** Paciente que ocupa la cama (OcupanteCamaDto del backend). */
 export interface PacienteInternado {
-  nombre: string
+  internacionId: string
+  pacienteId: string
+  nombreCompleto: string
   edad: number
   sexo: Sexo
-  /** Fecha ISO de ingreso. */
-  fechaIngreso: string
-  motivoInternacion: string
-  /** Tipo de aislamiento (ej. "Contacto", "Gotas"), si corresponde. */
-  aislamiento?: string
+  motivosInternacion: string[]
+  /** Días desde la fecha de internación (0 = ingresó hoy). */
+  diasInternado: number
 }
 
 export interface Cama {
@@ -34,11 +37,11 @@ export interface NuevaCama {
   sector: Sector
 }
 
-/** Acción disponible en el menú de una cama. Si tiene `nuevoEstado`, cambia el estado de la cama. */
+/** Acción disponible en el menú de una cama. Si tiene `accionApi`, cambia el estado de la cama en el backend. */
 export interface AccionCama {
   id: string
   label: string
-  nuevoEstado?: EstadoCama
+  accionApi?: AccionEstadoApi
   /** Participio para el mensaje de confirmación: "Cama 3 de UCO <mensaje>". */
   mensaje?: string
   tone?: 'default' | 'danger'

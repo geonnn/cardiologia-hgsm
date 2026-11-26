@@ -16,7 +16,8 @@ interface NuevaCamaDialogProps {
   onOpenChange: (open: boolean) => void
   sectorInicial: Sector
   camasExistentes: ReadonlyArray<Cama>
-  onCrear: (cama: NuevaCama) => void
+  /** Crea la cama en la API. Si rechaza, el error se muestra en el formulario y el modal sigue abierto. */
+  onCrear: (cama: NuevaCama) => Promise<unknown>
 }
 
 /** Modal de alta de cama. Radix desmonta el contenido al cerrar, así el formulario arranca vacío cada vez. */
@@ -29,18 +30,23 @@ export function NuevaCamaDialog({ open, onOpenChange, sectorInicial, camasExiste
           <DialogDescription>La cama se crea en estado Disponible.</DialogDescription>
         </DialogHeader>
 
-        <NuevaCamaForm sectorInicial={sectorInicial} camasExistentes={camasExistentes} onSubmit={onCrear}>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline" size="lg" className="h-11 px-4">
-                Cancelar
+        <NuevaCamaForm
+          sectorInicial={sectorInicial}
+          camasExistentes={camasExistentes}
+          onSubmit={onCrear}
+          acciones={({ enviando }) => (
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline" size="lg" className="h-11 px-4" disabled={enviando}>
+                  Cancelar
+                </Button>
+              </DialogClose>
+              <Button type="submit" variant="brand" size="lg" className="h-11 px-4" disabled={enviando}>
+                {enviando ? 'Creando…' : 'Crear cama'}
               </Button>
-            </DialogClose>
-            <Button type="submit" variant="brand" size="lg" className="h-11 px-4">
-              Crear cama
-            </Button>
-          </DialogFooter>
-        </NuevaCamaForm>
+            </DialogFooter>
+          )}
+        />
       </DialogContent>
     </Dialog>
   )

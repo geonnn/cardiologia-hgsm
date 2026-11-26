@@ -14,8 +14,6 @@ interface EstadoConfig {
   /** Clases de Tailwind (colores definidos en index.css). Deben ser literales para que Tailwind las detecte. */
   cardClass: string
   dotClass: string
-  /** Colores invertidos (fondo = color de texto de la tarjeta), para etiquetas dentro de la tarjeta. */
-  invertidoClass: string
   /** Texto que se muestra en la tarjeta cuando no hay paciente. */
   nota: string
 }
@@ -27,7 +25,6 @@ export const ESTADO_CONFIG: Record<EstadoCama, EstadoConfig> = {
     icon: UserIcon,
     cardClass: 'bg-estado-ocupada text-estado-ocupada-ink',
     dotClass: 'bg-estado-ocupada',
-    invertidoClass: 'bg-estado-ocupada-ink text-estado-ocupada',
     nota: 'Ocupada',
   },
   disponible: {
@@ -36,7 +33,6 @@ export const ESTADO_CONFIG: Record<EstadoCama, EstadoConfig> = {
     icon: CheckIcon,
     cardClass: 'bg-estado-disponible text-estado-disponible-ink',
     dotClass: 'bg-estado-disponible',
-    invertidoClass: 'bg-estado-disponible-ink text-estado-disponible',
     nota: 'Lista para una nueva internación',
   },
   aislamiento: {
@@ -45,7 +41,6 @@ export const ESTADO_CONFIG: Record<EstadoCama, EstadoConfig> = {
     icon: ShieldAlertIcon,
     cardClass: 'bg-estado-aislamiento text-estado-aislamiento-ink',
     dotClass: 'bg-estado-aislamiento',
-    invertidoClass: 'bg-estado-aislamiento-ink text-estado-aislamiento',
     nota: 'Bloqueada por aislamiento',
   },
   deshabilitada: {
@@ -54,7 +49,6 @@ export const ESTADO_CONFIG: Record<EstadoCama, EstadoConfig> = {
     icon: BanIcon,
     cardClass: 'bg-estado-deshabilitada text-estado-deshabilitada-ink',
     dotClass: 'bg-estado-deshabilitada',
-    invertidoClass: 'bg-estado-deshabilitada-ink text-estado-deshabilitada',
     nota: 'Fuera de servicio',
   },
 }
@@ -63,13 +57,13 @@ export const ESTADO_CONFIG: Record<EstadoCama, EstadoConfig> = {
 export const ACCIONES_POR_ESTADO: Record<EstadoCama, ReadonlyArray<AccionCama>> = {
   disponible: [
     { id: 'nueva-internacion', label: 'Nueva internación' },
-    { id: 'bloquear', label: 'Bloquear por aislamiento', nuevoEstado: 'aislamiento', mensaje: 'bloqueada' },
-    { id: 'deshabilitar', label: 'Deshabilitar cama', nuevoEstado: 'deshabilitada', mensaje: 'deshabilitada' },
+    { id: 'bloquear', label: 'Bloquear por aislamiento', accionApi: 'bloquear', mensaje: 'bloqueada' }, // RF-27
+    { id: 'deshabilitar', label: 'Deshabilitar cama', accionApi: 'deshabilitar', mensaje: 'deshabilitada' }, // RF-29
   ],
   ocupada: [
     { id: 'ver-ficha', label: 'Ver ficha del paciente' },
     { id: 'fin-internacion', label: 'Registrar fin de internación' },
   ],
-  aislamiento: [{ id: 'desbloquear', label: 'Desbloquear cama', nuevoEstado: 'disponible', mensaje: 'desbloqueada' }],
-  deshabilitada: [{ id: 'habilitar', label: 'Habilitar cama', nuevoEstado: 'disponible', mensaje: 'habilitada' }],
+  aislamiento: [{ id: 'desbloquear', label: 'Desbloquear cama', accionApi: 'desbloquear', mensaje: 'desbloqueada' }], // RF-28
+  deshabilitada: [{ id: 'habilitar', label: 'Habilitar cama', accionApi: 'habilitar', mensaje: 'habilitada' }], // RF-30
 }

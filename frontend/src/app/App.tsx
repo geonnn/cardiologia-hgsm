@@ -1,11 +1,6 @@
-import { Toaster } from '@/components/ui/sonner'
-import { CamasPage } from '@/features/camas'
+import { RouterProvider } from 'react-router/dom'
+import { router } from './router'
 
 export function App() {
-  return (
-    <>
-      <CamasPage />
-      <Toaster position="bottom-center" offset={92} />
-    </>
-  )
+  return <RouterProvider router={router} />
 }
