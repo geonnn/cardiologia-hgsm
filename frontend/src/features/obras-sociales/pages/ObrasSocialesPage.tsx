@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { PlusIcon } from 'lucide-react'
 import { toast } from 'sonner'
-import { AppHeader, PageTitle } from '@/components/layout'
+import { PageTitle } from '@/components/layout'
 import { Button } from '@/components/ui/button'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { mensajeDeError } from '@/lib/api'
@@ -126,9 +126,7 @@ export function ObrasSocialesPage() {
 
   return (
     <>
-      <AppHeader />
-
-      <main className="mx-auto max-w-3xl p-4 md:p-7">
+      <div className="mx-auto max-w-3xl">
         <PageTitle>Obras sociales</PageTitle>
 
         <div className="flex items-center gap-3">
@@ -157,7 +155,7 @@ export function ObrasSocialesPage() {
         <div aria-busy={actualizando} className={actualizando ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
           {contenido()}
         </div>
-      </main>
+      </div>
 
       <ObraSocialDialog
         open={formularioAbierto}

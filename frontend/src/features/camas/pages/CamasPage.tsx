@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { PlusIcon } from 'lucide-react'
 import { toast } from 'sonner'
-import { AppHeader, PageTitle, SidebarLayout, SidebarSection } from '@/components/layout'
+import { PageTitle, SidebarLayout, SidebarSection } from '@/components/layout'
 import { Button } from '@/components/ui/button'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { mensajeDeError } from '@/lib/api'
@@ -104,8 +104,6 @@ export function CamasPage() {
 
   return (
     <>
-      <AppHeader />
-
       <SidebarLayout
         sidebarLabel="Filtros"
         sidebar={
@@ -141,7 +139,7 @@ export function CamasPage() {
           </Button>
         </div>
 
-        <EstadoFilter className="md:hidden" value={filtro} onChange={setFiltro} conteos={conteos} />
+        <EstadoFilter className="lg:hidden" value={filtro} onChange={setFiltro} conteos={conteos} />
 
         <p className="sr-only" aria-live="polite">
           {cargandoInicial ? 'Cargando camas…' : `Mostrando ${visibles.length} camas de ${sector}`}
