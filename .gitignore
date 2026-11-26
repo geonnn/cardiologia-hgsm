@@ -2,7 +2,6 @@ docs/historias-de-usuario/
 *.env
 .env
 .env.*
-*.env
 
 node_modules/
 **/node_modules/
