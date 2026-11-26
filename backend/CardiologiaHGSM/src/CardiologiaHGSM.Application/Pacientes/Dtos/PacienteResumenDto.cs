@@ -8,7 +8,7 @@ public sealed record PacienteResumenDto(
     string Nombre,
     string Apellido,
     string Dni,
-    DateTime FechaCarga,
+    DateOnly FechaNacimiento,
     int Edad,
     Sexo Sexo,
     DateTimeOffset FechaCarga)
