@@ -161,7 +161,7 @@ namespace CardiologiaHGSM.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("Fecha")
+                    b.Property<DateTimeOffset>("Fecha")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("InternacionId")
@@ -194,10 +194,10 @@ namespace CardiologiaHGSM.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("FechaFin")
+                    b.Property<DateTimeOffset?>("FechaFin")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("FechaInternacion")
+                    b.Property<DateTimeOffset>("FechaInternacion")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Manejo")
@@ -247,10 +247,10 @@ namespace CardiologiaHGSM.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("FechaCarga")
+                    b.Property<DateTimeOffset>("FechaCarga")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("FechaResolucion")
+                    b.Property<DateTimeOffset?>("FechaResolucion")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("InternacionId")
@@ -277,7 +277,7 @@ namespace CardiologiaHGSM.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("Fecha")
+                    b.Property<DateTimeOffset>("Fecha")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("InternacionId")
@@ -332,8 +332,8 @@ namespace CardiologiaHGSM.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("Fecha")
+                        .HasColumnType("date");
 
                     b.Property<Guid>("PacienteId")
                         .HasColumnType("uuid");
@@ -374,7 +374,7 @@ namespace CardiologiaHGSM.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(9)")
                         .HasColumnName("Dni");
 
-                    b.Property<DateTime>("FechaCarga")
+                    b.Property<DateTimeOffset>("FechaCarga")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateOnly>("FechaNacimiento")
@@ -453,7 +453,7 @@ namespace CardiologiaHGSM.Infrastructure.Persistence.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("FechaCarga")
+                    b.Property<DateTimeOffset>("FechaCarga")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("LockoutEnabled")
