@@ -13,7 +13,11 @@ public class Usuario : IdentityUser<Guid>
 
     private Usuario() { }
 
-    public static ErrorOr<Usuario> Crear(string nombre, string apellido, string email)
+    public static ErrorOr<Usuario> Crear(
+        string nombre,
+        string apellido,
+        string email,
+        DateTimeOffset? fechaCarga = null)
     {
         var errores = ValidarDatosPersonales(nombre, apellido);
 
@@ -32,7 +36,7 @@ public class Usuario : IdentityUser<Guid>
             Apellido = apellido.Trim(),
             Email = emailNormalizado,
             UserName = emailNormalizado,
-            FechaCarga = DateTimeOffset.UtcNow
+            FechaCarga = (fechaCarga ?? DateTimeOffset.UtcNow).ToUniversalTime()
         };
     }
 

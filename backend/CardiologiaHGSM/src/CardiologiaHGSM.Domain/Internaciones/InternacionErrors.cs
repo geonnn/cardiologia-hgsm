@@ -78,6 +78,10 @@ public static class InternacionErrors
         code: "Pendiente.YaRealizado",
         description: "El pendiente ya se encuentra marcado como realizado.");
 
+    public static readonly Error PendienteFechaResolucionAnteriorACarga = Error.Validation(
+        code: "Pendiente.FechaResolucionAnteriorACarga",
+        description: "La fecha de resolución del pendiente no puede ser anterior a su fecha de carga.");
+
     public static readonly Error PacienteSinInternacionActiva = Error.Conflict(
         code: "Internacion.PacienteSinInternacionActiva",
         description: "El paciente no tiene una internación activa.");

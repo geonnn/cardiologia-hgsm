@@ -22,9 +22,11 @@ public class Estudio
         int tipoEstudioId,
         string titulo,
         DateOnly fecha,
-        string descripcion)
+        string descripcion,
+        DateOnly? hoy = null)
     {
-        var errores = ValidarDatos(titulo, fecha, descripcion);
+        var fechaReferencia = hoy ?? DateOnly.FromDateTime(DateTimeOffset.Now.DateTime);
+        var errores = ValidarDatos(titulo, fecha, descripcion, fechaReferencia);
         if (errores.Count > 0)
             return errores;
 
@@ -39,14 +41,14 @@ public class Estudio
         };
     }
 
-    private static List<Error> ValidarDatos(string titulo, DateOnly fecha, string descripcion)
+    private static List<Error> ValidarDatos(string titulo, DateOnly fecha, string descripcion, DateOnly hoy)
     {
         var errores = new List<Error>();
 
         if (ValidarTitulo(titulo) is { } errorTitulo)
             errores.Add(errorTitulo);
 
-        if (ValidarFecha(fecha) is { } errorFecha)
+        if (ValidarFecha(fecha, hoy) is { } errorFecha)
             errores.Add(errorFecha);
 
         if (ValidarDescripcion(descripcion) is { } errorDescripcion)
@@ -67,8 +69,8 @@ public class Estudio
         return null;
     }
 
-    private static Error? ValidarFecha(DateOnly fecha) =>
-        fecha > DateOnly.FromDateTime(DateTimeOffset.Now.DateTime) ? EstudioErrors.FechaFutura : null;
+    private static Error? ValidarFecha(DateOnly fecha, DateOnly hoy) =>
+        fecha > hoy ? EstudioErrors.FechaFutura : null;
 
     private static Error? ValidarDescripcion(string? descripcion) =>
         string.IsNullOrWhiteSpace(descripcion) ? EstudioErrors.DescripcionRequerida : null;

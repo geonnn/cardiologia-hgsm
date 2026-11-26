@@ -16,7 +16,11 @@ public class Pendiente
 
     private Pendiente() { }
 
-    public static ErrorOr<Pendiente> Crear(Guid internacionId, string titulo, string descripcion)
+    public static ErrorOr<Pendiente> Crear(
+        Guid internacionId,
+        string titulo,
+        string descripcion,
+        DateTimeOffset? fechaCarga = null)
     {
         var errores = ValidarDatos(titulo, descripcion);
         if (errores.Count > 0)
@@ -28,16 +32,20 @@ public class Pendiente
             InternacionId = internacionId,
             Titulo = titulo.Trim(),
             Descripcion = descripcion.Trim(),
-            FechaCarga = DateTimeOffset.UtcNow
+            FechaCarga = (fechaCarga ?? DateTimeOffset.UtcNow).ToUniversalTime()
         };
     }
 
-    public ErrorOr<Success> MarcarComoRealizado()
+    public ErrorOr<Success> MarcarComoRealizado(DateTimeOffset? fechaResolucion = null)
     {
         if (this.EstaRealizado)
             return InternacionErrors.PendienteYaRealizado;
 
-        this.FechaResolucion = DateTimeOffset.UtcNow;
+        var fecha = (fechaResolucion ?? DateTimeOffset.UtcNow).ToUniversalTime();
+        if (fecha < this.FechaCarga)
+            return InternacionErrors.PendienteFechaResolucionAnteriorACarga;
+
+        this.FechaResolucion = fecha;
         return Result.Success;
     }
 
