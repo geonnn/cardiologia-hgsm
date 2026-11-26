@@ -2198,7 +2198,7 @@ export interface components {
             /** Format: int32 */
             tipoEstudioId: null | number;
             titulo: string;
-            /** Format: date-time */
+            /** Format: date */
             fecha: null | string;
             descripcion: string;
         };
@@ -2224,7 +2224,7 @@ export interface components {
             pacienteId: string;
             tipoEstudio: components["schemas"]["TipoEstudioDto"];
             titulo: string;
-            /** Format: date-time */
+            /** Format: date */
             fecha: string;
             descripcion: string;
         };
