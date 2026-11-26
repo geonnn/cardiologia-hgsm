@@ -9,8 +9,8 @@ public class Pendiente
     public Internacion Internacion { get; private set; } = null!;
     public string Titulo { get; private set; } = null!;
     public string Descripcion { get; private set; } = null!;
-    public DateTime FechaCarga { get; private set; }
-    public DateTime? FechaResolucion { get; private set; }
+    public DateTimeOffset FechaCarga { get; private set; }
+    public DateTimeOffset? FechaResolucion { get; private set; }
 
     public bool EstaRealizado => this.FechaResolucion is not null;
 
@@ -28,7 +28,7 @@ public class Pendiente
             InternacionId = internacionId,
             Titulo = titulo.Trim(),
             Descripcion = descripcion.Trim(),
-            FechaCarga = DateTime.UtcNow
+            FechaCarga = DateTimeOffset.UtcNow
         };
     }
 
@@ -37,7 +37,7 @@ public class Pendiente
         if (this.EstaRealizado)
             return InternacionErrors.PendienteYaRealizado;
 
-        this.FechaResolucion = DateTime.UtcNow;
+        this.FechaResolucion = DateTimeOffset.UtcNow;
         return Result.Success;
     }
 

@@ -9,7 +9,7 @@ public class Usuario : IdentityUser<Guid>
 
     public string Nombre { get; private set; } = null!;
     public string Apellido { get; private set; } = null!;
-    public DateTime FechaCarga { get; private set; }
+    public DateTimeOffset FechaCarga { get; private set; }
 
     private Usuario() { }
 
@@ -32,7 +32,7 @@ public class Usuario : IdentityUser<Guid>
             Apellido = apellido.Trim(),
             Email = emailNormalizado,
             UserName = emailNormalizado,
-            FechaCarga = DateTime.UtcNow
+            FechaCarga = DateTimeOffset.UtcNow
         };
     }
 

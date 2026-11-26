@@ -10,8 +10,8 @@ public sealed record PacienteFiltro(
     Guid? MedicoDeCabeceraId = null,
     int? FactorDeRiesgoId = null,
     int? MotivoInternacionId = null,
-    DateTime? FechaCargaDesde = null,
-    DateTime? FechaCargaHasta = null,
+    DateOnly? FechaCargaDesde = null,
+    DateOnly? FechaCargaHasta = null,
     PacienteOrden OrdenarPor = PacienteOrden.Alfabetico,
     bool Descendente = false
 );

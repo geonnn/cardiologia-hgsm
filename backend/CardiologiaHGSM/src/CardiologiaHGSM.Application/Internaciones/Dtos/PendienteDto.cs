@@ -7,8 +7,8 @@ public sealed record PendienteDto(
     Guid InternacionId,
     string Titulo,
     string Descripcion,
-    DateTime FechaCarga,
-    DateTime? FechaResolucion,
+    DateTimeOffset FechaCarga,
+    DateTimeOffset? FechaResolucion,
     bool EstaRealizado)
 {
     public static PendienteDto FromEntity(Pendiente pendiente) => new(

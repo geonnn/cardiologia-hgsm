@@ -16,7 +16,7 @@ public class Paciente
     public DateOnly FechaNacimiento { get; private set; }
     public Sexo Sexo { get; private set; }
     public string? Antecedentes { get; private set; }
-    public DateTime FechaCarga { get; private set; }
+    public DateTimeOffset FechaCarga { get; private set; }
 
     public MedicoDeCabecera? MedicoDeCabecera { get; private set; }
     public Guid? MedicoDeCabeceraId { get; private set; }
@@ -52,13 +52,13 @@ public class Paciente
             Sexo = sexo,
             Antecedentes = antecedentes,
             MedicoDeCabeceraId = medicoDeCabeceraId,
-            FechaCarga = DateTime.UtcNow
+            FechaCarga = DateTimeOffset.UtcNow
         };
     }
 
     public int CalcularEdad(DateOnly? fechaReferencia = null)
     {
-        var hoy = fechaReferencia ?? DateOnly.FromDateTime(DateTime.UtcNow);
+        var hoy = fechaReferencia ?? DateOnly.FromDateTime(DateTimeOffset.Now.DateTime);
         var nacimiento = this.FechaNacimiento;
         var edad = hoy.Year - nacimiento.Year;
 
@@ -191,7 +191,7 @@ public class Paciente
     }
 
     private static Error? ValidarFechaNacimiento(DateOnly fechaNacimiento) =>
-        fechaNacimiento > DateOnly.FromDateTime(DateTime.UtcNow)
+        fechaNacimiento > DateOnly.FromDateTime(DateTimeOffset.Now.DateTime)
             ? PacienteErrors.FechaNacimientoFutura
             : null;
 }

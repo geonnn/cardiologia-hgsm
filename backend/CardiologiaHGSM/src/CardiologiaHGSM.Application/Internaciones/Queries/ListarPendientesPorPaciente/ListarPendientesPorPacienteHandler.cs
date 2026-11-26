@@ -31,16 +31,11 @@ public class ListarPendientesPorPacienteHandler(
             page,
             pageSize,
             query.Realizado,
-            ComoUtc(query.FechaDesde),
-            ComoUtc(query.FechaHasta),
+            query.FechaDesde,
+            query.FechaHasta,
             query.Ascendente,
             ct);
 
         return pendientes.Map(PendienteDto.FromEntity);
     }
-
-    // Npgsql exige DateTimeKind.Utc para comparar contra columnas timestamptz.
-    // Las fechas que llegan por query string vienen sin Kind (Unspecified).
-    private static DateTime? ComoUtc(DateTime? fecha) =>
-        fecha is { } f ? DateTime.SpecifyKind(f, DateTimeKind.Utc) : null;
 }

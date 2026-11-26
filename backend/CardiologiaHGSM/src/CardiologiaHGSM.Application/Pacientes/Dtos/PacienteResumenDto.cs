@@ -11,7 +11,7 @@ public sealed record PacienteResumenDto(
     DateOnly FechaNacimiento,
     int Edad,
     Sexo Sexo,
-    DateTime FechaCarga)
+    DateTimeOffset FechaCarga)
 {
     public static PacienteResumenDto FromEntity(Paciente paciente) => new(
         paciente.Id,

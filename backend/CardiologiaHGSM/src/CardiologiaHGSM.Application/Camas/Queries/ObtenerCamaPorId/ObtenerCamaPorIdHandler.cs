@@ -15,6 +15,6 @@ public class ObtenerCamaPorIdHandler(
         if (cama is null)
             return CamaErrors.NoEncontrada;
 
-        return CamaDto.FromEntity(cama, DateTime.UtcNow);
+        return CamaDto.FromEntity(cama, DateOnly.FromDateTime(DateTimeOffset.Now.DateTime));
     }
 }

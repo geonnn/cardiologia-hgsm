@@ -5,7 +5,7 @@ public sealed record ListarPendientesPorPacienteQuery(
     int Page = 1,
     int PageSize = 10,
     bool? Realizado = null,
-    DateTime? FechaDesde = null,
-    DateTime? FechaHasta = null,
+    DateOnly? FechaDesde = null,
+    DateOnly? FechaHasta = null,
     bool Ascendente = false
 );
