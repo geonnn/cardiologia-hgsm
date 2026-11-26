@@ -45,7 +45,7 @@ export function CamaCard({ cama, onAbrirFicha, onAccion }: CamaCardProps) {
       </div>
 
       {paciente ? (
-        <PacienteResumen paciente={paciente} aislamientoClass={config.invertidoClass} />
+        <PacienteResumen paciente={paciente} />
       ) : (
         <p className="mt-auto text-[15px]">{config.nota}</p>
       )}
@@ -54,7 +54,7 @@ export function CamaCard({ cama, onAbrirFicha, onAccion }: CamaCardProps) {
       <button
         type="button"
         className="absolute inset-0 rounded-2xl focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-        aria-label={paciente ? `Abrir ficha de ${paciente.nombre}` : `Ver acciones de la cama ${numero}`}
+        aria-label={paciente ? `Abrir ficha de ${paciente.nombreCompleto}` : `Ver acciones de la cama ${numero}`}
         onClick={() => (paciente ? onAbrirFicha(cama) : setMenuAbierto(true))}
       />
     </Card>
