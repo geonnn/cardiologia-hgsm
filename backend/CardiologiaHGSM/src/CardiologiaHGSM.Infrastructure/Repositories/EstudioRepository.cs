@@ -15,8 +15,8 @@ public class EstudioRepository(CardiologiaDbContext context)
         int page = 1,
         int pageSize = 10,
         int? tipoEstudioId = null,
-        DateTime? fechaDesde = null,
-        DateTime? fechaHasta = null,
+        DateOnly? fechaDesde = null,
+        DateOnly? fechaHasta = null,
         CancellationToken ct = default)
     {
         var query = _dbSet
@@ -27,11 +27,11 @@ public class EstudioRepository(CardiologiaDbContext context)
         if (tipoEstudioId is not null)
             query = query.Where(e => e.TipoEstudioId == tipoEstudioId);
 
-        if (fechaDesde is not null)
-            query = query.Where(e => e.Fecha >= fechaDesde);
+        if (fechaDesde is { } desde)
+            query = query.Where(e => e.Fecha >= desde);
 
-        if (fechaHasta is not null)
-            query = query.Where(e => e.Fecha <= fechaHasta);
+        if (fechaHasta is { } hasta)
+            query = query.Where(e => e.Fecha <= hasta);
 
         return await query
             .OrderByDescending(e => e.Fecha)

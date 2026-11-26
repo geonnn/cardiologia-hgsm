@@ -5,6 +5,6 @@ public sealed record ListarEstudiosPorPacienteQuery(
     int Page = 1,
     int PageSize = 10,
     int? TipoEstudioId = null,
-    DateTime? FechaDesde = null,
-    DateTime? FechaHasta = null
+    DateOnly? FechaDesde = null,
+    DateOnly? FechaHasta = null
 );

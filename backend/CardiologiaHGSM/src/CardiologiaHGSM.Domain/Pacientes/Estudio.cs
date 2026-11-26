@@ -12,7 +12,7 @@ public class Estudio
     public int TipoEstudioId { get; private set; }
     public TipoEstudio TipoEstudio { get; private set; } = null!;
     public string Titulo { get; private set; } = null!;
-    public DateTime Fecha { get; private set; }
+    public DateOnly Fecha { get; private set; }
     public string Descripcion { get; private set; } = null!;
 
     private Estudio() { }
@@ -21,7 +21,7 @@ public class Estudio
         Guid pacienteId,
         int tipoEstudioId,
         string titulo,
-        DateTime fecha,
+        DateOnly fecha,
         string descripcion)
     {
         var errores = ValidarDatos(titulo, fecha, descripcion);
@@ -39,7 +39,7 @@ public class Estudio
         };
     }
 
-    private static List<Error> ValidarDatos(string titulo, DateTime fecha, string descripcion)
+    private static List<Error> ValidarDatos(string titulo, DateOnly fecha, string descripcion)
     {
         var errores = new List<Error>();
 
@@ -67,8 +67,8 @@ public class Estudio
         return null;
     }
 
-    private static Error? ValidarFecha(DateTime fecha) =>
-        fecha > DateTime.UtcNow ? EstudioErrors.FechaFutura : null;
+    private static Error? ValidarFecha(DateOnly fecha) =>
+        fecha > DateOnly.FromDateTime(DateTimeOffset.Now.DateTime) ? EstudioErrors.FechaFutura : null;
 
     private static Error? ValidarDescripcion(string? descripcion) =>
         string.IsNullOrWhiteSpace(descripcion) ? EstudioErrors.DescripcionRequerida : null;

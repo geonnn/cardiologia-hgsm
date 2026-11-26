@@ -11,7 +11,7 @@ public interface IEstudioRepository : IRepositoryBase<Estudio, Guid>
         int page = 1,
         int pageSize = 10,
         int? tipoEstudioId = null,
-        DateTime? fechaDesde = null,
-        DateTime? fechaHasta = null,
+        DateOnly? fechaDesde = null,
+        DateOnly? fechaHasta = null,
         CancellationToken ct = default);
 }

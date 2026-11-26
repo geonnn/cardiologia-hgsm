@@ -197,8 +197,8 @@ public class PacientesController : ApiControllerBase
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10,
         [FromQuery] int? tipoEstudioId = null,
-        [FromQuery] DateTime? fechaDesde = null,
-        [FromQuery] DateTime? fechaHasta = null)
+        [FromQuery] DateOnly? fechaDesde = null,
+        [FromQuery] DateOnly? fechaHasta = null)
     {
         var query = new ListarEstudiosPorPacienteQuery(id, page, pageSize, tipoEstudioId, fechaDesde, fechaHasta);
         var result = await handler.HandleAsync(query, ct);
