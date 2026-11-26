@@ -7,17 +7,14 @@ interface SidebarLayoutProps {
   children: ReactNode
 }
 
-/** Layout de dos columnas: sidebar a la izquierda en desktop, una sola columna en mobile. */
+/** Layout de dos columnas internas (filtros a la izquierda en desktop, una columna en pantallas menores). */
 export function SidebarLayout({ sidebar, sidebarLabel, children }: SidebarLayoutProps) {
   return (
-    <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-[260px_1fr]">
-      <aside
-        aria-label={sidebarLabel}
-        className="hidden min-h-[calc(100vh-80px)] space-y-5 border-r py-7 pr-5 pl-7 md:block"
-      >
+    <div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-6 lg:grid-cols-[250px_minmax(0,1fr)]">
+      <aside aria-label={sidebarLabel} className="hidden space-y-5 border-r pr-6 lg:block">
         {sidebar}
       </aside>
-      <main className="min-w-0 p-4 md:p-7">{children}</main>
+      <div className="min-w-0">{children}</div>
     </div>
   )
 }
