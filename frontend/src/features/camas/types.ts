@@ -1,13 +1,14 @@
+import type { Manejo, Sexo } from '@/api/types'
 import type { AccionEstadoApi } from './api/camasApi'
 
-/** Espeja el enum `Manejo` del dominio (backend). */
-export type Sector = 'UCO' | 'Sala'
+/** Alias de UI para el enum `Manejo` del backend (fuente de verdad: `@/api/types`). */
+export type Sector = Manejo
 
 /** Espeja los estados de `Cama.EstadoCama` del dominio (backend). */
 export type EstadoCama = 'ocupada' | 'disponible' | 'aislamiento' | 'deshabilitada'
 
-/** Espeja el enum `Sexo` del dominio (backend). */
-export type Sexo = 'Masculino' | 'Femenino'
+/** Re-exportado desde `@/api/types`. */
+export type { Sexo }
 
 /** Paciente que ocupa la cama (OcupanteCamaDto del backend). */
 export interface PacienteInternado {

@@ -1,44 +1,24 @@
 // Acceso a CamasController (api/camas). Traduce los DTOs del backend al modelo del front.
 import type { AxiosRequestConfig } from 'axios'
+import type { CamaDto, CrearCamaRequest, EstadoCamaTipo } from '@/api/types'
 import { api } from '@/lib/api'
-import type { Cama, EstadoCama, NuevaCama, Sector, Sexo } from '../types'
+import type { Cama, EstadoCama, NuevaCama, Sector } from '../types'
 
-// ---- DTOs tal como los devuelve la API (enums serializados como string) ----
-
-type EstadoCamaApi = 'Disponible' | 'Ocupada' | 'EnAislamiento' | 'Deshabilitada'
-
-interface OcupanteCamaDto {
-  internacionId: string
-  pacienteId: string
-  nombre: string
-  apellido: string
-  edad: number
-  sexo: Sexo
-  motivosInternacion: string[]
-  diasInternado: number
-}
-
-export interface CamaDto {
-  id: string
-  numeroCama: number
-  sector: Sector
-  estado: EstadoCamaApi
-  ocupante: OcupanteCamaDto | null
-}
+export type { CamaDto }
 
 /** Endpoints de cambio de estado: POST api/camas/{id}/{accion} (RF-27 a RF-30). */
 export type AccionEstadoApi = 'bloquear' | 'desbloquear' | 'deshabilitar' | 'habilitar'
 
 // ---- Mapeo de enums ----
 
-const ESTADO_DESDE_API: Record<EstadoCamaApi, EstadoCama> = {
+const ESTADO_DESDE_API: Record<EstadoCamaTipo, EstadoCama> = {
   Disponible: 'disponible',
   Ocupada: 'ocupada',
   EnAislamiento: 'aislamiento',
   Deshabilitada: 'deshabilitada',
 }
 
-const ESTADO_A_API: Record<EstadoCama, EstadoCamaApi> = {
+const ESTADO_A_API: Record<EstadoCama, EstadoCamaTipo> = {
   disponible: 'Disponible',
   ocupada: 'Ocupada',
   aislamiento: 'EnAislamiento',
@@ -97,7 +77,8 @@ export async function obtenerCama(id: string, signal?: AbortSignal): Promise<Cam
 
 /** RF-10 — POST api/camas. Devuelve el id de la cama creada. */
 export async function crearCama({ numero, sector }: NuevaCama): Promise<string> {
-  const { data } = await api.post<{ id: string }>('/camas', { numeroCama: numero, sector })
+  const payload: CrearCamaRequest = { numeroCama: numero, sector }
+  const { data } = await api.post<{ id: string }>('/camas', payload)
   return data.id
 }
 
