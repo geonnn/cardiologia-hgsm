@@ -6,6 +6,8 @@ export interface ApiQueryState<T> {
   data: T | undefined
   /** Mensaje de error listo para mostrar, o null. */
   error: string | null
+  /** Código HTTP del último error (ej. 404), o null si no hubo error HTTP. */
+  errorStatus: number | null
   cargando: boolean
 }
 
@@ -14,6 +16,8 @@ interface ApiQueryOptions<TResponse, TData> {
   select?: (data: TResponse) => TData
   /** Dependencias extra que fuerzan una nueva consulta (ej. un contador para recargar). */
   deps?: DependencyList
+  /** Si es `false`, no dispara el pedido HTTP. Por defecto `true`. */
+  enabled?: boolean
 }
 
 /**
@@ -30,31 +34,52 @@ interface ApiQueryOptions<TResponse, TData> {
  */
 export function useApiQuery<TResponse, TData = TResponse>(
   request: AxiosRequestConfig,
-  { select, deps = [] }: ApiQueryOptions<TResponse, TData> = {},
+  { select, deps = [], enabled = true }: ApiQueryOptions<TResponse, TData> = {},
 ): ApiQueryState<TData> {
-  const [state, setState] = useState<ApiQueryState<TData>>({ data: undefined, error: null, cargando: true })
+  const [state, setState] = useState<ApiQueryState<TData>>({
+    data: undefined,
+    error: null,
+    errorStatus: null,
+    cargando: enabled,
+  })
 
   // Clave estable del pedido: un objeto nuevo con los mismos valores no vuelve a consultar
   const clave = JSON.stringify([request.method ?? 'get', request.url, request.params])
 
   useEffect(() => {
+    if (!enabled) {
+      setState((prev) => (prev.cargando ? { ...prev, cargando: false } : prev))
+      return
+    }
+
     const controller = new AbortController()
-    setState((prev) => ({ ...prev, cargando: true, error: null }))
+    setState((prev) => ({ ...prev, cargando: true, error: null, errorStatus: null }))
 
     api
       .request<TResponse>({ ...request, signal: controller.signal })
       .then(({ data }) =>
-        setState({ data: select ? select(data) : (data as unknown as TData), error: null, cargando: false }),
+        setState({
+          data: select ? select(data) : (data as unknown as TData),
+          error: null,
+          errorStatus: null,
+          cargando: false,
+        }),
       )
       .catch((error: unknown) => {
         if (axios.isCancel(error) || controller.signal.aborted) return
-        setState((prev) => ({ ...prev, error: mensajeDeError(error), cargando: false }))
+        const errorStatus = axios.isAxiosError(error) ? (error.response?.status ?? null) : null
+        setState((prev) => ({
+          ...prev,
+          error: mensajeDeError(error),
+          errorStatus,
+          cargando: false,
+        }))
       })
 
     return () => controller.abort()
     // `request` y `select` se recrean en cada render: lo que define el pedido está en `clave`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clave, ...deps])
+  }, [clave, enabled, ...deps])
 
   return state
 }
