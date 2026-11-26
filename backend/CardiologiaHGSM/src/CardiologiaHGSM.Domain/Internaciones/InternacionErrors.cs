@@ -77,4 +77,12 @@ public static class InternacionErrors
     public static readonly Error PendienteYaRealizado = Error.Conflict(
         code: "Pendiente.YaRealizado",
         description: "El pendiente ya se encuentra marcado como realizado.");
+
+    public static readonly Error PacienteSinInternacionActiva = Error.Conflict(
+        code: "Internacion.PacienteSinInternacionActiva",
+        description: "El paciente no tiene una internación activa.");
+
+    public static readonly Error PendienteRangoFechasInvalido = Error.Validation(
+        code: "Pendiente.RangoFechasInvalido",
+        description: "La fecha desde no puede ser posterior a la fecha hasta.");
 }
