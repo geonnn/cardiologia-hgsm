@@ -31,7 +31,8 @@ public class ListarPacientesHandler(
             Descendente: query.Descendente);
 
         var pacientes = await pacienteRepository.ListarAsync(filtro, ct);
+        var hoy = DateOnly.FromDateTime(DateTimeOffset.Now.DateTime);
 
-        return pacientes.Map(PacienteResumenDto.FromEntity);
+        return pacientes.Map(p => PacienteResumenDto.FromEntity(p, hoy));
     }
 }
