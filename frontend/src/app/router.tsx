@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router'
 import { CamasPage } from '@/features/camas'
+import { ObrasSocialesPage } from '@/features/obras-sociales'
 import { NotFoundPage } from './NotFoundPage'
 import { RootLayout } from './RootLayout'
 
@@ -16,6 +17,7 @@ export const router = createBrowserRouter([
       // Por ahora la única vista es Camas: la raíz redirige ahí
       { index: true, element: <Navigate to="/camas" replace /> },
       { path: 'camas', element: <CamasPage /> },
+      { path: 'obras-sociales', element: <ObrasSocialesPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
