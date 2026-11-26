@@ -17,6 +17,9 @@ public class CamasController : ApiControllerBase
 {
     // RF-10
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Crear(
         CrearCamaRequest request,
         [FromServices] ICommandHandler<CrearCamaCommand, Guid> handler,
@@ -32,6 +35,7 @@ public class CamasController : ApiControllerBase
 
     // RF-11 y RF-11.1
     [HttpGet]
+    [ProducesResponseType(typeof(IReadOnlyList<CamaDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Listar(
         [FromQuery] Manejo? sector,
         [FromQuery] EstadoCamaTipo? estado,
@@ -43,6 +47,8 @@ public class CamasController : ApiControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(CamaDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ObtenerPorId(
         Guid id,
         [FromServices] IQueryHandler<ObtenerCamaPorIdQuery, CamaDto> handler,
@@ -54,6 +60,9 @@ public class CamasController : ApiControllerBase
 
     // RF-27
     [HttpPost("{id:guid}/bloquear")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public Task<IActionResult> BloquearPorAislamiento(
         Guid id,
         [FromServices] ICommandHandler<CambiarEstadoCamaCommand> handler,
@@ -62,6 +71,9 @@ public class CamasController : ApiControllerBase
 
     // RF-28
     [HttpPost("{id:guid}/desbloquear")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public Task<IActionResult> Desbloquear(
         Guid id,
         [FromServices] ICommandHandler<CambiarEstadoCamaCommand> handler,
@@ -70,6 +82,9 @@ public class CamasController : ApiControllerBase
 
     // RF-29
     [HttpPost("{id:guid}/deshabilitar")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public Task<IActionResult> Deshabilitar(
         Guid id,
         [FromServices] ICommandHandler<CambiarEstadoCamaCommand> handler,
@@ -78,6 +93,9 @@ public class CamasController : ApiControllerBase
 
     // RF-30
     [HttpPost("{id:guid}/habilitar")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public Task<IActionResult> Habilitar(
         Guid id,
         [FromServices] ICommandHandler<CambiarEstadoCamaCommand> handler,
