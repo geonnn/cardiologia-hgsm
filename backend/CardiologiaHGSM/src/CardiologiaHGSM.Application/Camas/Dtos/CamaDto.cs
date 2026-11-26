@@ -10,7 +10,7 @@ public sealed record CamaDto(
     EstadoCamaTipo Estado,
     OcupanteCamaDto? Ocupante)
 {
-    public static CamaDto FromEntity(CamaConInternacion item, DateTime ahoraUtc)
+    public static CamaDto FromEntity(CamaConInternacion item, DateOnly hoy)
     {
         var (cama, internacion) = item;
 
@@ -19,6 +19,6 @@ public sealed record CamaDto(
             cama.NumeroCama,
             cama.Sector,
             cama.EstadoCama.Tipo,
-            internacion is null ? null : OcupanteCamaDto.FromEntity(internacion, ahoraUtc));
+            internacion is null ? null : OcupanteCamaDto.FromEntity(internacion, hoy));
     }
 }

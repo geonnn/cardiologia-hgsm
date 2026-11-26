@@ -15,8 +15,8 @@ public interface IPendienteRepository : IRepositoryBase<Pendiente, Guid>
         int page = 1,
         int pageSize = 10,
         bool? realizado = null,
-        DateTime? fechaDesde = null,
-        DateTime? fechaHasta = null,
+        DateOnly? fechaDesde = null,
+        DateOnly? fechaHasta = null,
         bool ascendente = false,
         CancellationToken ct = default);
 }

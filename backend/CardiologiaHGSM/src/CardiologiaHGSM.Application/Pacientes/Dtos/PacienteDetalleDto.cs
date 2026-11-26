@@ -13,7 +13,7 @@ public sealed record PacienteDetalleDto(
     int Edad,
     Sexo Sexo,
     string? Antecedentes,
-    DateTime FechaCarga,
+    DateTimeOffset FechaCarga,
     MedicoDeCabeceraDto? MedicoDeCabecera,
     IReadOnlyList<ContactoDto> Contactos,
     IReadOnlyList<FactorDeRiesgoDto> FactoresDeRiesgo)

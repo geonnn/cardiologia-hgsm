@@ -10,14 +10,14 @@ public class Internacion
     public const int MaxLongitudAislamiento = 50;
 
     public Guid Id { get; private set; }
-    public DateTime FechaInternacion { get; private set; }
+    public DateTimeOffset FechaInternacion { get; private set; }
     public Manejo Manejo { get; private set; }
     public string EnfermedadActual { get; private set; } = null!;
     public string? Aislamiento { get; private set; }
     public string? ParametrosAntropometria { get; private set; }
     public string? TratamientoPrevio { get; private set; }
     public string? Observaciones { get; private set; }
-    public DateTime? FechaFin { get; private set; }
+    public DateTimeOffset? FechaFin { get; private set; }
     public CondicionAlta? CondicionAlta { get; private set; }
 
     public bool EstaActiva => this.FechaFin is null;
@@ -42,15 +42,17 @@ public class Internacion
         Manejo manejo,
         string enfermedadActual,
         IReadOnlyCollection<MotivoInternacion> motivos,
-        DateTime? fechaInternacion = null,
+        DateTimeOffset? fechaInternacion = null,
         int? obraSocialId = null,
         string? aislamiento = null,
         string? parametrosAntropometria = null,
         string? tratamientoPrevio = null,
-        string? observaciones = null)
+        string? observaciones = null,
+        DateTimeOffset? ahora = null)
     {
-        var fechaIngreso = fechaInternacion ?? DateTime.UtcNow;
-        var errores = ValidarDatosClinicos(fechaIngreso, enfermedadActual, aislamiento);
+        var referencia = (ahora ?? DateTimeOffset.UtcNow).ToUniversalTime();
+        var fechaIngreso = (fechaInternacion ?? referencia).ToUniversalTime();
+        var errores = ValidarDatosClinicos(fechaIngreso, enfermedadActual, aislamiento, referencia);
 
         if (ValidarMotivos(motivos) is { } errorMotivos)
             errores.Add(errorMotivos);
@@ -78,23 +80,26 @@ public class Internacion
     }
 
     public ErrorOr<Success> Modificar(
-        DateTime fechaInternacion,
+        DateTimeOffset fechaInternacion,
         Manejo manejo,
         string enfermedadActual,
         int? obraSocialId = null,
         string? aislamiento = null,
         string? parametrosAntropometria = null,
         string? tratamientoPrevio = null,
-        string? observaciones = null)
+        string? observaciones = null,
+        DateTimeOffset? ahora = null)
     {
         if (!this.EstaActiva)
             return InternacionErrors.YaFinalizada;
 
-        var errores = ValidarDatosClinicos(fechaInternacion, enfermedadActual, aislamiento);
+        var referencia = (ahora ?? DateTimeOffset.UtcNow).ToUniversalTime();
+        var fechaIngreso = fechaInternacion.ToUniversalTime();
+        var errores = ValidarDatosClinicos(fechaIngreso, enfermedadActual, aislamiento, referencia);
         if (errores.Count > 0)
             return errores;
 
-        this.FechaInternacion = fechaInternacion;
+        this.FechaInternacion = fechaIngreso;
         this.Manejo = manejo;
         this.EnfermedadActual = enfermedadActual.Trim();
         this.ObraSocialId = obraSocialId;
@@ -115,17 +120,22 @@ public class Internacion
         return Result.Success;
     }
 
-    public ErrorOr<Success> DarAlta(CondicionAlta condicionAlta, DateTime fechaFin)
+    public ErrorOr<Success> DarAlta(
+        CondicionAlta condicionAlta,
+        DateTimeOffset fechaFin,
+        DateTimeOffset? ahora = null)
     {
         if (!this.EstaActiva)
             return InternacionErrors.YaFinalizada;
 
-        var errores = ValidarFechaFin(fechaFin);
+        var referencia = (ahora ?? DateTimeOffset.UtcNow).ToUniversalTime();
+        var fechaEgreso = fechaFin.ToUniversalTime();
+        var errores = ValidarFechaFin(fechaEgreso, referencia);
         if (errores.Count > 0)
             return errores;
 
         this.CondicionAlta = condicionAlta;
-        this.FechaFin = fechaFin;
+        this.FechaFin = fechaEgreso;
         return Result.Success;
     }
 
@@ -154,11 +164,15 @@ public class Internacion
         return Result.Success;
     }
 
-    private static List<Error> ValidarDatosClinicos(DateTime fechaInternacion, string enfermedadActual, string? aislamiento)
+    private static List<Error> ValidarDatosClinicos(
+        DateTimeOffset fechaInternacion,
+        string enfermedadActual,
+        string? aislamiento,
+        DateTimeOffset ahora)
     {
         var errores = new List<Error>();
 
-        if (ValidarFechaIngreso(fechaInternacion) is { } errorFecha)
+        if (ValidarFechaIngreso(fechaInternacion, ahora) is { } errorFecha)
             errores.Add(errorFecha);
 
         if (ValidarEnfermedadActual(enfermedadActual) is { } errorEnfermedad)
@@ -170,8 +184,8 @@ public class Internacion
         return errores;
     }
 
-    private static Error? ValidarFechaIngreso(DateTime fechaInternacion) =>
-        fechaInternacion.Date > DateTime.UtcNow.Date ? InternacionErrors.FechaIngresoFutura : null;
+    private static Error? ValidarFechaIngreso(DateTimeOffset fechaInternacion, DateTimeOffset ahora) =>
+        fechaInternacion > ahora ? InternacionErrors.FechaIngresoFutura : null;
 
     private static Error? ValidarEnfermedadActual(string? enfermedadActual) =>
         string.IsNullOrWhiteSpace(enfermedadActual) ? InternacionErrors.EnfermedadActualRequerida : null;
@@ -187,14 +201,14 @@ public class Internacion
     private static Error? ValidarMotivos(IReadOnlyCollection<MotivoInternacion>? motivos) =>
         motivos is null || motivos.Count == 0 ? InternacionErrors.MotivosRequeridos : null;
 
-    private List<Error> ValidarFechaFin(DateTime fechaFin)
+    private List<Error> ValidarFechaFin(DateTimeOffset fechaFin, DateTimeOffset ahora)
     {
         var errores = new List<Error>();
 
-        if (fechaFin.Date > DateTime.UtcNow.Date)
+        if (fechaFin > ahora)
             errores.Add(InternacionErrors.FechaFinFutura);
 
-        if (fechaFin.Date < this.FechaInternacion.Date)
+        if (fechaFin < this.FechaInternacion)
             errores.Add(InternacionErrors.FechaFinAnteriorAIngreso);
 
         return errores;

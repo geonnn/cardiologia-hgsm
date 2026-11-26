@@ -23,8 +23,8 @@ public class PendientesController : ApiControllerBase
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10,
         [FromQuery] bool? realizado = null,
-        [FromQuery] DateTime? fechaDesde = null,
-        [FromQuery] DateTime? fechaHasta = null,
+        [FromQuery] DateOnly? fechaDesde = null,
+        [FromQuery] DateOnly? fechaHasta = null,
         [FromQuery] bool ascendente = false)
     {
         var query = new ListarPendientesPorPacienteQuery(

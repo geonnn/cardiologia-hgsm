@@ -23,8 +23,8 @@ public class PendienteRepository(CardiologiaDbContext context)
         int page = 1,
         int pageSize = 10,
         bool? realizado = null,
-        DateTime? fechaDesde = null,
-        DateTime? fechaHasta = null,
+        DateOnly? fechaDesde = null,
+        DateOnly? fechaHasta = null,
         bool ascendente = false,
         CancellationToken ct = default)
     {
@@ -39,11 +39,17 @@ public class PendienteRepository(CardiologiaDbContext context)
         else if (realizado is false)
             query = query.Where(p => p.FechaResolucion == null);
 
-        if (fechaDesde is not null)
-            query = query.Where(p => p.FechaCarga >= fechaDesde);
+        if (fechaDesde is { } desde)
+        {
+            var desdeUtc = desde.InicioDelDiaUtc();
+            query = query.Where(p => p.FechaCarga >= desdeUtc);
+        }
 
-        if (fechaHasta is not null)
-            query = query.Where(p => p.FechaCarga <= fechaHasta);
+        if (fechaHasta is { } hasta)
+        {
+            var hastaUtcExclusivo = hasta.AddDays(1).InicioDelDiaUtc();
+            query = query.Where(p => p.FechaCarga < hastaUtcExclusivo);
+        }
 
         query = ascendente
             ? query.OrderBy(p => p.FechaCarga)
