@@ -8,38 +8,42 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import type { ObraSocial } from '../api/obrasSocialesApi'
-import { ObraSocialForm } from './ObraSocialForm'
+import { textosCatalogo } from '../textos'
+import type { CatalogoConfig, ItemCatalogo } from '../types'
+import { CatalogoForm } from './CatalogoForm'
 
-interface ObraSocialDialogProps {
+interface CatalogoDialogProps {
+  config: CatalogoConfig
   open: boolean
   onOpenChange: (open: boolean) => void
-  /** Obra social a modificar (RF-22). Sin ella, el modal es de alta (RF-20). */
-  obraSocial?: ObraSocial
-  existentes: ReadonlyArray<ObraSocial>
+  /** Elemento a modificar. Sin él, el modal es de alta. */
+  item?: ItemCatalogo
+  existentes: ReadonlyArray<ItemCatalogo>
   /** Guarda en la API. Si rechaza, el error se muestra en el formulario y el modal sigue abierto. */
   onGuardar: (nombre: string) => Promise<unknown>
 }
 
 /** Modal de alta o modificación. Radix desmonta el contenido al cerrar, así el formulario arranca de cero cada vez. */
-export function ObraSocialDialog({ open, onOpenChange, obraSocial, existentes, onGuardar }: ObraSocialDialogProps) {
-  const modificando = obraSocial !== undefined
+export function CatalogoDialog({ config, open, onOpenChange, item, existentes, onGuardar }: CatalogoDialogProps) {
+  const textos = textosCatalogo(config)
+  const modificando = item !== undefined
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-extrabold text-primary">
-            {modificando ? 'Modificar obra social' : 'Nueva obra social'}
+            {modificando ? textos.modificar : textos.nuevo}
           </DialogTitle>
-          <DialogDescription>
-            {modificando ? `Cambiá el nombre de ${obraSocial.nombre}.` : 'Ingresá el nombre de la obra social.'}
+          <DialogDescription className="break-words">
+            {modificando ? `Cambiá el nombre de ${item.nombre}.` : textos.nombreRequerido}
           </DialogDescription>
         </DialogHeader>
 
-        <ObraSocialForm
-          nombreInicial={obraSocial?.nombre}
-          excluirId={obraSocial?.id}
+        <CatalogoForm
+          config={config}
+          nombreInicial={item?.nombre}
+          excluirId={item?.id}
           existentes={existentes}
           onSubmit={onGuardar}
           acciones={({ enviando }) => (
@@ -50,7 +54,7 @@ export function ObraSocialDialog({ open, onOpenChange, obraSocial, existentes, o
                 </Button>
               </DialogClose>
               <Button type="submit" variant="brand" size="lg" className="h-11 px-4" disabled={enviando}>
-                {enviando ? 'Guardando…' : modificando ? 'Guardar cambios' : 'Crear obra social'}
+                {enviando ? 'Guardando…' : modificando ? 'Guardar cambios' : textos.crear}
               </Button>
             </DialogFooter>
           )}

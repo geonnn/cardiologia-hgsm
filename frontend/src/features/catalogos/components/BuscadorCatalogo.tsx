@@ -2,14 +2,17 @@ import { SearchIcon, XIcon } from 'lucide-react'
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group'
 import { cn } from '@/lib/utils'
 
-interface BuscadorObraSocialProps {
+interface BuscadorCatalogoProps {
   value: string
   onChange: (value: string) => void
+  placeholder: string
+  /** Nombre accesible del campo, ej. "Buscar obra social por nombre". */
+  label: string
   className?: string
 }
 
-/** Campo de búsqueda por nombre (RF-21.1), con botón para limpiar. */
-export function BuscadorObraSocial({ value, onChange, className }: BuscadorObraSocialProps) {
+/** Campo de búsqueda por nombre, con botón para limpiar (Esc también limpia). */
+export function BuscadorCatalogo({ value, onChange, placeholder, label, className }: BuscadorCatalogoProps) {
   return (
     <InputGroup className={cn('h-14 rounded-xl bg-card', className)}>
       <InputGroupAddon>
@@ -17,8 +20,8 @@ export function BuscadorObraSocial({ value, onChange, className }: BuscadorObraS
       </InputGroupAddon>
       <InputGroupInput
         type="search"
-        aria-label="Buscar obra social por nombre"
-        placeholder="Buscar obra social…"
+        aria-label={label}
+        placeholder={placeholder}
         autoComplete="off"
         className="text-base [&::-webkit-search-cancel-button]:hidden"
         value={value}

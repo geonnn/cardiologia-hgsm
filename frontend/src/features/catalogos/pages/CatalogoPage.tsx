@@ -5,20 +5,25 @@ import { PageTitle } from '@/components/layout'
 import { Button } from '@/components/ui/button'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { mensajeDeError } from '@/lib/api'
-import type { ObraSocial } from '../api/obrasSocialesApi'
-import { BuscadorObraSocial } from '../components/BuscadorObraSocial'
-import { EliminarObraSocialDialog } from '../components/EliminarObraSocialDialog'
-import { ObraSocialDialog } from '../components/ObraSocialDialog'
-import { ObrasSocialesList, ObrasSocialesListSkeleton } from '../components/ObrasSocialesList'
-import { useObrasSociales } from '../hooks/useObrasSociales'
+import { BuscadorCatalogo } from '../components/BuscadorCatalogo'
+import { CatalogoDialog } from '../components/CatalogoDialog'
+import { CatalogoList, CatalogoListSkeleton } from '../components/CatalogoList'
+import { EliminarCatalogoDialog } from '../components/EliminarCatalogoDialog'
+import { useCatalogo } from '../hooks/useCatalogo'
+import { textosCatalogo } from '../textos'
+import type { CatalogoConfig, ItemCatalogo } from '../types'
 
-/** Listado (RF-21), búsqueda (RF-21.1), alta (RF-20), modificación (RF-22) y baja (RF-23) de obras sociales. */
-export function ObrasSocialesPage() {
+/**
+ * Vista de un catálogo: listar ordenado alfabéticamente, buscar por nombre, crear, modificar y eliminar.
+ * Cada catálogo (obras sociales, tipos de estudio, ...) la usa con su propia `config`.
+ */
+export function CatalogoPage({ config }: { config: CatalogoConfig }) {
+  const textos = textosCatalogo(config)
   const {
     busqueda,
     setBusqueda,
     busquedaAplicada,
-    todas,
+    todos,
     visibles,
     cargandoInicial,
     actualizando,
@@ -27,26 +32,26 @@ export function ObrasSocialesPage() {
     crear,
     modificar,
     eliminar,
-  } = useObrasSociales()
+  } = useCatalogo(config.recurso)
 
-  // El `open` va aparte de la obra social para que el texto de los modales no cambie mientras se cierran
+  // El `open` va aparte del elemento para que el texto de los modales no cambie mientras se cierran
   const [formularioAbierto, setFormularioAbierto] = useState(false)
-  const [aModificar, setAModificar] = useState<ObraSocial>()
+  const [aModificar, setAModificar] = useState<ItemCatalogo>()
   const [eliminarAbierto, setEliminarAbierto] = useState(false)
-  const [aEliminar, setAEliminar] = useState<ObraSocial>()
+  const [aEliminar, setAEliminar] = useState<ItemCatalogo>()
 
   const abrirAlta = () => {
     setAModificar(undefined)
     setFormularioAbierto(true)
   }
 
-  const abrirModificacion = (obraSocial: ObraSocial) => {
-    setAModificar(obraSocial)
+  const abrirModificacion = (item: ItemCatalogo) => {
+    setAModificar(item)
     setFormularioAbierto(true)
   }
 
-  const abrirEliminacion = (obraSocial: ObraSocial) => {
-    setAEliminar(obraSocial)
+  const abrirEliminacion = (item: ItemCatalogo) => {
+    setAEliminar(item)
     setEliminarAbierto(true)
   }
 
@@ -54,20 +59,20 @@ export function ObrasSocialesPage() {
   const guardar = async (nombre: string) => {
     if (aModificar) {
       await modificar(aModificar.id, nombre)
-      toast.success(`Obra social ${nombre} modificada`)
+      toast.success(textos.modificado(nombre))
     } else {
       await crear(nombre)
-      toast.success(`Obra social ${nombre} creada`)
+      toast.success(textos.creado(nombre))
     }
     setFormularioAbierto(false)
   }
 
-  const confirmarEliminacion = async (obraSocial: ObraSocial) => {
+  const confirmarEliminacion = async (item: ItemCatalogo) => {
     try {
-      await eliminar(obraSocial.id)
-      toast.success(`Obra social ${obraSocial.nombre} eliminada`)
+      await eliminar(item.id)
+      toast.success(textos.eliminado(item.nombre))
     } catch (e) {
-      // Ej. 409 Catalogo.EnUso: está asociada a una internación
+      // Ej. 409 Catalogo.EnUso: está asociado a una internación o a un estudio
       toast.error(mensajeDeError(e))
     }
   }
@@ -77,7 +82,7 @@ export function ObrasSocialesPage() {
       return (
         <Empty className="mt-3 border-2 border-dashed">
           <EmptyHeader>
-            <EmptyTitle className="font-extrabold">No se pudieron cargar las obras sociales</EmptyTitle>
+            <EmptyTitle className="font-extrabold">{textos.errorCarga}</EmptyTitle>
             <EmptyDescription>{error}</EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
@@ -89,21 +94,20 @@ export function ObrasSocialesPage() {
       )
     }
 
-    if (cargandoInicial) return <ObrasSocialesListSkeleton />
+    if (cargandoInicial) return <CatalogoListSkeleton />
 
     return (
-      <ObrasSocialesList
-        obrasSociales={visibles}
+      <CatalogoList
+        items={visibles}
+        label={config.titulo}
         resaltar={busquedaAplicada}
         onModificar={abrirModificacion}
         onEliminar={abrirEliminacion}
         empty={
           <Empty className="mt-3 border-2 border-dashed">
             <EmptyHeader>
-              <EmptyTitle className="font-extrabold">
-                {busquedaAplicada
-                  ? `No hay obras sociales que coincidan con “${busquedaAplicada}”.`
-                  : 'No hay obras sociales cargadas.'}
+              <EmptyTitle className="font-extrabold break-words">
+                {busquedaAplicada ? textos.sinCoincidencias(busquedaAplicada) : textos.vacio}
               </EmptyTitle>
             </EmptyHeader>
             <EmptyContent>
@@ -114,7 +118,7 @@ export function ObrasSocialesPage() {
               ) : (
                 <Button variant="brand" size="lg" className="h-11 px-4" onClick={abrirAlta}>
                   <PlusIcon data-icon="inline-start" />
-                  Nueva obra social
+                  {textos.nuevo}
                 </Button>
               )}
             </EmptyContent>
@@ -126,30 +130,37 @@ export function ObrasSocialesPage() {
 
   return (
     <>
+      {/* AppShell ya aporta el <main> con su padding */}
       <div className="mx-auto max-w-3xl">
-        <PageTitle>Obras sociales</PageTitle>
+        <PageTitle>{config.titulo}</PageTitle>
 
         <div className="flex items-center gap-3">
-          <BuscadorObraSocial value={busqueda} onChange={setBusqueda} className="min-w-0 flex-1" />
+          <BuscadorCatalogo
+            value={busqueda}
+            onChange={setBusqueda}
+            placeholder={textos.buscar}
+            label={textos.buscarPorNombre}
+            className="min-w-0 flex-1"
+          />
           <Button
             variant="brand"
             size="lg"
-            aria-label="Nueva obra social"
+            aria-label={textos.nuevo}
             className="h-14 shrink-0 px-4 font-semibold"
             onClick={abrirAlta}
           >
             <PlusIcon data-icon="inline-start" className="size-5" strokeWidth={2.5} />
             {/* En pantallas angostas sólo se ve el "+" */}
-            <span className="hidden sm:inline">Nueva obra social</span>
+            <span className="hidden sm:inline">{textos.nuevo}</span>
           </Button>
         </div>
 
         <p className="mt-3 text-sm text-muted-foreground" aria-live="polite">
           {cargandoInicial
-            ? 'Cargando obras sociales…'
+            ? textos.cargando
             : busquedaAplicada
-              ? `${visibles.length} de ${todas.length} obras sociales`
-              : `${todas.length} obras sociales`}
+              ? textos.totalFiltrado(visibles.length, todos.length)
+              : textos.total(todos.length)}
         </p>
 
         <div aria-busy={actualizando} className={actualizando ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
@@ -157,17 +168,19 @@ export function ObrasSocialesPage() {
         </div>
       </div>
 
-      <ObraSocialDialog
+      <CatalogoDialog
+        config={config}
         open={formularioAbierto}
         onOpenChange={setFormularioAbierto}
-        obraSocial={aModificar}
-        existentes={todas}
+        item={aModificar}
+        existentes={todos}
         onGuardar={guardar}
       />
 
-      <EliminarObraSocialDialog
+      <EliminarCatalogoDialog
         open={eliminarAbierto}
-        obraSocial={aEliminar}
+        item={aEliminar}
+        restriccion={config.restriccionEliminar}
         onOpenChange={setEliminarAbierto}
         onConfirmar={confirmarEliminacion}
       />

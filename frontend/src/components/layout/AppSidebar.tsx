@@ -3,6 +3,7 @@ import {
   Building2Icon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ClipboardListIcon,
   LogOutIcon,
   UsersIcon,
 } from 'lucide-react'
@@ -21,6 +22,7 @@ const NAV_ITEMS = [
   { to: '/camas', label: 'Mapa de Camas', icon: BedDoubleIcon },
   { to: '/pacientes', label: 'Pacientes', icon: UsersIcon },
   { to: '/obras-sociales', label: 'Obras Sociales', icon: Building2Icon },
+  { to: '/tipos-estudio', label: 'Tipos de Estudio', icon: ClipboardListIcon },
 ] as const
 
 /** Barra lateral de navegación principal (colapsable a riel de íconos en desktop y drawer en mobile). */

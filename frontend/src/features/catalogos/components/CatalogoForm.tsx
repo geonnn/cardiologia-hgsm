@@ -1,28 +1,30 @@
-import { useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { useId, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { codigosDeError, mensajeDeError } from '@/lib/api'
-import type { ObraSocial } from '../api/obrasSocialesApi'
-import { MAX_LONGITUD_NOMBRE, validarNombreObraSocial } from '../validaciones'
+import type { CatalogoConfig, ItemCatalogo } from '../types'
+import { validarNombreCatalogo } from '../validaciones'
 
 /** Errores de la API que corresponden al campo "Nombre" (CatalogoErrors y validación del request). */
 const ERRORES_DE_NOMBRE = ['Catalogo.NombreDuplicado', 'Catalogo.NombreRequerido', 'Catalogo.NombreMuyLargo', 'Nombre']
 
-interface ObraSocialFormProps {
+interface CatalogoFormProps {
+  config: CatalogoConfig
   /** Nombre con el que arranca el campo (al modificar, el nombre actual). */
   nombreInicial?: string
-  /** Id de la obra social que se modifica: no cuenta como duplicada consigo misma. */
+  /** Id del elemento que se modifica: no cuenta como duplicado consigo mismo. */
   excluirId?: number
   /** Para validar en el cliente que el nombre no se repita. */
-  existentes: ReadonlyArray<ObraSocial>
+  existentes: ReadonlyArray<ItemCatalogo>
   /** Envía el nombre a la API. Si rechaza, el error se muestra en el formulario. */
   onSubmit: (nombre: string) => Promise<unknown>
   /** Botones del pie (se renderizan dentro del <form>). Reciben si hay un envío en curso. */
   acciones?: (estado: { enviando: boolean }) => ReactNode
 }
 
-/** Formulario de alta y modificación de obra social (RF-20 / RF-22). */
-export function ObraSocialForm({ nombreInicial = '', excluirId, existentes, onSubmit, acciones }: ObraSocialFormProps) {
+/** Formulario de alta y modificación de un elemento del catálogo (solo tiene nombre). */
+export function CatalogoForm({ config, nombreInicial = '', excluirId, existentes, onSubmit, acciones }: CatalogoFormProps) {
+  const id = useId()
   const [nombre, setNombre] = useState(nombreInicial)
   // Los errores se muestran recién después del primer intento de envío, y luego se actualizan en vivo.
   const [intentoEnviar, setIntentoEnviar] = useState(false)
@@ -32,9 +34,9 @@ export function ObraSocialForm({ nombreInicial = '', excluirId, existentes, onSu
   const [errorServidorGeneral, setErrorServidorGeneral] = useState<string | null>(null)
   const nombreRef = useRef<HTMLInputElement>(null)
 
-  const errorCliente = intentoEnviar ? validarNombreObraSocial(nombre, existentes, excluirId) : undefined
-  const errorNombre = errorCliente ?? errorServidorNombre
-  const longitud = nombre.trim().length
+  const validar = () => validarNombreCatalogo(config, nombre, existentes, excluirId)
+  const errorNombre = (intentoEnviar ? validar() : undefined) ?? errorServidorNombre
+  const max = config.maxLongitudNombre
 
   const enviar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -43,7 +45,7 @@ export function ObraSocialForm({ nombreInicial = '', excluirId, existentes, onSu
     setErrorServidorNombre(null)
     setErrorServidorGeneral(null)
 
-    if (validarNombreObraSocial(nombre, existentes, excluirId)) {
+    if (validar()) {
       nombreRef.current?.focus()
       return
     }
@@ -68,18 +70,18 @@ export function ObraSocialForm({ nombreInicial = '', excluirId, existentes, onSu
     <form noValidate onSubmit={enviar} className="grid gap-6" aria-busy={enviando}>
       <FieldGroup>
         <Field data-invalid={errorNombre ? true : undefined}>
-          <FieldLabel htmlFor="obra-social-nombre">
+          <FieldLabel htmlFor={`${id}-nombre`}>
             Nombre <span className="text-destructive" aria-hidden="true">*</span>
           </FieldLabel>
           <Input
-            id="obra-social-nombre"
+            id={`${id}-nombre`}
             ref={nombreRef}
             required
             autoFocus
             autoComplete="off"
             // Margen para espacios al inicio o al final, que se recortan al guardar
-            maxLength={MAX_LONGITUD_NOMBRE + 10}
-            placeholder="Ej. PAMI"
+            maxLength={max + 10}
+            placeholder={`Ej. ${config.ejemploNombre}`}
             className="h-11 text-base"
             value={nombre}
             onChange={(e) => {
@@ -88,15 +90,15 @@ export function ObraSocialForm({ nombreInicial = '', excluirId, existentes, onSu
               setErrorServidorGeneral(null)
             }}
             aria-invalid={errorNombre ? true : undefined}
-            aria-describedby={errorNombre ? 'obra-social-nombre-error' : 'obra-social-nombre-ayuda'}
+            aria-describedby={errorNombre ? `${id}-error` : `${id}-ayuda`}
           />
           {errorNombre ? (
-            <FieldError id="obra-social-nombre-error">{errorNombre}</FieldError>
+            <FieldError id={`${id}-error`}>{errorNombre}</FieldError>
           ) : (
-            <FieldDescription id="obra-social-nombre-ayuda" className="flex justify-between gap-3">
-              <span>Único, hasta {MAX_LONGITUD_NOMBRE} caracteres.</span>
+            <FieldDescription id={`${id}-ayuda`} className="flex justify-between gap-3">
+              <span>Único, hasta {max} caracteres.</span>
               <span className="tabular-nums" aria-hidden="true">
-                {longitud}/{MAX_LONGITUD_NOMBRE}
+                {nombre.trim().length}/{max}
               </span>
             </FieldDescription>
           )}
