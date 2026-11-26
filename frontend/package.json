@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate:api": "npx -y --package=typescript@5 --package=openapi-typescript openapi-typescript http://localhost:5000/openapi/v1.json -o src/api/schema.d.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.5",
