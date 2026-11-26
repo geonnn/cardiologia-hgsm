@@ -1,6 +1,11 @@
 import { createBrowserRouter, Navigate } from 'react-router'
 import { CamasPage } from '@/features/camas'
 import { ObrasSocialesPage } from '@/features/obras-sociales'
+import { MainLayout } from '@/layouts/MainLayout'
+import { DetallePacientePage } from '@/pages/Pacientes/DetallePacientePage'
+import { NuevoPacientePage } from '@/pages/Pacientes/NuevoPacientePage'
+import { PacientesPage } from '@/pages/Pacientes/PacientesPage'
+
 import { NotFoundPage } from './NotFoundPage'
 import { RootLayout } from './RootLayout'
 
@@ -18,6 +23,16 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="/camas" replace /> },
       { path: 'camas', element: <CamasPage /> },
       { path: 'obras-sociales', element: <ObrasSocialesPage /> },
+      {
+        // Las vistas de pacientes usan el layout con el panel lateral (Sidebar)
+        path: 'pacientes',
+        element: <MainLayout />,
+        children: [
+          { index: true, element: <PacientesPage /> },
+          { path: 'nuevo', element: <NuevoPacientePage /> },
+          { path: ':id', element: <DetallePacientePage /> },
+        ],
+      },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

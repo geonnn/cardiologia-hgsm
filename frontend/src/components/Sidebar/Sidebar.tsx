@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 import logoImg from '../../assets/logo-icono.png';
 import styles from './Sidebar.module.css';
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { listarPacientes } from '../../services/pacienteService';
 import { listarFactoresDeRiesgo, listarMotivosInternacion } from '../../services/catalogoService';
 import SearchSelect from '../../components/SearchSelect/SearchSelect';
