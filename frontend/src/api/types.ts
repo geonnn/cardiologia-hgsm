@@ -58,6 +58,13 @@ export type EvolucionDto = Schemas['EvolucionDto']
 export type CrearEvolucionRequest = Schemas['CrearEvolucionRequest']
 export type PaginatedListOfEvolucionDto = Schemas['PaginatedListOfEvolucionDto']
 
+// ---- Tratamientos ----
+
+export type TratamientoDto = Schemas['TratamientoDto']
+export type CrearTratamientoRequest = Schemas['CrearTratamientoRequest']
+export type ModificarTratamientoRequest = Schemas['ModificarTratamientoRequest']
+export type PaginatedListOfTratamientoDto = Schemas['PaginatedListOfTratamientoDto']
+
 // ---- Internaciones ----
 
 export type InternacionCamaDto = Omit<Schemas['InternacionCamaDto'], 'sector'> & { sector: Manejo }
