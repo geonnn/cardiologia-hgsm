@@ -16,6 +16,20 @@ public class InternacionRepository(CardiologiaDbContext context)
     public Task<bool> ExisteActivaParaPacienteAsync(Guid pacienteId, CancellationToken ct = default)
         => _dbSet.AnyAsync(i => i.PacienteId == pacienteId && i.FechaFin == null, ct);
 
+    public async Task<IReadOnlyDictionary<Guid, Guid>> ObtenerActivasPorPacientesAsync(
+        IReadOnlyCollection<Guid> pacienteIds,
+        CancellationToken ct = default)
+    {
+        if (pacienteIds.Count == 0)
+            return new Dictionary<Guid, Guid>();
+
+        // El índice único parcial IX_Internaciones_PacienteId_Activa garantiza a lo sumo una activa por paciente.
+        return await _dbSet
+            .AsNoTracking()
+            .Where(i => i.FechaFin == null && pacienteIds.Contains(i.PacienteId))
+            .ToDictionaryAsync(i => i.PacienteId, i => i.Id, ct);
+    }
+
     public override Task<Internacion?> GetByIdAsync(Guid id, CancellationToken ct = default)
         => _dbSet
             .Include(i => i.MotivosInternacion)
