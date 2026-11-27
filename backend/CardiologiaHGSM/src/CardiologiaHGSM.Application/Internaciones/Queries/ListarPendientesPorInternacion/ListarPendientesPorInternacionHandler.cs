@@ -1,24 +1,22 @@
 using CardiologiaHGSM.Application.Common.Interfaces;
 using CardiologiaHGSM.Application.Common.Models;
 using CardiologiaHGSM.Application.Internaciones.Dtos;
-using CardiologiaHGSM.Application.Pacientes;
 using CardiologiaHGSM.Domain.Internaciones;
-using CardiologiaHGSM.Domain.Pacientes;
 using ErrorOr;
 
-namespace CardiologiaHGSM.Application.Internaciones.Queries.ListarPendientesPorPaciente;
+namespace CardiologiaHGSM.Application.Internaciones.Queries.ListarPendientesPorInternacion;
 
-public class ListarPendientesPorPacienteHandler(
-    IPacienteRepository pacienteRepository,
+public class ListarPendientesPorInternacionHandler(
+    IInternacionRepository internacionRepository,
     IPendienteRepository pendienteRepository
-) : IQueryHandler<ListarPendientesPorPacienteQuery, PaginatedList<PendienteDto>>
+) : IQueryHandler<ListarPendientesPorInternacionQuery, PaginatedList<PendienteDto>>
 {
     public async Task<ErrorOr<PaginatedList<PendienteDto>>> HandleAsync(
-        ListarPendientesPorPacienteQuery query,
+        ListarPendientesPorInternacionQuery query,
         CancellationToken ct = default)
     {
-        if (!await pacienteRepository.ExisteAsync(query.PacienteId, ct))
-            return PacienteErrors.NoEncontrado;
+        if (!await internacionRepository.ExisteAsync(query.InternacionId, ct))
+            return InternacionErrors.NoEncontrada;
 
         if (query.FechaDesde.HasValue && query.FechaHasta.HasValue && query.FechaDesde > query.FechaHasta)
             return InternacionErrors.PendienteRangoFechasInvalido;
@@ -26,8 +24,8 @@ public class ListarPendientesPorPacienteHandler(
         var page = Math.Max(1, query.Page);
         var pageSize = Math.Clamp(query.PageSize, 1, 100);
 
-        var pendientes = await pendienteRepository.ListarPorPacienteAsync(
-            query.PacienteId,
+        var pendientes = await pendienteRepository.ListarPorInternacionAsync(
+            query.InternacionId,
             page,
             pageSize,
             query.Realizado,

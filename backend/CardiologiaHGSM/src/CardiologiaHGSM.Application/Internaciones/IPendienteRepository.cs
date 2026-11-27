@@ -6,12 +6,14 @@ namespace CardiologiaHGSM.Application.Internaciones;
 
 public interface IPendienteRepository : IRepositoryBase<Pendiente, Guid>
 {
-    // Devuelve el Id de la internación en curso del paciente, o null si no tiene.
-    // TODO: mover a IInternacionRepository cuando exista (HU-19).
-    Task<Guid?> ObtenerInternacionActivaIdAsync(Guid pacienteId, CancellationToken ct = default);
+    // Tracked: verifica que el pendiente pertenezca a la internación indicada (RF-46).
+    Task<Pendiente?> ObtenerPorIdEnInternacionAsync(
+        Guid internacionId,
+        Guid pendienteId,
+        CancellationToken ct = default);
 
-    Task<PaginatedList<Pendiente>> ListarPorPacienteAsync(
-        Guid pacienteId,
+    Task<PaginatedList<Pendiente>> ListarPorInternacionAsync(
+        Guid internacionId,
         int page = 1,
         int pageSize = 10,
         bool? realizado = null,

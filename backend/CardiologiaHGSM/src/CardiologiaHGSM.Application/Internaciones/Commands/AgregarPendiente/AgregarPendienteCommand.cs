@@ -1,7 +1,7 @@
 namespace CardiologiaHGSM.Application.Internaciones.Commands.AgregarPendiente;
 
 public sealed record AgregarPendienteCommand(
-    Guid PacienteId,
+    Guid InternacionId,
     string Titulo,
     string Descripcion
 );
