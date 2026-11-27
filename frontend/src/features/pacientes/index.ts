@@ -5,7 +5,14 @@ export {
   type FactorDeRiesgo,
   type MedicoDeCabecera,
 } from './api/catalogosApi'
-export { crearPaciente, type ContactoInput, type Sexo } from './api/pacientesApi'
+export {
+  crearPaciente,
+  listarPacientesRequest,
+  type ContactoInput,
+  type PacienteResumen,
+  type PaginatedList,
+  type Sexo,
+} from './api/pacientesApi'
 export { FactoresRiesgoCombobox } from './components/FactoresRiesgoCombobox'
 export { DetallePacientePage } from './pages/DetallePacientePage'
 export { NuevoPacientePage } from './pages/NuevoPacientePage'
