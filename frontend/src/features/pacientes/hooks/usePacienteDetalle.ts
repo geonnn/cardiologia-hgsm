@@ -1,4 +1,8 @@
 import { useState } from 'react'
+import {
+  obtenerInternacionActivaRequest,
+  type InternacionDetalle,
+} from '@/features/internaciones'
 import { useApiQuery } from '@/hooks/useApiQuery'
 import { obtenerOCrearMedicoDeCabecera } from '../api/catalogosApi'
 import {
@@ -37,6 +41,14 @@ export function usePacienteDetalle(id: string | undefined) {
     listarEstudiosRequest(id ?? '', { page: 1, pageSize: 50 }),
     {
       deps: [estudiosVersion],
+      enabled: habilitado,
+    },
+  )
+
+  const internacionActivaQuery = useApiQuery<InternacionDetalle>(
+    obtenerInternacionActivaRequest(id ?? ''),
+    {
+      deps: [pacienteVersion],
       enabled: habilitado,
     },
   )
@@ -106,6 +118,8 @@ export function usePacienteDetalle(id: string | undefined) {
     estudios: estudiosQuery.data?.items ?? [],
     cargandoEstudios: estudiosQuery.cargando && estudiosQuery.data === undefined,
     errorEstudios: estudiosQuery.error,
+    internacionActiva:
+      internacionActivaQuery.errorStatus === 404 ? null : (internacionActivaQuery.data ?? null),
     recargarPaciente,
     recargarEstudios,
     guardarDatos,

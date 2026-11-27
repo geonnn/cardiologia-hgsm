@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import {
   ArrowLeftIcon,
+  BedDoubleIcon,
   CalendarIcon,
   ClipboardListIcon,
   PencilIcon,
@@ -23,6 +24,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
+import { HistorialInternacionesPanel } from '@/features/internaciones'
 import { mensajeDeError } from '@/lib/api'
 import { formatearFecha } from '@/lib/fechas'
 import { cn } from '@/lib/utils'
@@ -57,6 +59,7 @@ export function DetallePacientePage() {
     estudios,
     cargandoEstudios,
     errorEstudios,
+    internacionActiva,
     recargarPaciente,
     recargarEstudios,
     guardarDatos,
@@ -238,6 +241,15 @@ export function DetallePacientePage() {
                 >
                   DNI {paciente.dni}
                 </Badge>
+                {internacionActiva && (
+                  <Badge className="inline-flex items-center gap-1 bg-emerald-600 font-semibold text-white">
+                    <BedDoubleIcon className="size-3.5" />
+                    <span>
+                      Internado en {internacionActiva.cama.sector} #
+                      {internacionActiva.cama.numeroCama}
+                    </span>
+                  </Badge>
+                )}
               </div>
 
               <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-muted-foreground">
@@ -278,16 +290,29 @@ export function DetallePacientePage() {
               <PencilIcon className="size-4" />
               <span>Modificar datos</span>
             </Button>
-            <Button
-              type="button"
-              variant="brand"
-              size="lg"
-              className="h-10 px-4 font-semibold"
-              onClick={() => toast('Próximo módulo: Crear internación de este paciente (RF-47)')}
-            >
-              <PlusIcon className="size-4" strokeWidth={2.5} />
-              <span>Nueva internación</span>
-            </Button>
+            {internacionActiva ? (
+              <Button
+                type="button"
+                variant="brand"
+                size="lg"
+                className="h-10 px-4 font-semibold"
+                onClick={() => navigate(`/internaciones/${internacionActiva.id}`)}
+              >
+                <BedDoubleIcon className="size-4" />
+                <span>Ver internación actual</span>
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="brand"
+                size="lg"
+                className="h-10 px-4 font-semibold"
+                onClick={() => navigate(`/internaciones/nueva?pacienteId=${paciente.id}`)}
+              >
+                <PlusIcon className="size-4" strokeWidth={2.5} />
+                <span>Nueva internación</span>
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -589,28 +614,11 @@ export function DetallePacientePage() {
 
       {/* TAB 3: Historial de internaciones (RF-48) */}
       {activeTab === 'internaciones' && (
-        <Card className="gap-4 py-5">
-          <CardHeader className="border-b pb-3">
-            <CardTitle className="text-base font-bold text-primary">
-              Historial de internaciones
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Empty className="border-2 border-dashed py-10">
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <ClipboardListIcon />
-                </EmptyMedia>
-                <EmptyTitle className="font-extrabold">Sin internaciones registradas</EmptyTitle>
-                <EmptyDescription>
-                  Este paciente no registra internaciones finalizadas ni una internación en curso
-                  actualmente. Podrás registrar una con el botón superior{' '}
-                  <strong>&ldquo;Nueva internación&rdquo;</strong>.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          </CardContent>
-        </Card>
+        <HistorialInternacionesPanel
+          pacienteId={paciente.id}
+          tieneInternacionActiva={Boolean(internacionActiva)}
+          onNuevaInternacion={() => navigate(`/internaciones/nueva?pacienteId=${paciente.id}`)}
+        />
       )}
 
       {/* Diálogos */}
