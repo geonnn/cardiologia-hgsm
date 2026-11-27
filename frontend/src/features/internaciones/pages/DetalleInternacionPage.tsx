@@ -23,7 +23,6 @@ import {
   EmptyContent,
   EmptyDescription,
   EmptyHeader,
-  EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
 import { formatearFechaHora, hoyIso } from '@/lib/fechas'
@@ -32,6 +31,7 @@ import { EditarInternacionDialog } from '../components/EditarInternacionDialog'
 import { EvolucionesInternacionPanel } from '../components/EvolucionesInternacionPanel'
 import { PendientesInternacionPanel } from '../components/PendientesInternacionPanel'
 import { RegistrarAltaDialog } from '../components/RegistrarAltaDialog'
+import { TratamientosInternacionPanel } from '../components/TratamientosInternacionPanel'
 import { CONDICION_ALTA_POR_VALOR } from '../constants'
 import { useInternacionDetalle } from '../hooks/useInternacionDetalle'
 
@@ -498,22 +498,10 @@ export function DetalleInternacionPage() {
       )}
 
       {activeTab === 'tratamientos' && (
-        <Card className="py-6">
-          <CardContent>
-            <Empty className="border-2 border-dashed py-10">
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <PillIcon />
-                </EmptyMedia>
-                <EmptyTitle className="font-extrabold">Tratamientos e indicaciones</EmptyTitle>
-                <EmptyDescription>
-                  Próximo módulo: historial, alta, modificación del último esquema y baja de
-                  tratamientos de esta internación (RF-40 a RF-43).
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          </CardContent>
-        </Card>
+        <TratamientosInternacionPanel
+          internacionId={internacion.id}
+          estaActiva={internacion.estaActiva}
+        />
       )}
 
       {activeTab === 'pendientes' && (
