@@ -5,7 +5,9 @@ import {
   ChevronRightIcon,
   ClipboardListIcon,
   HeartPulseIcon,
+  LayoutDashboardIcon,
   LogOutIcon,
+  PlusIcon,
   StethoscopeIcon,
   UsersIcon,
   type LucideIcon,
@@ -21,10 +23,11 @@ interface AppSidebarProps {
   onNavigate?: () => void
 }
 
-type NavItem = { to: string; label: string; icon: LucideIcon }
+type NavItem = { to: string; label: string; icon: LucideIcon; end?: boolean }
 
 /** Vistas principales del servicio: arriba y destacadas. */
 const NAV_PRINCIPAL: ReadonlyArray<NavItem> = [
+  { to: '/', label: 'Inicio', icon: LayoutDashboardIcon, end: true },
   { to: '/camas', label: 'Mapa de Camas', icon: BedDoubleIcon },
   { to: '/pacientes', label: 'Pacientes', icon: UsersIcon },
 ]
@@ -84,10 +87,30 @@ export function AppSidebar({ open, onToggle, onNavigate }: AppSidebarProps) {
         </button>
       </div>
 
+      {/* Acción principal global: Nueva internación */}
+      <div className={cn('px-3 pt-4 pb-1', !open && 'md:px-2')}>
+        <NavLink
+          to="/internaciones/nueva"
+          onClick={onNavigate}
+          title={!open ? 'Nueva internación' : undefined}
+          aria-label="Nueva internación"
+          className={({ isActive }) =>
+            cn(
+              'flex h-10 items-center justify-center gap-2 rounded-lg bg-white px-3.5 text-sm font-bold text-primary shadow-xs transition-colors hover:bg-white/90 focus-visible:ring-3 focus-visible:ring-white/60 focus-visible:outline-none',
+              !open && 'md:mx-auto md:size-10 md:px-0',
+              isActive && 'ring-2 ring-white/50 ring-offset-2 ring-offset-primary',
+            )
+          }
+        >
+          <PlusIcon className="size-4 shrink-0" strokeWidth={2.75} />
+          <span className={cn('truncate', !open && 'md:hidden')}>Nueva internación</span>
+        </NavLink>
+      </div>
+
       {/* Navegación principal */}
       <nav
         className={cn(
-          'flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4',
+          'flex flex-1 flex-col gap-1 overflow-y-auto px-3 pt-3 pb-4',
           !open && 'md:px-2',
         )}
       >
@@ -138,10 +161,11 @@ interface SidebarLinkProps {
   secundario?: boolean
 }
 
-function SidebarLink({ item: { to, label, icon: Icon }, open, onNavigate, secundario = false }: SidebarLinkProps) {
+function SidebarLink({ item: { to, label, icon: Icon, end }, open, onNavigate, secundario = false }: SidebarLinkProps) {
   return (
     <NavLink
       to={to}
+      end={end}
       onClick={onNavigate}
       title={!open ? label : undefined}
       aria-label={label}

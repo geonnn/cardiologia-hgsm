@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { AlertTriangleIcon, ArrowLeftIcon, ExternalLinkIcon } from 'lucide-react'
-import { useNavigate, useSearchParams } from 'react-router'
+import { useLocation, useNavigate, useSearchParams } from 'react-router'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
@@ -45,6 +45,11 @@ const SIN_SELECCION = '__ninguna__'
 
 /** Formulario de alta de internación de un paciente (HU-19 / RF-47). */
 export function NuevaInternacionPage() {
+  const { key } = useLocation()
+  return <NuevaInternacionForm key={key} />
+}
+
+function NuevaInternacionForm() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 

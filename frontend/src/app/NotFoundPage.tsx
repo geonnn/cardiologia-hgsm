@@ -13,7 +13,7 @@ export function NotFoundPage() {
         </EmptyHeader>
         <EmptyContent>
           <Button asChild variant="outline" size="lg" className="h-11 px-4">
-            <Link to="/camas">Ir a Camas</Link>
+            <Link to="/">Ir al inicio</Link>
           </Button>
         </EmptyContent>
       </Empty>

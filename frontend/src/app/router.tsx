@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router'
+import { createBrowserRouter } from 'react-router'
 import { AppShell } from '@/components/layout'
 import { CamasPage } from '@/features/camas'
 import {
@@ -7,6 +7,7 @@ import {
   ObrasSocialesPage,
   TiposEstudioPage,
 } from '@/features/catalogos'
+import { InicioPage } from '@/features/inicio'
 import { DetalleInternacionPage, NuevaInternacionPage } from '@/features/internaciones'
 import { DetallePacientePage, NuevoPacientePage, PacientesPage } from '@/features/pacientes'
 
@@ -26,7 +27,7 @@ export const router = createBrowserRouter([
       {
         element: <AppShell />,
         children: [
-          { index: true, element: <Navigate to="/camas" replace /> },
+          { index: true, element: <InicioPage /> },
           { path: 'camas', element: <CamasPage /> },
           { path: 'obras-sociales', element: <ObrasSocialesPage /> },
           { path: 'tipos-estudio', element: <TiposEstudioPage /> },
