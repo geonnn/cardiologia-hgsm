@@ -2181,6 +2181,8 @@ export interface components {
         CatalogoNombreRequest: {
             nombre: string;
         };
+        /** @enum {unknown} */
+        CondicionAlta: "AltaHospitalaria" | "Traslado" | "Obito" | "RetiroVoluntario" | null;
         ContactoDto: {
             /** Format: uuid */
             id: string;
@@ -2201,6 +2203,26 @@ export interface components {
             /** Format: date */
             fecha: null | string;
             descripcion: string;
+        };
+        CrearInternacionRequest: {
+            /** Format: uuid */
+            pacienteId: null | string;
+            /** Format: uuid */
+            camaId: null | string;
+            enfermedadActual: string;
+            motivoInternacionIds: number[];
+            manejo?: null | components["schemas"]["Manejo"];
+            /** Format: date-time */
+            fechaInternacion?: null | string;
+            /** Format: int32 */
+            obraSocialId?: null | number;
+            aislamiento?: null | string;
+            /** Format: uuid */
+            camaAislamientoId?: null | string;
+            parametrosAntropometria?: null | string;
+            tratamientoPrevio?: null | string;
+            tratamientoActual?: null | string;
+            observaciones?: null | string;
         };
         CrearPacienteRequest: {
             nombre: string;
@@ -2233,6 +2255,57 @@ export interface components {
             id: number;
             nombre: string;
         };
+        InternacionCamaDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: int32 */
+            numeroCama: number;
+            sector: components["schemas"]["Manejo"];
+            estado: components["schemas"]["EstadoCamaTipo"];
+        };
+        InternacionDetalleDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            fechaInternacion: string;
+            /** Format: date-time */
+            fechaFin: null | string;
+            condicionAlta: null | components["schemas"]["CondicionAlta"];
+            estaActiva: boolean;
+            manejo: components["schemas"]["Manejo"];
+            enfermedadActual: string;
+            aislamiento: null | string;
+            parametrosAntropometria: null | string;
+            tratamientoPrevio: null | string;
+            observaciones: null | string;
+            paciente: components["schemas"]["InternacionPacienteDto"];
+            cama: components["schemas"]["InternacionCamaDto"];
+            obraSocial: null | components["schemas"]["ObraSocialDto"];
+            motivosInternacion: components["schemas"]["MotivoInternacionDto"][];
+        };
+        InternacionPacienteDto: {
+            /** Format: uuid */
+            id: string;
+            nombre: string;
+            apellido: string;
+            dni: string;
+            /** Format: int32 */
+            edad: number;
+            sexo: components["schemas"]["Sexo"];
+        };
+        InternacionResumenDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            fechaInternacion: string;
+            /** Format: date-time */
+            fechaFin: null | string;
+            condicionAlta: null | components["schemas"]["CondicionAlta"];
+            estaActiva: boolean;
+            manejo: components["schemas"]["Manejo"];
+            cama: components["schemas"]["InternacionCamaDto"];
+            motivosInternacion: components["schemas"]["MotivoInternacionDto"][];
+        };
         /** @enum {unknown} */
         Manejo: "UCO" | "Sala" | null;
         MedicoDeCabeceraDto: {
@@ -2245,6 +2318,23 @@ export interface components {
             telefono: string;
             apellido?: null | string;
             parentesco?: null | string;
+        };
+        ModificarInternacionRequest: {
+            /** Format: uuid */
+            camaId: null | string;
+            /** Format: date-time */
+            fechaInternacion: null | string;
+            manejo: null | components["schemas"]["Manejo"];
+            enfermedadActual: string;
+            motivoInternacionIds: number[];
+            /** Format: int32 */
+            obraSocialId?: null | number;
+            aislamiento?: null | string;
+            /** Format: uuid */
+            camaAislamientoId?: null | string;
+            parametrosAntropometria?: null | string;
+            tratamientoPrevio?: null | string;
+            observaciones?: null | string;
         };
         ModificarPacienteRequest: {
             nombre: string;
@@ -2328,6 +2418,19 @@ export interface components {
             hasPreviousPage?: boolean;
             hasNextPage?: boolean;
         };
+        PaginatedListOfInternacionResumenDto: {
+            items: components["schemas"]["InternacionResumenDto"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPreviousPage?: boolean;
+            hasNextPage?: boolean;
+        };
         PaginatedListOfPacienteResumenDto: {
             items: components["schemas"]["PacienteResumenDto"][];
             /** Format: int32 */
@@ -2377,6 +2480,11 @@ export interface components {
         };
         ReemplazarFactoresDeRiesgoRequest: {
             factorDeRiesgoIds: number[];
+        };
+        RegistrarAltaRequest: {
+            condicionAlta: null | components["schemas"]["CondicionAlta"];
+            /** Format: date-time */
+            fechaFin: null | string;
         };
         /** @enum {unknown} */
         Sexo: "Masculino" | "Femenino";
