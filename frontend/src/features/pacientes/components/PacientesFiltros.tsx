@@ -3,12 +3,18 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import type { FactorDeRiesgo, MotivoInternacion } from '../api/catalogosApi'
 import type { PacienteOrden, Sexo } from '../api/pacientesApi'
 import { CatalogoCombobox } from './CatalogoCombobox'
 
-const SELECT_CLASS =
-  'h-9 w-full rounded-lg border border-input bg-card px-2.5 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50'
+const SEXO_TODOS = '__todos__'
 
 interface PacientesFiltrosProps {
   busqueda: string
@@ -101,25 +107,31 @@ export function PacientesFiltros({
             Ordenar por
           </FieldLabel>
           <div className="flex flex-col gap-2">
-            <select
-              id="pacientes-orden"
-              className={SELECT_CLASS}
+            <Select
               value={ordenarPor}
-              onChange={(e) => onOrdenarPorChange(e.target.value as PacienteOrden)}
+              onValueChange={(v) => onOrdenarPorChange(v as PacienteOrden)}
             >
-              <option value="Alfabetico">Alfabético (Apellido y Nombre)</option>
-              <option value="FechaCarga">Fecha de registro</option>
-              <option value="Edad">Edad</option>
-            </select>
-            <select
-              aria-label="Dirección de ordenamiento"
-              className={SELECT_CLASS}
+              <SelectTrigger id="pacientes-orden" size="sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Alfabetico">Alfabético (Apellido y Nombre)</SelectItem>
+                <SelectItem value="FechaCarga">Fecha de registro</SelectItem>
+                <SelectItem value="Edad">Edad</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select
               value={descendente ? 'desc' : 'asc'}
-              onChange={(e) => onDescendenteChange(e.target.value === 'desc')}
+              onValueChange={(v) => onDescendenteChange(v === 'desc')}
             >
-              <option value="asc">Ascendente</option>
-              <option value="desc">Descendente</option>
-            </select>
+              <SelectTrigger aria-label="Dirección de ordenamiento" size="sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="asc">Ascendente</SelectItem>
+                <SelectItem value="desc">Descendente</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </Field>
 
@@ -146,16 +158,19 @@ export function PacientesFiltros({
           <FieldLabel htmlFor="pacientes-sexo" className="text-xs font-semibold text-primary">
             Sexo
           </FieldLabel>
-          <select
-            id="pacientes-sexo"
-            className={SELECT_CLASS}
-            value={sexo}
-            onChange={(e) => onSexoChange(e.target.value as Sexo | '')}
+          <Select
+            value={sexo || SEXO_TODOS}
+            onValueChange={(v) => onSexoChange(v === SEXO_TODOS ? '' : (v as Sexo))}
           >
-            <option value="">Todos</option>
-            <option value="Femenino">Femenino</option>
-            <option value="Masculino">Masculino</option>
-          </select>
+            <SelectTrigger id="pacientes-sexo" size="sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={SEXO_TODOS}>Todos</SelectItem>
+              <SelectItem value="Femenino">Femenino</SelectItem>
+              <SelectItem value="Masculino">Masculino</SelectItem>
+            </SelectContent>
+          </Select>
         </Field>
 
         {/* 6. Rango de fecha de carga (RF-26.2) */}

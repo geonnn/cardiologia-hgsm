@@ -20,13 +20,17 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { formatearFechaHora } from '@/lib/fechas'
 import { cn } from '@/lib/utils'
 import { CONDICION_ALTA_POR_VALOR } from '../constants'
 import { useInternacionesPaciente } from '../hooks/useInternacionesPaciente'
-
-const SELECT_CLASS =
-  'h-9 rounded-lg border border-input bg-card px-2.5 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50'
 
 interface HistorialInternacionesPanelProps {
   pacienteId: string
@@ -97,15 +101,18 @@ export function HistorialInternacionesPanel({
               <label htmlFor="hist-int-orden" className="text-xs font-semibold text-primary">
                 Orden
               </label>
-              <select
-                id="hist-int-orden"
-                className={SELECT_CLASS}
+              <Select
                 value={ascendente ? 'asc' : 'desc'}
-                onChange={(e) => setAscendente(e.target.value === 'asc')}
+                onValueChange={(v) => setAscendente(v === 'asc')}
               >
-                <option value="desc">Más reciente primero</option>
-                <option value="asc">Más antigua primero</option>
-              </select>
+                <SelectTrigger id="hist-int-orden" size="sm" className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="desc">Más reciente primero</SelectItem>
+                  <SelectItem value="asc">Más antigua primero</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

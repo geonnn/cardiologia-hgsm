@@ -12,14 +12,18 @@ import {
 } from '@/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { mensajeDeError } from '@/lib/api'
 import { ahoraInputLocal, inputLocalAIsoUtc } from '@/lib/fechas'
 import type { CondicionAlta, RegistrarAltaPayload } from '../api/internacionesApi'
 import { CONDICIONES_ALTA } from '../constants'
 import { validarRegistrarAlta, type ErroresRegistrarAlta } from '../validaciones'
-
-const SELECT_CLASS =
-  'h-10 w-full rounded-lg border border-input bg-card px-2.5 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50'
 
 interface RegistrarAltaDialogProps {
   open: boolean
@@ -120,19 +124,24 @@ function RegistrarAltaForm({
           <FieldLabel htmlFor="alta-condicion">
             Condición de alta <span className="text-destructive">*</span>
           </FieldLabel>
-          <select
-            id="alta-condicion"
-            className={SELECT_CLASS}
+          <Select
             value={condicionAlta}
-            onChange={(e) => setCondicionAlta(e.target.value as CondicionAlta)}
-            aria-invalid={errores.condicionAlta ? true : undefined}
+            onValueChange={(v) => setCondicionAlta(v as CondicionAlta)}
           >
-            {CONDICIONES_ALTA.map((c) => (
-              <option key={c.value} value={c.value}>
-                {c.label}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger
+              id="alta-condicion"
+              aria-invalid={errores.condicionAlta ? true : undefined}
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {CONDICIONES_ALTA.map((c) => (
+                <SelectItem key={c.value} value={c.value}>
+                  {c.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           {errores.condicionAlta && <FieldError>{errores.condicionAlta}</FieldError>}
         </Field>
 
