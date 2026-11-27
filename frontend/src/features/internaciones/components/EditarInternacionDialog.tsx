@@ -51,7 +51,7 @@ export function EditarInternacionDialog({
 }: EditarInternacionDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl lg:max-w-5xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-extrabold text-primary">
             Modificar internación
@@ -163,174 +163,182 @@ function EditarInternacionForm({
   }
 
   return (
-    <form noValidate onSubmit={enviar} className="grid gap-5" aria-busy={enviando}>
+    <form noValidate onSubmit={enviar} className="grid gap-4" aria-busy={enviando}>
       {(errorServidor || catalogosError) && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {errorServidor ?? `No se pudieron cargar los catálogos: ${catalogosError}`}
         </div>
       )}
 
-      <FieldGroup className="gap-4">
-        <p className="text-xs font-bold tracking-wide text-primary uppercase">
-          Ubicación y datos de ingreso
-        </p>
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
+        {/* Columna izquierda: ubicación, motivos y enfermedad actual */}
+        <FieldGroup className="gap-3.5 lg:col-span-7">
+          <p className="text-xs font-bold tracking-wide text-primary uppercase">
+            Ubicación y datos de ingreso
+          </p>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field data-invalid={errores.camaId ? true : undefined}>
-            <FieldLabel htmlFor="editar-int-cama">
-              Cama asignada <span className="text-destructive">*</span>
-            </FieldLabel>
-            <select
-              id="editar-int-cama"
-              className={SELECT_CLASS}
-              value={camaId}
-              onChange={(e) => {
-                const nuevaCamaId = e.target.value
-                setCamaId(nuevaCamaId)
-                if (camaAislamientoId === nuevaCamaId) setCamaAislamientoId('')
-              }}
-              aria-invalid={errores.camaId ? true : undefined}
-            >
-              <optgroup label="Cama actual">
-                <option value={internacion.cama.id}>
-                  {internacion.cama.sector} #{internacion.cama.numeroCama} (Actual)
-                </option>
-              </optgroup>
-
-              {camasDisponibles.length > 0 && (
-                <optgroup label="Camas disponibles (pase)">
-                  {camasDisponibles.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.sector} #{c.numeroCama} — Disponible
-                    </option>
-                  ))}
+          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+            <Field data-invalid={errores.camaId ? true : undefined}>
+              <FieldLabel htmlFor="editar-int-cama">
+                Cama asignada <span className="text-destructive">*</span>
+              </FieldLabel>
+              <select
+                id="editar-int-cama"
+                className={SELECT_CLASS}
+                value={camaId}
+                onChange={(e) => {
+                  const nuevaCamaId = e.target.value
+                  setCamaId(nuevaCamaId)
+                  if (camaAislamientoId === nuevaCamaId) setCamaAislamientoId('')
+                }}
+                aria-invalid={errores.camaId ? true : undefined}
+              >
+                <optgroup label="Cama actual">
+                  <option value={internacion.cama.id}>
+                    {internacion.cama.sector} #{internacion.cama.numeroCama} (Actual)
+                  </option>
                 </optgroup>
-              )}
 
-              {camasOcupadasOtras.length > 0 && (
-                <optgroup label="Camas ocupadas (intercambio / swap)">
-                  {camasOcupadasOtras.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.sector} #{c.numeroCama} —{' '}
-                      {c.ocupante
-                        ? `Ocupada por ${c.ocupante.apellido}, ${c.ocupante.nombre}`
-                        : 'Ocupada'}
-                    </option>
-                  ))}
-                </optgroup>
-              )}
-            </select>
-            {errores.camaId && <FieldError>{errores.camaId}</FieldError>}
-          </Field>
+                {camasDisponibles.length > 0 && (
+                  <optgroup label="Camas disponibles (pase)">
+                    {camasDisponibles.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.sector} #{c.numeroCama} — Disponible
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
 
-          <Field>
-            <FieldLabel htmlFor="editar-int-manejo">
-              Tipo de tratamiento <span className="text-destructive">*</span>
-            </FieldLabel>
-            <select
-              id="editar-int-manejo"
-              className={SELECT_CLASS}
-              value={manejo}
-              onChange={(e) => setManejo(e.target.value as Manejo)}
-            >
-              {MANEJOS.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-          </Field>
-        </div>
+                {camasOcupadasOtras.length > 0 && (
+                  <optgroup label="Camas ocupadas (intercambio / swap)">
+                    {camasOcupadasOtras.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.sector} #{c.numeroCama} —{' '}
+                        {c.ocupante
+                          ? `Ocupada por ${c.ocupante.apellido}, ${c.ocupante.nombre}`
+                          : 'Ocupada'}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+              </select>
+              {errores.camaId && <FieldError>{errores.camaId}</FieldError>}
+            </Field>
 
-        {camaDestinoSwap && (
-          <div className="flex items-start gap-2.5 rounded-lg border border-amber-300 bg-amber-50 px-3.5 py-2.5 text-xs text-amber-950">
-            <ArrowLeftRightIcon className="mt-0.5 size-4 shrink-0 text-amber-700" />
-            <span>
-              <strong>Intercambio automático (swap):</strong> al guardar,{' '}
-              <strong>
-                {internacion.paciente.apellido}, {internacion.paciente.nombre}
-              </strong>{' '}
-              pasará a{' '}
-              <strong>
-                {camaDestinoSwap.sector} #{camaDestinoSwap.numeroCama}
-              </strong>{' '}
-              y{' '}
-              <strong>
-                {camaDestinoSwap.ocupante
-                  ? `${camaDestinoSwap.ocupante.apellido}, ${camaDestinoSwap.ocupante.nombre}`
-                  : 'el paciente ocupante'}
-              </strong>{' '}
-              pasará a{' '}
-              <strong>
-                {internacion.cama.sector} #{internacion.cama.numeroCama}
-              </strong>
-              .
-            </span>
+            <Field>
+              <FieldLabel htmlFor="editar-int-manejo">
+                Tipo de tratamiento <span className="text-destructive">*</span>
+              </FieldLabel>
+              <select
+                id="editar-int-manejo"
+                className={SELECT_CLASS}
+                value={manejo}
+                onChange={(e) => setManejo(e.target.value as Manejo)}
+              >
+                {MANEJOS.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            </Field>
           </div>
-        )}
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field data-invalid={errores.fechaInternacion ? true : undefined}>
-            <FieldLabel htmlFor="editar-int-fecha">
-              Fecha y hora de ingreso <span className="text-destructive">*</span>
-            </FieldLabel>
-            <Input
-              id="editar-int-fecha"
-              type="datetime-local"
-              max={ahoraStr}
-              className="h-10"
-              value={fechaInternacion}
-              onChange={(e) => setFechaInternacion(e.target.value)}
-              aria-invalid={errores.fechaInternacion ? true : undefined}
-            />
-            {errores.fechaInternacion && <FieldError>{errores.fechaInternacion}</FieldError>}
-          </Field>
+          {camaDestinoSwap && (
+            <div className="flex items-start gap-2.5 rounded-lg border border-amber-300 bg-amber-50 px-3.5 py-2.5 text-xs text-amber-950">
+              <ArrowLeftRightIcon className="mt-0.5 size-4 shrink-0 text-amber-700" />
+              <span>
+                <strong>Intercambio automático (swap):</strong> al guardar,{' '}
+                <strong>
+                  {internacion.paciente.apellido}, {internacion.paciente.nombre}
+                </strong>{' '}
+                pasará a{' '}
+                <strong>
+                  {camaDestinoSwap.sector} #{camaDestinoSwap.numeroCama}
+                </strong>{' '}
+                y{' '}
+                <strong>
+                  {camaDestinoSwap.ocupante
+                    ? `${camaDestinoSwap.ocupante.apellido}, ${camaDestinoSwap.ocupante.nombre}`
+                    : 'el paciente ocupante'}
+                </strong>{' '}
+                pasará a{' '}
+                <strong>
+                  {internacion.cama.sector} #{internacion.cama.numeroCama}
+                </strong>
+                .
+              </span>
+            </div>
+          )}
 
-          <Field>
-            <FieldLabel htmlFor="editar-int-obra-social">Obra social (opcional)</FieldLabel>
-            <select
-              id="editar-int-obra-social"
-              className={SELECT_CLASS}
-              value={obraSocialId}
-              onChange={(e) => setObraSocialId(e.target.value)}
-            >
-              <option value="">Sin obra social</option>
-              {(obrasSocialesQuery.data ?? []).map((os) => (
-                <option key={os.id} value={os.id}>
-                  {os.nombre}
-                </option>
-              ))}
-            </select>
-          </Field>
-        </div>
+          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+            <Field data-invalid={errores.fechaInternacion ? true : undefined}>
+              <FieldLabel htmlFor="editar-int-fecha">
+                Fecha y hora de ingreso <span className="text-destructive">*</span>
+              </FieldLabel>
+              <Input
+                id="editar-int-fecha"
+                type="datetime-local"
+                max={ahoraStr}
+                className="h-10"
+                value={fechaInternacion}
+                onChange={(e) => setFechaInternacion(e.target.value)}
+                aria-invalid={errores.fechaInternacion ? true : undefined}
+              />
+              {errores.fechaInternacion && <FieldError>{errores.fechaInternacion}</FieldError>}
+            </Field>
 
-        <Separator />
-        <p className="text-xs font-bold tracking-wide text-primary uppercase">
-          Motivo y cuadro clínico
-        </p>
+            <Field>
+              <FieldLabel htmlFor="editar-int-obra-social">Obra social (opcional)</FieldLabel>
+              <select
+                id="editar-int-obra-social"
+                className={SELECT_CLASS}
+                value={obraSocialId}
+                onChange={(e) => setObraSocialId(e.target.value)}
+              >
+                <option value="">Sin obra social</option>
+                {(obrasSocialesQuery.data ?? []).map((os) => (
+                  <option key={os.id} value={os.id}>
+                    {os.nombre}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          </div>
 
-        <MotivosCombobox
-          options={motivosQuery.data ?? []}
-          selectedIds={motivoIds}
-          error={errores.motivoInternacionIds}
-          onChange={setMotivoIds}
-        />
+          <Separator />
+          <p className="text-xs font-bold tracking-wide text-primary uppercase">
+            Motivo y cuadro clínico
+          </p>
 
-        <Field data-invalid={errores.enfermedadActual ? true : undefined}>
-          <FieldLabel htmlFor="editar-int-enfermedad">
-            Enfermedad actual <span className="text-destructive">*</span>
-          </FieldLabel>
-          <Textarea
-            id="editar-int-enfermedad"
-            rows={3}
-            value={enfermedadActual}
-            onChange={(e) => setEnfermedadActual(e.target.value)}
-            aria-invalid={errores.enfermedadActual ? true : undefined}
+          <MotivosCombobox
+            options={motivosQuery.data ?? []}
+            selectedIds={motivoIds}
+            error={errores.motivoInternacionIds}
+            onChange={setMotivoIds}
           />
-          {errores.enfermedadActual && <FieldError>{errores.enfermedadActual}</FieldError>}
-        </Field>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Field data-invalid={errores.enfermedadActual ? true : undefined}>
+            <FieldLabel htmlFor="editar-int-enfermedad">
+              Enfermedad actual <span className="text-destructive">*</span>
+            </FieldLabel>
+            <Textarea
+              id="editar-int-enfermedad"
+              rows={3}
+              value={enfermedadActual}
+              onChange={(e) => setEnfermedadActual(e.target.value)}
+              aria-invalid={errores.enfermedadActual ? true : undefined}
+            />
+            {errores.enfermedadActual && <FieldError>{errores.enfermedadActual}</FieldError>}
+          </Field>
+        </FieldGroup>
+
+        {/* Columna derecha: aislamiento y datos clínicos complementarios */}
+        <FieldGroup className="gap-3.5 border-t pt-4 lg:col-span-5 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-5">
+          <p className="text-xs font-bold tracking-wide text-primary uppercase">
+            Aislamiento y datos complementarios
+          </p>
+
           <Field data-invalid={errores.aislamiento ? true : undefined}>
             <FieldLabel htmlFor="editar-int-aislamiento">Aislamiento (opcional)</FieldLabel>
             <Input
@@ -365,43 +373,40 @@ function EditarInternacionForm({
             </select>
             {errores.camaAislamientoId && <FieldError>{errores.camaAislamientoId}</FieldError>}
           </Field>
-        </div>
 
-        <Separator />
-        <p className="text-xs font-bold tracking-wide text-primary uppercase">
-          Información clínica complementaria
-        </p>
+          <Separator />
 
-        <Field>
-          <FieldLabel htmlFor="editar-int-parametros">Parámetros / Antropometría</FieldLabel>
-          <Textarea
-            id="editar-int-parametros"
-            rows={2}
-            value={parametrosAntropometria}
-            onChange={(e) => setParametrosAntropometria(e.target.value)}
-          />
-        </Field>
+          <Field>
+            <FieldLabel htmlFor="editar-int-parametros">Parámetros / Antropometría</FieldLabel>
+            <Textarea
+              id="editar-int-parametros"
+              rows={2}
+              value={parametrosAntropometria}
+              onChange={(e) => setParametrosAntropometria(e.target.value)}
+            />
+          </Field>
 
-        <Field>
-          <FieldLabel htmlFor="editar-int-trat-previo">Tratamiento previo</FieldLabel>
-          <Textarea
-            id="editar-int-trat-previo"
-            rows={2}
-            value={tratamientoPrevio}
-            onChange={(e) => setTratamientoPrevio(e.target.value)}
-          />
-        </Field>
+          <Field>
+            <FieldLabel htmlFor="editar-int-trat-previo">Tratamiento previo</FieldLabel>
+            <Textarea
+              id="editar-int-trat-previo"
+              rows={2}
+              value={tratamientoPrevio}
+              onChange={(e) => setTratamientoPrevio(e.target.value)}
+            />
+          </Field>
 
-        <Field>
-          <FieldLabel htmlFor="editar-int-obs">Observaciones</FieldLabel>
-          <Textarea
-            id="editar-int-obs"
-            rows={2}
-            value={observaciones}
-            onChange={(e) => setObservaciones(e.target.value)}
-          />
-        </Field>
-      </FieldGroup>
+          <Field>
+            <FieldLabel htmlFor="editar-int-obs">Observaciones</FieldLabel>
+            <Textarea
+              id="editar-int-obs"
+              rows={2}
+              value={observaciones}
+              onChange={(e) => setObservaciones(e.target.value)}
+            />
+          </Field>
+        </FieldGroup>
+      </div>
 
       <DialogFooter>
         <DialogClose asChild>

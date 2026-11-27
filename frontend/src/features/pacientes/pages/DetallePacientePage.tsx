@@ -127,9 +127,9 @@ export function DetallePacientePage() {
 
   if (cargandoInicial) {
     return (
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-5" aria-hidden="true">
+      <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-4" aria-hidden="true">
         <div className="h-8 w-36 animate-pulse rounded-lg bg-muted" />
-        <Card className="p-6">
+        <Card className="p-5">
           <div className="flex items-center gap-4">
             <div className="size-14 animate-pulse rounded-full bg-muted" />
             <div className="flex flex-1 flex-col gap-2">
@@ -138,9 +138,9 @@ export function DetallePacientePage() {
             </div>
           </div>
         </Card>
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-          <Card className="h-56 animate-pulse bg-muted/40" />
-          <Card className="h-56 animate-pulse bg-muted/40" />
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+          <Card className="h-56 animate-pulse bg-muted/40 lg:col-span-7" />
+          <Card className="h-56 animate-pulse bg-muted/40 lg:col-span-5" />
         </div>
       </div>
     )
@@ -212,7 +212,7 @@ export function DetallePacientePage() {
   const iniciales = `${paciente.apellido[0] ?? ''}${paciente.nombre[0] ?? ''}`.toUpperCase()
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-5">
+    <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-4">
       <div>
         <Button type="button" variant="outline" size="sm" onClick={() => navigate('/pacientes')}>
           <ArrowLeftIcon className="size-4" />
@@ -225,7 +225,7 @@ export function DetallePacientePage() {
         aria-busy={actualizando}
         className={cn('gap-0 py-0 transition-opacity', actualizando && 'opacity-70')}
       >
-        <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
+        <CardContent className="flex flex-wrap items-center justify-between gap-4 p-4 sm:p-5">
           <div className="flex min-w-0 items-center gap-4">
             <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-extrabold text-primary-foreground">
               {iniciales}
@@ -377,14 +377,14 @@ export function DetallePacientePage() {
 
       {/* TAB 1: Datos personales y contactos */}
       {activeTab === 'datos' && (
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-          <Card className="gap-4 py-5">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+          <Card className="gap-3.5 py-4 lg:col-span-7">
             <CardHeader className="border-b pb-3">
               <CardTitle className="text-base font-bold text-primary">
                 Perfil clínico y factores de riesgo
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-5">
+            <CardContent className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                   Factores de riesgo cardiovascular
@@ -412,7 +412,7 @@ export function DetallePacientePage() {
                 <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                   Antecedentes clínicos relevantes
                 </span>
-                <div className="rounded-lg border bg-muted/30 p-3.5 text-sm leading-relaxed whitespace-pre-wrap text-foreground">
+                <div className="rounded-lg border bg-muted/30 p-3.5 text-sm leading-relaxed break-words whitespace-pre-wrap text-foreground [overflow-wrap:anywhere]">
                   {paciente.antecedentes?.trim() || (
                     <span className="text-muted-foreground">
                       No se registraron antecedentes para este paciente.
@@ -434,7 +434,7 @@ export function DetallePacientePage() {
             </CardContent>
           </Card>
 
-          <Card className="gap-4 py-5">
+          <Card className="gap-3.5 py-4 lg:col-span-5">
             <CardHeader className="flex flex-row items-center justify-between gap-2 border-b pb-3">
               <CardTitle className="text-base font-bold text-primary">
                 Contactos familiares
@@ -551,8 +551,8 @@ export function DetallePacientePage() {
             </Empty>
           ) : cargandoEstudios ? (
             <div className="flex flex-col gap-3" aria-hidden="true">
-              <Card className="h-28 animate-pulse bg-muted/40" />
-              <Card className="h-28 animate-pulse bg-muted/40" />
+              <Card className="h-24 animate-pulse bg-muted/40" />
+              <Card className="h-24 animate-pulse bg-muted/40" />
             </div>
           ) : estudios.length === 0 ? (
             <Empty className="border-2 border-dashed bg-card py-12">
@@ -570,19 +570,19 @@ export function DetallePacientePage() {
             <div className="flex flex-col gap-3">
               {estudios.map((est) => (
                 <Card key={est.id} className="gap-3 py-4">
-                  <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3 pb-0">
-                    <div className="flex flex-wrap items-center gap-2.5">
+                  <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 pb-0">
+                    <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2.5">
                       <Badge
                         variant="secondary"
-                        className="border border-primary/20 bg-primary/10 font-semibold text-primary"
+                        className="shrink-0 border border-primary/20 bg-primary/10 font-semibold text-primary"
                       >
                         {est.tipoEstudio.nombre}
                       </Badge>
-                      <CardTitle className="text-base font-bold text-foreground">
+                      <CardTitle className="min-w-0 text-base font-bold break-words text-foreground [overflow-wrap:anywhere]">
                         {est.titulo}
                       </CardTitle>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex shrink-0 items-center gap-3">
                       <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground tabular-nums">
                         <CalendarIcon className="size-3.5" />
                         <span>{formatearFecha(est.fecha)}</span>
@@ -600,8 +600,8 @@ export function DetallePacientePage() {
                       </Button>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap text-foreground/90">
+                  <CardContent className="min-w-0">
+                    <p className="text-sm leading-relaxed break-words whitespace-pre-wrap text-foreground/90 [overflow-wrap:anywhere]">
                       {est.descripcion}
                     </p>
                   </CardContent>

@@ -70,17 +70,17 @@ export function DetalleInternacionPage() {
 
   if (cargandoInicial) {
     return (
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-5" aria-hidden="true">
+      <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-4" aria-hidden="true">
         <div className="h-8 w-44 animate-pulse rounded-lg bg-muted" />
-        <Card className="p-6">
+        <Card className="p-5">
           <div className="flex flex-col gap-3">
             <div className="h-6 w-72 animate-pulse rounded bg-muted" />
             <div className="h-4 w-96 max-w-full animate-pulse rounded bg-muted" />
           </div>
         </Card>
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-          <Card className="h-56 animate-pulse bg-muted/40" />
-          <Card className="h-56 animate-pulse bg-muted/40" />
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+          <Card className="h-56 animate-pulse bg-muted/40 lg:col-span-7" />
+          <Card className="h-56 animate-pulse bg-muted/40 lg:col-span-5" />
         </div>
       </div>
     )
@@ -163,7 +163,7 @@ export function DetalleInternacionPage() {
   const pacienteNombre = `${paciente.apellido}, ${paciente.nombre}`
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-5">
+    <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-4">
       {/* Navegación superior */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Button type="button" variant="outline" size="sm" onClick={() => navigate('/camas')}>
@@ -187,7 +187,7 @@ export function DetalleInternacionPage() {
         aria-busy={actualizando}
         className={cn('gap-0 py-0 transition-opacity', actualizando && 'opacity-70')}
       >
-        <CardContent className="flex flex-wrap items-start justify-between gap-4 p-5 sm:p-6">
+        <CardContent className="flex flex-wrap items-start justify-between gap-4 p-4 sm:p-5">
           <div className="flex min-w-0 flex-1 flex-col gap-2">
             <div className="flex flex-wrap items-center gap-2">
               {internacion.estaActiva ? (
@@ -384,14 +384,14 @@ export function DetalleInternacionPage() {
 
       {/* TAB 1: Resumen clínico */}
       {activeTab === 'resumen' && (
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-          <Card className="gap-4 py-5">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+          <Card className="gap-3.5 py-4 lg:col-span-7">
             <CardHeader className="border-b pb-3">
               <CardTitle className="text-base font-bold text-primary">
                 Motivos y cuadro de ingreso
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-5">
+            <CardContent className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                   Motivos de internación
@@ -409,11 +409,11 @@ export function DetalleInternacionPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1.5">
                 <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                   Enfermedad actual
                 </span>
-                <div className="rounded-lg border bg-muted/30 p-3.5 text-sm leading-relaxed whitespace-pre-wrap text-foreground">
+                <div className="rounded-lg border bg-muted/30 p-3 text-sm leading-relaxed break-words whitespace-pre-wrap text-foreground [overflow-wrap:anywhere]">
                   {internacion.enfermedadActual}
                 </div>
               </div>
@@ -444,40 +444,40 @@ export function DetalleInternacionPage() {
             </CardContent>
           </Card>
 
-          <Card className="gap-4 py-5">
+          <Card className="gap-3.5 py-4 lg:col-span-5">
             <CardHeader className="border-b pb-3">
               <CardTitle className="text-base font-bold text-primary">
                 Información clínica complementaria
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-5">
-              <div className="flex flex-col gap-2">
+            <CardContent className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5">
                 <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                   Parámetros / Antropometría
                 </span>
-                <div className="rounded-lg border bg-muted/30 p-3.5 text-sm leading-relaxed whitespace-pre-wrap text-foreground">
+                <div className="rounded-lg border bg-muted/30 p-3 text-sm leading-relaxed break-words whitespace-pre-wrap text-foreground [overflow-wrap:anywhere]">
                   {internacion.parametrosAntropometria?.trim() || (
                     <span className="text-muted-foreground">Sin registros de antropometría.</span>
                   )}
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1.5">
                 <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                   Tratamiento previo
                 </span>
-                <div className="rounded-lg border bg-muted/30 p-3.5 text-sm leading-relaxed whitespace-pre-wrap text-foreground">
+                <div className="rounded-lg border bg-muted/30 p-3 text-sm leading-relaxed break-words whitespace-pre-wrap text-foreground [overflow-wrap:anywhere]">
                   {internacion.tratamientoPrevio?.trim() || (
                     <span className="text-muted-foreground">No se registró tratamiento previo.</span>
                   )}
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1.5">
                 <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                   Observaciones
                 </span>
-                <div className="rounded-lg border bg-muted/30 p-3.5 text-sm leading-relaxed whitespace-pre-wrap text-foreground">
+                <div className="rounded-lg border bg-muted/30 p-3 text-sm leading-relaxed break-words whitespace-pre-wrap text-foreground [overflow-wrap:anywhere]">
                   {internacion.observaciones?.trim() || (
                     <span className="text-muted-foreground">Sin observaciones registradas.</span>
                   )}

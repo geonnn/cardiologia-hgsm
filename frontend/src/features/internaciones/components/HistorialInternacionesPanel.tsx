@@ -10,7 +10,7 @@ import {
 import { useNavigate } from 'react-router'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Empty,
   EmptyContent,
@@ -152,8 +152,8 @@ export function HistorialInternacionesPanel({
           </Empty>
         ) : cargandoInicial ? (
           <div className="flex flex-col gap-3" aria-hidden="true">
-            <Card className="h-28 animate-pulse bg-muted/40" />
-            <Card className="h-28 animate-pulse bg-muted/40" />
+            <Card className="h-20 animate-pulse bg-muted/40" />
+            <Card className="h-20 animate-pulse bg-muted/40" />
           </div>
         ) : internaciones.length === 0 ? (
           <Empty className="border-2 border-dashed bg-card py-12">
@@ -202,79 +202,80 @@ export function HistorialInternacionesPanel({
                   <Card
                     key={item.id}
                     className={cn(
-                      'gap-3 py-4',
+                      'gap-0 py-0',
                       item.estaActiva && 'border-primary/35 ring-1 ring-primary/15',
                     )}
                   >
-                    <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3 pb-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        {item.estaActiva ? (
-                          <Badge className="bg-emerald-600 font-semibold text-white">
-                            En curso
-                          </Badge>
-                        ) : (
-                          condicion && (
-                            <Badge variant="secondary" className={cn('font-semibold', condicion.badgeClass)}>
-                              {condicion.label}
+                    <CardContent className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
+                      <div className="flex min-w-0 flex-1 flex-col gap-2">
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                          {item.estaActiva ? (
+                            <Badge className="bg-emerald-600 font-semibold text-white">
+                              En curso
                             </Badge>
-                          )
-                        )}
-                        <CardTitle className="inline-flex items-center gap-1.5 text-sm font-bold text-primary">
-                          <BedDoubleIcon className="size-4" />
-                          <span>
-                            {item.cama.sector} #{item.cama.numeroCama}
+                          ) : (
+                            condicion && (
+                              <Badge
+                                variant="secondary"
+                                className={cn('font-semibold', condicion.badgeClass)}
+                              >
+                                {condicion.label}
+                              </Badge>
+                            )
+                          )}
+                          <span className="inline-flex items-center gap-1.5 text-sm font-bold text-primary">
+                            <BedDoubleIcon className="size-4" />
+                            <span>
+                              {item.cama.sector} #{item.cama.numeroCama}
+                            </span>
                           </span>
-                        </CardTitle>
-                        <Badge variant="outline" className="text-xs font-semibold">
-                          Manejo {item.manejo}
-                        </Badge>
+                          <Badge variant="outline" className="text-xs font-semibold">
+                            Manejo {item.manejo}
+                          </Badge>
+                          <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground tabular-nums">
+                            <CalendarIcon className="size-3.5" />
+                            <span>
+                              Ingreso:{' '}
+                              <strong className="text-foreground">
+                                {formatearFechaHora(item.fechaInternacion)}
+                              </strong>
+                            </span>
+                          </span>
+                          {item.fechaFin && (
+                            <span className="text-xs text-muted-foreground tabular-nums">
+                              Egreso:{' '}
+                              <strong className="text-foreground">
+                                {formatearFechaHora(item.fechaFin)}
+                              </strong>
+                            </span>
+                          )}
+                        </div>
+
+                        {item.motivosInternacion.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5">
+                            {item.motivosInternacion.map((m) => (
+                              <Badge
+                                key={m.id}
+                                variant="secondary"
+                                className="border border-primary/15 bg-primary/10 text-xs font-semibold text-primary"
+                              >
+                                {m.nombre}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
                       </div>
 
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
+                        className="shrink-0"
                         onClick={() => navigate(`/internaciones/${item.id}`)}
                       >
                         <EyeIcon className="size-3.5" />
                         <span>Ver internación</span>
                       </Button>
-                    </CardHeader>
-
-                    <CardContent className="flex flex-col gap-2.5">
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground tabular-nums">
-                        <span className="inline-flex items-center gap-1.5">
-                          <CalendarIcon className="size-3.5" />
-                          <span>
-                            Ingreso:{' '}
-                            <strong className="text-foreground">
-                              {formatearFechaHora(item.fechaInternacion)}
-                            </strong>
-                          </span>
-                        </span>
-                        {item.fechaFin && (
-                          <span>
-                            Egreso:{' '}
-                            <strong className="text-foreground">
-                              {formatearFechaHora(item.fechaFin)}
-                            </strong>
-                          </span>
-                        )}
-                      </div>
-
-                      {item.motivosInternacion.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5">
-                          {item.motivosInternacion.map((m) => (
-                            <Badge
-                              key={m.id}
-                              variant="secondary"
-                              className="border border-primary/15 bg-primary/10 text-xs font-semibold text-primary"
-                            >
-                              {m.nombre}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
                     </CardContent>
                   </Card>
                 )
