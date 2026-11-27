@@ -209,8 +209,6 @@ export function DetallePacientePage() {
 
   if (!paciente) return null
 
-  const iniciales = `${paciente.apellido[0] ?? ''}${paciente.nombre[0] ?? ''}`.toUpperCase()
-
   return (
     <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-4">
       <div>
@@ -227,9 +225,6 @@ export function DetallePacientePage() {
       >
         <CardContent className="flex flex-wrap items-center justify-between gap-4 p-4 sm:p-5">
           <div className="flex min-w-0 items-center gap-4">
-            <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-extrabold text-primary-foreground">
-              {iniciales}
-            </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2.5">
                 <h1 className="truncate text-xl font-extrabold tracking-tight text-primary sm:text-2xl">

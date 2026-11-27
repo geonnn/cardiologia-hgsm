@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { BedDoubleIcon, ChevronLeftIcon, ChevronRightIcon, EyeIcon } from 'lucide-react'
+import { ChevronLeftIcon, ChevronRightIcon, ClipboardListIcon, EyeIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -14,7 +14,7 @@ interface PacientesTablaProps {
   totalCount: number
   onPageChange: (page: number) => void
   onVerFicha: (paciente: PacienteResumen) => void
-  onInternar: (paciente: PacienteResumen) => void
+  onVerInternacion: (internacionId: string) => void
   empty?: ReactNode
 }
 
@@ -26,7 +26,7 @@ export function PacientesTabla({
   totalCount,
   onPageChange,
   onVerFicha,
-  onInternar,
+  onVerInternacion,
   empty,
 }: PacientesTablaProps) {
   if (pacientes.length === 0) return <>{empty}</>
@@ -78,16 +78,21 @@ export function PacientesTabla({
                 </td>
                 <td className="px-4 py-3 text-right whitespace-nowrap">
                   <div className="inline-flex items-center justify-end gap-1.5">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onInternar(p)}
-                      title="Registrar internación"
-                    >
-                      <BedDoubleIcon className="size-3.5" />
-                      <span>Internar</span>
-                    </Button>
+                    {p.internacionActivaId && (
+                      <Button
+                        type="button"
+                        variant="default"
+                        size="sm"
+                        className="font-semibold"
+                        onClick={() => {
+                          if (p.internacionActivaId) onVerInternacion(p.internacionActivaId)
+                        }}
+                        title="Ver ficha de la internación activa"
+                      >
+                        <ClipboardListIcon className="size-3.5" />
+                        <span>Ver internación activa</span>
+                      </Button>
+                    )}
                     <Button
                       type="button"
                       variant="outline"

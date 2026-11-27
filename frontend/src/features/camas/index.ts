@@ -1,5 +1,6 @@
 // API pública de la feature: importar desde '@/features/camas'.
 export { CamasPage } from './pages/CamasPage'
+export { aCamas, listarCamasRequest, type CamaDto } from './api/camasApi'
 export { CamaCard } from './components/CamaCard'
 export { EstadoBadge } from './components/EstadoBadge'
 export { NuevaCamaForm } from './components/NuevaCamaForm'
