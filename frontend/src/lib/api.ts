@@ -19,8 +19,18 @@ export interface ProblemDetails {
   errors?: Record<string, string[]>
 }
 
-const problemaDe = (error: unknown): ProblemDetails | undefined =>
-  axios.isAxiosError<ProblemDetails>(error) ? error.response?.data : undefined
+const problemaDe = (error: unknown): ProblemDetails | undefined => {
+  if (!axios.isAxiosError(error)) return undefined
+  const data = error.response?.data
+  return typeof data === 'object' && data !== null ? (data as ProblemDetails) : undefined
+}
+
+const MENSAJE_POR_STATUS: Record<number, string> = {
+  502: 'El servidor no está disponible en este momento. Intentá nuevamente en unos segundos.',
+  503: 'El servidor no está disponible en este momento. Intentá nuevamente en unos segundos.',
+  504: 'El servidor tardó demasiado en responder. Intentá nuevamente.',
+  500: 'Ocurrió un error interno en el servidor.',
+}
 
 /** Mensaje legible para mostrar al usuario a partir de cualquier error de la API. */
 export function mensajeDeError(error: unknown): string {
@@ -28,7 +38,13 @@ export function mensajeDeError(error: unknown): string {
     if (!error.response) return 'No se pudo conectar con el servidor.'
     const problema = problemaDe(error)
     const primerErrorDeValidacion = problema?.errors ? Object.values(problema.errors).flat()[0] : undefined
-    return primerErrorDeValidacion ?? problema?.detail ?? problema?.title ?? `Error ${error.response.status}`
+    return (
+      primerErrorDeValidacion ??
+      problema?.detail ??
+      problema?.title ??
+      MENSAJE_POR_STATUS[error.response.status] ??
+      `Error inesperado (${error.response.status}).`
+    )
   }
   return error instanceof Error ? error.message : 'Ocurrió un error inesperado.'
 }
