@@ -46,7 +46,9 @@ public static class DependencyInjection
         services.AddScoped<IMedicoDeCabeceraRepository, MedicoDeCabeceraRepository>();
         services.AddScoped<ICatalogoRepository<MedicoDeCabecera, Guid>, MedicoDeCabeceraRepository>();
 
-        services.AddScoped<IPendienteRepository,PendienteRepository>();
+        services.AddScoped<IInternacionRepository, InternacionRepository>();
+        services.AddScoped<ITratamientoRepository, TratamientoRepository>();
+        services.AddScoped<IPendienteRepository, PendienteRepository>();
 
         return services;
     }
