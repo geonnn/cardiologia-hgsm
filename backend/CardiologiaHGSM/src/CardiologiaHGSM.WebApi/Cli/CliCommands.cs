@@ -4,10 +4,11 @@ namespace CardiologiaHGSM.WebApi.Cli;
 
 public static class CliCommands
 {
-    // El orden define la secuencia de ejecución si se combinan flags (ej: --migrate --seed)
+    // El orden permite migrar y cargar la demo en una misma ejecución.
     private static readonly (string Flag, Func<WebApplication, Task> Action)[] Commands =
     [
         ("--migrate", app => app.Services.ApplyMigrationsAsync()),
+        ("--seed-demo", app => app.Services.ApplyDemoSeedAsync()),
     ];
 
     private static readonly HashSet<string> KnownFlags =
