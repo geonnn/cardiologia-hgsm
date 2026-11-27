@@ -1,0 +1,3 @@
+namespace CardiologiaHGSM.Application.Internaciones.Queries.ObtenerInternacionActivaPorPaciente;
+
+public sealed record ObtenerInternacionActivaPorPacienteQuery(Guid PacienteId);

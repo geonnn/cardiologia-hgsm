@@ -42,6 +42,12 @@ namespace CardiologiaHGSM.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(30)")
                         .HasColumnName("Sector");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NumeroCama", "Sector")
@@ -220,16 +226,20 @@ namespace CardiologiaHGSM.Infrastructure.Persistence.Migrations
                     b.Property<string>("TratamientoPrevio")
                         .HasColumnType("text");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("CamaId");
 
                     b.HasIndex("ObraSocialId");
 
                     b.HasIndex("PacienteId", "FechaInternacion")
                         .IsUnique();
-
-                    b.HasIndex(new[] { "CamaId" }, "IX_Internaciones_CamaId_Activa")
-                        .IsUnique()
-                        .HasFilter("\"FechaFin\" IS NULL");
 
                     b.HasIndex(new[] { "PacienteId" }, "IX_Internaciones_PacienteId_Activa")
                         .IsUnique()

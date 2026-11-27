@@ -6,36 +6,35 @@ using CardiologiaHGSM.Domain.Internaciones;
 using CardiologiaHGSM.Domain.Pacientes;
 using ErrorOr;
 
-namespace CardiologiaHGSM.Application.Internaciones.Queries.ListarPendientesPorPaciente;
+namespace CardiologiaHGSM.Application.Internaciones.Queries.ListarInternacionesPorPaciente;
 
-public class ListarPendientesPorPacienteHandler(
+public class ListarInternacionesPorPacienteHandler(
     IPacienteRepository pacienteRepository,
-    IPendienteRepository pendienteRepository
-) : IQueryHandler<ListarPendientesPorPacienteQuery, PaginatedList<PendienteDto>>
+    IInternacionRepository internacionRepository
+) : IQueryHandler<ListarInternacionesPorPacienteQuery, PaginatedList<InternacionResumenDto>>
 {
-    public async Task<ErrorOr<PaginatedList<PendienteDto>>> HandleAsync(
-        ListarPendientesPorPacienteQuery query,
+    public async Task<ErrorOr<PaginatedList<InternacionResumenDto>>> HandleAsync(
+        ListarInternacionesPorPacienteQuery query,
         CancellationToken ct = default)
     {
         if (!await pacienteRepository.ExisteAsync(query.PacienteId, ct))
             return PacienteErrors.NoEncontrado;
 
         if (query.FechaDesde.HasValue && query.FechaHasta.HasValue && query.FechaDesde > query.FechaHasta)
-            return InternacionErrors.PendienteRangoFechasInvalido;
+            return InternacionErrors.RangoFechasInvalido;
 
         var page = Math.Max(1, query.Page);
         var pageSize = Math.Clamp(query.PageSize, 1, 100);
 
-        var pendientes = await pendienteRepository.ListarPorPacienteAsync(
+        var internaciones = await internacionRepository.ListarPorPacienteAsync(
             query.PacienteId,
             page,
             pageSize,
-            query.Realizado,
             query.FechaDesde,
             query.FechaHasta,
             query.Ascendente,
             ct);
 
-        return pendientes.Map(PendienteDto.FromEntity);
+        return internaciones.Map(InternacionResumenDto.FromEntity);
     }
 }

@@ -11,6 +11,13 @@ import {
 } from '@/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { useApiQuery } from '@/hooks/useApiQuery'
@@ -32,9 +39,6 @@ import {
   type ErroresPaciente,
 } from '../validaciones'
 import { FactoresRiesgoCombobox } from './FactoresRiesgoCombobox'
-
-const SELECT_CLASS =
-  'h-10 w-full rounded-lg border border-input bg-card px-2.5 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50'
 
 export type GuardarDatosPacienteInput = Omit<ModificarPacientePayload, 'medicoDeCabeceraId'> & {
   medicoDeCabeceraNombre: string
@@ -202,15 +206,15 @@ function EditarPacienteForm({
 
           <Field>
             <FieldLabel htmlFor="editar-sexo">Sexo</FieldLabel>
-            <select
-              id="editar-sexo"
-              className={SELECT_CLASS}
-              value={sexo}
-              onChange={(e) => setSexo(e.target.value as Sexo)}
-            >
-              <option value="Masculino">Masculino</option>
-              <option value="Femenino">Femenino</option>
-            </select>
+            <Select value={sexo} onValueChange={(v) => setSexo(v as Sexo)}>
+              <SelectTrigger id="editar-sexo">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Masculino">Masculino</SelectItem>
+                <SelectItem value="Femenino">Femenino</SelectItem>
+              </SelectContent>
+            </Select>
           </Field>
 
           <Field data-invalid={errores.fechaNacimiento ? true : undefined}>
