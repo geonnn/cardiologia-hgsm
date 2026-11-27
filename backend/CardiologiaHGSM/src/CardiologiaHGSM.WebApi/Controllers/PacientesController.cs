@@ -1,5 +1,8 @@
 using CardiologiaHGSM.Application.Common.Interfaces;
 using CardiologiaHGSM.Application.Common.Models;
+using CardiologiaHGSM.Application.Internaciones.Dtos;
+using CardiologiaHGSM.Application.Internaciones.Queries.ListarInternacionesPorPaciente;
+using CardiologiaHGSM.Application.Internaciones.Queries.ObtenerInternacionActivaPorPaciente;
 using CardiologiaHGSM.Application.Pacientes.Commands.AgregarContacto;
 using CardiologiaHGSM.Application.Pacientes.Commands.CrearEstudio;
 using CardiologiaHGSM.Application.Pacientes.Commands.CrearPaciente;
@@ -239,5 +242,37 @@ public class PacientesController : ApiControllerBase
     {
         var result = await handler.HandleAsync(new EliminarEstudioCommand(id, estudioId), ct);
         return result.Match(_ => NoContent(), Problem);
+    }
+
+    // HU-21 / RF-48, RF-48.1, RF-48.2: listar historial de internaciones del paciente.
+    [HttpGet("{id:guid}/internaciones")]
+    [ProducesResponseType(typeof(PaginatedList<InternacionResumenDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ListarInternaciones(
+        Guid id,
+        [FromServices] IQueryHandler<ListarInternacionesPorPacienteQuery, PaginatedList<InternacionResumenDto>> handler,
+        CancellationToken ct,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] DateOnly? fechaDesde = null,
+        [FromQuery] DateOnly? fechaHasta = null,
+        [FromQuery] bool ascendente = false)
+    {
+        var query = new ListarInternacionesPorPacienteQuery(id, page, pageSize, fechaDesde, fechaHasta, ascendente);
+        var result = await handler.HandleAsync(query, ct);
+        return result.Match(Ok, Problem);
+    }
+
+    [HttpGet("{id:guid}/internacion-activa")]
+    [ProducesResponseType(typeof(InternacionDetalleDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ObtenerInternacionActiva(
+        Guid id,
+        [FromServices] IQueryHandler<ObtenerInternacionActivaPorPacienteQuery, InternacionDetalleDto> handler,
+        CancellationToken ct)
+    {
+        var result = await handler.HandleAsync(new ObtenerInternacionActivaPorPacienteQuery(id), ct);
+        return result.Match(Ok, Problem);
     }
 }
