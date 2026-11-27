@@ -6,6 +6,16 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { useApiQuery } from '@/hooks/useApiQuery'
@@ -30,8 +40,7 @@ import { PacienteBuscador, type PacienteSeleccionado } from '../components/Pacie
 import { MANEJOS, MAX_LONGITUD_AISLAMIENTO } from '../constants'
 import { validarNuevaInternacion, type ErroresNuevaInternacion } from '../validaciones'
 
-const SELECT_CLASS =
-  'h-10 w-full rounded-lg border border-input bg-card px-2.5 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50'
+const SIN_SELECCION = '__ninguna__'
 
 /** Formulario de alta de internación de un paciente (HU-19 / RF-47). */
 export function NuevaInternacionPage() {
@@ -242,44 +251,52 @@ export function NuevaInternacionPage() {
                       <FieldLabel htmlFor="nueva-int-cama">
                         Cama disponible <span className="text-destructive">*</span>
                       </FieldLabel>
-                      <select
-                        id="nueva-int-cama"
-                        className={SELECT_CLASS}
-                        value={camaId}
+                      <Select
+                        value={camaSeleccionada ? camaId : ''}
                         disabled={camasQuery.cargando || camasDisponibles.length === 0}
-                        onChange={(e) => {
-                          const nuevaCama = e.target.value
+                        onValueChange={(nuevaCama) => {
                           setCamaId(nuevaCama)
                           if (camaAislamientoId === nuevaCama) setCamaAislamientoId('')
                         }}
-                        aria-invalid={errores.camaId ? true : undefined}
                       >
-                        <option value="">
-                          {camasQuery.cargando
-                            ? 'Cargando camas…'
-                            : camasDisponibles.length === 0
-                              ? 'No hay camas disponibles'
-                              : 'Seleccionar cama…'}
-                        </option>
-                        {camasUco.length > 0 && (
-                          <optgroup label="UCO">
-                            {camasUco.map((c) => (
-                              <option key={c.id} value={c.id}>
-                                UCO #{c.numeroCama}
-                              </option>
-                            ))}
-                          </optgroup>
-                        )}
-                        {camasSala.length > 0 && (
-                          <optgroup label="Sala">
-                            {camasSala.map((c) => (
-                              <option key={c.id} value={c.id}>
-                                Sala #{c.numeroCama}
-                              </option>
-                            ))}
-                          </optgroup>
-                        )}
-                      </select>
+                        <SelectTrigger
+                          id="nueva-int-cama"
+                          aria-invalid={errores.camaId ? true : undefined}
+                        >
+                          <SelectValue
+                            placeholder={
+                              camasQuery.cargando
+                                ? 'Cargando camas…'
+                                : camasDisponibles.length === 0
+                                  ? 'No hay camas disponibles'
+                                  : 'Seleccionar cama…'
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {camasUco.length > 0 && (
+                            <SelectGroup>
+                              <SelectLabel>UCO</SelectLabel>
+                              {camasUco.map((c) => (
+                                <SelectItem key={c.id} value={c.id}>
+                                  UCO #{c.numeroCama}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          )}
+                          {camasUco.length > 0 && camasSala.length > 0 && <SelectSeparator />}
+                          {camasSala.length > 0 && (
+                            <SelectGroup>
+                              <SelectLabel>Sala</SelectLabel>
+                              {camasSala.map((c) => (
+                                <SelectItem key={c.id} value={c.id}>
+                                  Sala #{c.numeroCama}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          )}
+                        </SelectContent>
+                      </Select>
                       {errores.camaId && <FieldError>{errores.camaId}</FieldError>}
                     </Field>
 
@@ -287,18 +304,21 @@ export function NuevaInternacionPage() {
                       <FieldLabel htmlFor="nueva-int-manejo">
                         Tipo de tratamiento <span className="text-destructive">*</span>
                       </FieldLabel>
-                      <select
-                        id="nueva-int-manejo"
-                        className={SELECT_CLASS}
+                      <Select
                         value={manejoEfectivo}
-                        onChange={(e) => setManejoManual(e.target.value as Manejo)}
+                        onValueChange={(v) => setManejoManual(v as Manejo)}
                       >
-                        {MANEJOS.map((m) => (
-                          <option key={m} value={m}>
-                            {m}
-                          </option>
-                        ))}
-                      </select>
+                        <SelectTrigger id="nueva-int-manejo">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {MANEJOS.map((m) => (
+                            <SelectItem key={m} value={m}>
+                              {m}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </Field>
 
                     <Field data-invalid={errores.fechaInternacion ? true : undefined}>
@@ -354,19 +374,22 @@ export function NuevaInternacionPage() {
                   <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-3">
                     <Field>
                       <FieldLabel htmlFor="nueva-int-obra-social">Obra social (opcional)</FieldLabel>
-                      <select
-                        id="nueva-int-obra-social"
-                        className={SELECT_CLASS}
-                        value={obraSocialId}
-                        onChange={(e) => setObraSocialId(e.target.value)}
+                      <Select
+                        value={obraSocialId || SIN_SELECCION}
+                        onValueChange={(v) => setObraSocialId(v === SIN_SELECCION ? '' : v)}
                       >
-                        <option value="">Sin obra social</option>
-                        {(obrasSocialesQuery.data ?? []).map((os) => (
-                          <option key={os.id} value={os.id}>
-                            {os.nombre}
-                          </option>
-                        ))}
-                      </select>
+                        <SelectTrigger id="nueva-int-obra-social">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={SIN_SELECCION}>Sin obra social</SelectItem>
+                          {(obrasSocialesQuery.data ?? []).map((os) => (
+                            <SelectItem key={os.id} value={String(os.id)}>
+                              {os.nombre}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </Field>
 
                     <Field data-invalid={errores.aislamiento ? true : undefined}>
@@ -387,21 +410,26 @@ export function NuevaInternacionPage() {
                       <FieldLabel htmlFor="nueva-int-cama-aisl">
                         Bloquear cama por aislamiento
                       </FieldLabel>
-                      <select
-                        id="nueva-int-cama-aisl"
-                        className={SELECT_CLASS}
-                        value={camaAislamientoId}
+                      <Select
+                        value={camaAislamientoId || SIN_SELECCION}
                         disabled={camasParaAislamiento.length === 0}
-                        onChange={(e) => setCamaAislamientoId(e.target.value)}
-                        aria-invalid={errores.camaAislamientoId ? true : undefined}
+                        onValueChange={(v) => setCamaAislamientoId(v === SIN_SELECCION ? '' : v)}
                       >
-                        <option value="">Ninguna</option>
-                        {camasParaAislamiento.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.sector} #{c.numeroCama}
-                          </option>
-                        ))}
-                      </select>
+                        <SelectTrigger
+                          id="nueva-int-cama-aisl"
+                          aria-invalid={errores.camaAislamientoId ? true : undefined}
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={SIN_SELECCION}>Ninguna</SelectItem>
+                          {camasParaAislamiento.map((c) => (
+                            <SelectItem key={c.id} value={c.id}>
+                              {c.sector} #{c.numeroCama}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       {errores.camaAislamientoId && (
                         <FieldError>{errores.camaAislamientoId}</FieldError>
                       )}

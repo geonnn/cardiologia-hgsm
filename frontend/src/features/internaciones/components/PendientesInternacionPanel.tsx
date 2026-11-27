@@ -23,6 +23,13 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { mensajeDeError } from '@/lib/api'
 import { formatearFechaHora } from '@/lib/fechas'
 import { cn } from '@/lib/utils'
@@ -32,9 +39,6 @@ import {
   type FiltroEstadoPendiente,
 } from '../hooks/usePendientesInternacion'
 import { NuevoPendienteDialog } from './NuevoPendienteDialog'
-
-const SELECT_CLASS =
-  'h-9 rounded-lg border border-input bg-card px-2.5 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50'
 
 interface PendientesInternacionPanelProps {
   internacionId: string
@@ -109,16 +113,19 @@ export function PendientesInternacionPanel({
               <label htmlFor="pend-estado" className="text-xs font-semibold text-primary">
                 Estado
               </label>
-              <select
-                id="pend-estado"
-                className={SELECT_CLASS}
+              <Select
                 value={estado}
-                onChange={(e) => setEstado(e.target.value as FiltroEstadoPendiente)}
+                onValueChange={(v) => setEstado(v as FiltroEstadoPendiente)}
               >
-                <option value="todos">Todos</option>
-                <option value="pendientes">No realizados</option>
-                <option value="realizados">Realizados</option>
-              </select>
+                <SelectTrigger id="pend-estado" size="sm" className="w-40">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos</SelectItem>
+                  <SelectItem value="pendientes">No realizados</SelectItem>
+                  <SelectItem value="realizados">Realizados</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex flex-col gap-1">
@@ -153,15 +160,18 @@ export function PendientesInternacionPanel({
               <label htmlFor="pend-orden" className="text-xs font-semibold text-primary">
                 Orden
               </label>
-              <select
-                id="pend-orden"
-                className={SELECT_CLASS}
+              <Select
                 value={ascendente ? 'asc' : 'desc'}
-                onChange={(e) => setAscendente(e.target.value === 'asc')}
+                onValueChange={(v) => setAscendente(v === 'asc')}
               >
-                <option value="desc">Más reciente primero</option>
-                <option value="asc">Más antiguo primero</option>
-              </select>
+                <SelectTrigger id="pend-orden" size="sm" className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="desc">Más reciente primero</SelectItem>
+                  <SelectItem value="asc">Más antiguo primero</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

@@ -12,6 +12,16 @@ import {
 } from '@/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { useApiQuery } from '@/hooks/useApiQuery'
@@ -32,8 +42,7 @@ import { MANEJOS, MAX_LONGITUD_AISLAMIENTO } from '../constants'
 import { validarModificarInternacion, type ErroresModificarInternacion } from '../validaciones'
 import { MotivosCombobox } from './MotivosCombobox'
 
-const SELECT_CLASS =
-  'h-10 w-full rounded-lg border border-input bg-card px-2.5 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50'
+const SIN_SELECCION = '__ninguna__'
 
 interface EditarInternacionDialogProps {
   open: boolean
@@ -122,6 +131,12 @@ function EditarInternacionForm({
   const camasParaAislamiento = camasDisponibles.filter((c) => c.id !== camaId)
   const camaDestinoSwap = camasOcupadasOtras.find((c) => c.id === camaId)
 
+  const obrasSociales = obrasSocialesQuery.data ?? []
+  const obraSocialActualFueraDeLista =
+    internacion.obraSocial && !obrasSociales.some((os) => os.id === internacion.obraSocial?.id)
+      ? internacion.obraSocial
+      : null
+
   const catalogosError = camasQuery.error ?? motivosQuery.error ?? obrasSocialesQuery.error
 
   const enviar = async (e: FormEvent<HTMLFormElement>) => {
@@ -182,46 +197,59 @@ function EditarInternacionForm({
               <FieldLabel htmlFor="editar-int-cama">
                 Cama asignada <span className="text-destructive">*</span>
               </FieldLabel>
-              <select
-                id="editar-int-cama"
-                className={SELECT_CLASS}
+              <Select
                 value={camaId}
-                onChange={(e) => {
-                  const nuevaCamaId = e.target.value
+                onValueChange={(nuevaCamaId) => {
                   setCamaId(nuevaCamaId)
                   if (camaAislamientoId === nuevaCamaId) setCamaAislamientoId('')
                 }}
-                aria-invalid={errores.camaId ? true : undefined}
               >
-                <optgroup label="Cama actual">
-                  <option value={internacion.cama.id}>
-                    {internacion.cama.sector} #{internacion.cama.numeroCama} (Actual)
-                  </option>
-                </optgroup>
+                <SelectTrigger
+                  id="editar-int-cama"
+                  aria-invalid={errores.camaId ? true : undefined}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Cama actual</SelectLabel>
+                    <SelectItem value={internacion.cama.id}>
+                      {internacion.cama.sector} #{internacion.cama.numeroCama} (Actual)
+                    </SelectItem>
+                  </SelectGroup>
 
-                {camasDisponibles.length > 0 && (
-                  <optgroup label="Camas disponibles (pase)">
-                    {camasDisponibles.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.sector} #{c.numeroCama} — Disponible
-                      </option>
-                    ))}
-                  </optgroup>
-                )}
+                  {camasDisponibles.length > 0 && (
+                    <>
+                      <SelectSeparator />
+                      <SelectGroup>
+                        <SelectLabel>Camas disponibles (pase)</SelectLabel>
+                        {camasDisponibles.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.sector} #{c.numeroCama} — Disponible
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </>
+                  )}
 
-                {camasOcupadasOtras.length > 0 && (
-                  <optgroup label="Camas ocupadas (intercambio / swap)">
-                    {camasOcupadasOtras.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.sector} #{c.numeroCama} —{' '}
-                        {c.ocupante
-                          ? `Ocupada por ${c.ocupante.apellido}, ${c.ocupante.nombre}`
-                          : 'Ocupada'}
-                      </option>
-                    ))}
-                  </optgroup>
-                )}
-              </select>
+                  {camasOcupadasOtras.length > 0 && (
+                    <>
+                      <SelectSeparator />
+                      <SelectGroup>
+                        <SelectLabel>Camas ocupadas (intercambio / swap)</SelectLabel>
+                        {camasOcupadasOtras.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.sector} #{c.numeroCama} —{' '}
+                            {c.ocupante
+                              ? `Ocupada por ${c.ocupante.apellido}, ${c.ocupante.nombre}`
+                              : 'Ocupada'}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </>
+                  )}
+                </SelectContent>
+              </Select>
               {errores.camaId && <FieldError>{errores.camaId}</FieldError>}
             </Field>
 
@@ -229,18 +257,18 @@ function EditarInternacionForm({
               <FieldLabel htmlFor="editar-int-manejo">
                 Tipo de tratamiento <span className="text-destructive">*</span>
               </FieldLabel>
-              <select
-                id="editar-int-manejo"
-                className={SELECT_CLASS}
-                value={manejo}
-                onChange={(e) => setManejo(e.target.value as Manejo)}
-              >
-                {MANEJOS.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
-                ))}
-              </select>
+              <Select value={manejo} onValueChange={(v) => setManejo(v as Manejo)}>
+                <SelectTrigger id="editar-int-manejo">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {MANEJOS.map((m) => (
+                    <SelectItem key={m} value={m}>
+                      {m}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
           </div>
 
@@ -290,19 +318,27 @@ function EditarInternacionForm({
 
             <Field>
               <FieldLabel htmlFor="editar-int-obra-social">Obra social (opcional)</FieldLabel>
-              <select
-                id="editar-int-obra-social"
-                className={SELECT_CLASS}
-                value={obraSocialId}
-                onChange={(e) => setObraSocialId(e.target.value)}
+              <Select
+                value={obraSocialId || SIN_SELECCION}
+                onValueChange={(v) => setObraSocialId(v === SIN_SELECCION ? '' : v)}
               >
-                <option value="">Sin obra social</option>
-                {(obrasSocialesQuery.data ?? []).map((os) => (
-                  <option key={os.id} value={os.id}>
-                    {os.nombre}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger id="editar-int-obra-social">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={SIN_SELECCION}>Sin obra social</SelectItem>
+                  {obraSocialActualFueraDeLista && (
+                    <SelectItem value={String(obraSocialActualFueraDeLista.id)}>
+                      {obraSocialActualFueraDeLista.nombre}
+                    </SelectItem>
+                  )}
+                  {obrasSociales.map((os) => (
+                    <SelectItem key={os.id} value={String(os.id)}>
+                      {os.nombre}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
           </div>
 
@@ -357,20 +393,25 @@ function EditarInternacionForm({
             <FieldLabel htmlFor="editar-int-cama-aisl">
               Bloquear cama por aislamiento (opcional)
             </FieldLabel>
-            <select
-              id="editar-int-cama-aisl"
-              className={SELECT_CLASS}
-              value={camaAislamientoId}
-              onChange={(e) => setCamaAislamientoId(e.target.value)}
-              aria-invalid={errores.camaAislamientoId ? true : undefined}
+            <Select
+              value={camaAislamientoId || SIN_SELECCION}
+              onValueChange={(v) => setCamaAislamientoId(v === SIN_SELECCION ? '' : v)}
             >
-              <option value="">Ninguna</option>
-              {camasParaAislamiento.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.sector} #{c.numeroCama}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger
+                id="editar-int-cama-aisl"
+                aria-invalid={errores.camaAislamientoId ? true : undefined}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={SIN_SELECCION}>Ninguna</SelectItem>
+                {camasParaAislamiento.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.sector} #{c.numeroCama}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {errores.camaAislamientoId && <FieldError>{errores.camaAislamientoId}</FieldError>}
           </Field>
 
