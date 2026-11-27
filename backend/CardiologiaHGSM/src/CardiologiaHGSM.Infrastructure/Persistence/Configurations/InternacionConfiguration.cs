@@ -29,9 +29,12 @@ public class InternacionConfiguration : IEntityTypeConfiguration<Internacion>
             .IsUnique()
             .HasFilter("\"FechaFin\" IS NULL");
 
-        builder.HasIndex(i => i.CamaId, "IX_Internaciones_CamaId_Activa")
-            .IsUnique()
-            .HasFilter("\"FechaFin\" IS NULL");
+        // builder.HasIndex(i => i.CamaId, "IX_Internaciones_CamaId_Activa")
+        //     .IsUnique()
+        //     .HasFilter("\"FechaFin\" IS NULL");
+        // No se define índice único sobre CamaId activa para permitir el intercambio de camas
+        // (swap, RF-49) en memoria dentro de SaveChangesAsync; la ocupación concurrente se
+        // resguarda mediante concurrencia optimista (xmin) sobre Cama y las reglas de aplicación.
 
         builder.HasOne(i => i.Paciente)
             .WithMany()
@@ -65,5 +68,8 @@ public class InternacionConfiguration : IEntityTypeConfiguration<Internacion>
                     join.HasKey("InternacionId", "MotivoInternacionId");
                 }
             );
+
+        // Concurrencia optimista con la columna de sistema xmin de PostgreSQL (protege modificaciones y swaps concurrentes).
+        builder.Property<uint>("xmin").IsRowVersion();
     }
 }

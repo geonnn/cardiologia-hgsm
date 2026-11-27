@@ -25,6 +25,9 @@ public class CamaConfiguration : IEntityTypeConfiguration<Cama>
             .HasConversion<string>();
 
         builder.HasIndex(c => new { c.NumeroCama, c.Sector }).IsUnique();
+
+        // Concurrencia optimista con la columna de sistema xmin de PostgreSQL (protege ocupación/cambios de estado concurrentes).
+        builder.Property<uint>("xmin").IsRowVersion();
     }
 
     // Se persiste el nombre del estado ("Disponible", "Ocupada", "EnAislamiento", "Deshabilitada").

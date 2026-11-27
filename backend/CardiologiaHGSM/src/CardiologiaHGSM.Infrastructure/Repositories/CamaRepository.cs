@@ -59,7 +59,7 @@ public class CamaRepository : RepositoryBase<Cama, Guid>, ICamaRepository
         if (camaIds.Count == 0)
             return [];
 
-        // El índice único IX_Internaciones_CamaId_Activa garantiza a lo sumo una activa por cama.
+        // Las reglas de aplicación y la concurrencia optimista (xmin) sobre Cama garantizan a lo sumo una activa por cama.
         return await _context.Internaciones
             .AsNoTracking()
             .Include(i => i.Paciente)
