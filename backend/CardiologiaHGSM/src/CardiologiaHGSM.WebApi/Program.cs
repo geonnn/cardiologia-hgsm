@@ -3,6 +3,7 @@ using CardiologiaHGSM.Application.Common;
 using CardiologiaHGSM.Infrastructure.Common;
 using CardiologiaHGSM.WebApi.Cli;
 using CardiologiaHGSM.WebApi.Health;
+using CardiologiaHGSM.WebApi.Middleware;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(CliCommands.StripFromArgs(args));
@@ -29,6 +30,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddApiHealthChecks();
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<ConcurrencyExceptionHandler>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -37,6 +40,8 @@ var app = builder.Build();
 
 if (await app.TryRunCliCommandsAsync(args))
     return;
+
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
