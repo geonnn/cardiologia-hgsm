@@ -47,6 +47,7 @@ export function PacientesPage() {
     catalogosError,
     pacientes,
     totalCount,
+    hayPacientesCargados,
     totalPages,
     cargandoInicial,
     actualizando,
@@ -87,15 +88,18 @@ export function PacientesPage() {
               <EmptyMedia variant="icon">
                 <UsersIcon />
               </EmptyMedia>
-              <EmptyTitle className="font-extrabold">No se encontraron pacientes</EmptyTitle>
+              <EmptyTitle className="font-extrabold">
+                {hayPacientesCargados ? 'No se encontraron pacientes' : 'No hay pacientes cargados'}
+              </EmptyTitle>
               <EmptyDescription>
-                {tieneFiltrosActivos
+                {hayPacientesCargados
                   ? 'Ajustá o limpiá los filtros aplicados para ver más resultados.'
                   : 'Registrá un nuevo paciente con el botón superior.'}
               </EmptyDescription>
             </EmptyHeader>
-            <EmptyContent>
-              {tieneFiltrosActivos ? (
+            {/* El único botón de alta es el de arriba, junto al título */}
+            {hayPacientesCargados && tieneFiltrosActivos && (
+              <EmptyContent>
                 <Button
                   type="button"
                   variant="outline"
@@ -105,19 +109,8 @@ export function PacientesPage() {
                 >
                   Limpiar filtros
                 </Button>
-              ) : (
-                <Button
-                  type="button"
-                  variant="brand"
-                  size="lg"
-                  className="h-10 px-4"
-                  onClick={() => navigate('/pacientes/nuevo')}
-                >
-                  <PlusIcon className="size-4" strokeWidth={2.5} />
-                  <span>Nuevo paciente</span>
-                </Button>
-              )}
-            </EmptyContent>
+              </EmptyContent>
+            )}
           </Empty>
         }
       />

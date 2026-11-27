@@ -53,6 +53,13 @@ export function usePacientes() {
     { deps: [version] },
   )
 
+  // Sin filtros y con una sola fila: sólo interesa `totalCount`, para distinguir
+  // "no hay pacientes cargados" de "ningún paciente coincide con los filtros"
+  const totalSinFiltrosQuery = useApiQuery<PaginatedList<PacienteResumen>>(
+    listarPacientesRequest({ page: 1, pageSize: 1 }),
+    { deps: [version] },
+  )
+
   const actualizarBusqueda = (valor: string) => {
     setBusqueda(valor)
     setPage(1)
@@ -144,6 +151,10 @@ export function usePacientes() {
     catalogosError: motivosQuery.error ?? factoresQuery.error,
     pacientes: pacientesQuery.data?.items ?? [],
     totalCount: pacientesQuery.data?.totalCount ?? 0,
+    /** Si hay al menos un paciente en el sistema, sin importar los filtros. Mientras no se sabe, se asume que sí hay si hay filtros. */
+    hayPacientesCargados: totalSinFiltrosQuery.data
+      ? totalSinFiltrosQuery.data.totalCount > 0
+      : tieneFiltrosActivos,
     totalPages: Math.max(1, pacientesQuery.data?.totalPages ?? 1),
     cargandoInicial: pacientesQuery.cargando && pacientesQuery.data === undefined,
     actualizando: pacientesQuery.cargando && pacientesQuery.data !== undefined,

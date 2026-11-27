@@ -8,6 +8,7 @@ import {
   LogOutIcon,
   StethoscopeIcon,
   UsersIcon,
+  type LucideIcon,
 } from 'lucide-react'
 import { NavLink } from 'react-router'
 import { toast } from 'sonner'
@@ -20,14 +21,21 @@ interface AppSidebarProps {
   onNavigate?: () => void
 }
 
-const NAV_ITEMS = [
+type NavItem = { to: string; label: string; icon: LucideIcon }
+
+/** Vistas principales del servicio: arriba y destacadas. */
+const NAV_PRINCIPAL: ReadonlyArray<NavItem> = [
   { to: '/camas', label: 'Mapa de Camas', icon: BedDoubleIcon },
   { to: '/pacientes', label: 'Pacientes', icon: UsersIcon },
+]
+
+/** Catálogos (datos de referencia): abajo y más discretos. */
+const NAV_CATALOGOS: ReadonlyArray<NavItem> = [
   { to: '/obras-sociales', label: 'Obras Sociales', icon: Building2Icon },
   { to: '/tipos-estudio', label: 'Tipos de Estudio', icon: ClipboardListIcon },
   { to: '/motivos-internacion', label: 'Motivos de Internación', icon: StethoscopeIcon },
   { to: '/factores-de-riesgo', label: 'Factores de Riesgo', icon: HeartPulseIcon },
-] as const
+]
 
 /** Barra lateral de navegación principal (colapsable a riel de íconos en desktop y drawer en mobile). */
 export function AppSidebar({ open, onToggle, onNavigate }: AppSidebarProps) {
@@ -83,27 +91,18 @@ export function AppSidebar({ open, onToggle, onNavigate }: AppSidebarProps) {
           !open && 'md:px-2',
         )}
       >
-        {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
-          <NavLink
-            key={to}
-            to={to}
-            onClick={onNavigate}
-            title={!open ? label : undefined}
-            aria-label={label}
-            className={({ isActive }) =>
-              cn(
-                'flex h-10 items-center gap-3 rounded-lg px-3.5 text-sm font-medium transition-colors',
-                !open && 'md:justify-center md:gap-0 md:px-0',
-                isActive
-                  ? 'bg-brand font-semibold text-brand-foreground shadow-xs'
-                  : 'text-primary-foreground/90 hover:bg-white/10 hover:text-white',
-              )
-            }
-          >
-            <Icon className="size-5 shrink-0" />
-            <span className={cn('truncate', !open && 'md:hidden')}>{label}</span>
-          </NavLink>
+        {NAV_PRINCIPAL.map((item) => (
+          <SidebarLink key={item.to} item={item} open={open} onNavigate={onNavigate} />
         ))}
+
+        {/* mt-auto empuja los catálogos al fondo de la barra */}
+        <div role="group" aria-label="Catálogos" className="mt-auto flex flex-col gap-0.5 pt-6">
+          {/* Línea divisoria entre las vistas principales y los catálogos */}
+          <div aria-hidden="true" className="mx-2 mb-1.5 border-t border-white/15" />
+          {NAV_CATALOGOS.map((item) => (
+            <SidebarLink key={item.to} item={item} open={open} onNavigate={onNavigate} secundario />
+          ))}
+        </div>
       </nav>
 
       {/* Pie del Sidebar */}
@@ -128,5 +127,37 @@ export function AppSidebar({ open, onToggle, onNavigate }: AppSidebarProps) {
         </button>
       </div>
     </aside>
+  )
+}
+
+interface SidebarLinkProps {
+  item: NavItem
+  open: boolean
+  onNavigate?: () => void
+  /** Más chico (catálogos). Mismo color que los principales. */
+  secundario?: boolean
+}
+
+function SidebarLink({ item: { to, label, icon: Icon }, open, onNavigate, secundario = false }: SidebarLinkProps) {
+  return (
+    <NavLink
+      to={to}
+      onClick={onNavigate}
+      title={!open ? label : undefined}
+      aria-label={label}
+      className={({ isActive }) =>
+        cn(
+          'flex items-center gap-3 rounded-lg px-3.5 transition-colors',
+          secundario ? 'h-9 text-[13px] font-normal' : 'h-10 text-sm font-medium',
+          !open && 'md:justify-center md:gap-0 md:px-0',
+          isActive
+            ? 'bg-brand font-semibold text-brand-foreground shadow-xs'
+            : 'text-primary-foreground/90 hover:bg-white/10 hover:text-white',
+        )
+      }
+    >
+      <Icon className={cn('shrink-0', secundario ? 'size-4' : 'size-5')} />
+      <span className={cn('truncate', !open && 'md:hidden')}>{label}</span>
+    </NavLink>
   )
 }
