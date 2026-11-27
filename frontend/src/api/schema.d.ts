@@ -1034,6 +1034,131 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/internaciones/{internacionId}/evoluciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                    fechaDesde?: string;
+                    fechaHasta?: string;
+                    ascendente?: boolean;
+                };
+                header?: never;
+                path: {
+                    internacionId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaginatedListOfEvolucionDto"];
+                        "application/json": components["schemas"]["PaginatedListOfEvolucionDto"];
+                        "text/json": components["schemas"]["PaginatedListOfEvolucionDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "text/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    internacionId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CrearEvolucionRequest"];
+                    "text/json": components["schemas"]["CrearEvolucionRequest"];
+                    "application/*+json": components["schemas"]["CrearEvolucionRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "text/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/internaciones/{internacionId}/pendientes": {
         parameters: {
             query?: never;
@@ -2320,6 +2445,11 @@ export interface components {
             fecha: null | string;
             descripcion: string;
         };
+        CrearEvolucionRequest: {
+            detalle: string;
+            /** Format: date-time */
+            fecha: null | string;
+        };
         CrearInternacionRequest: {
             /** Format: uuid */
             pacienteId: null | string;
@@ -2365,6 +2495,15 @@ export interface components {
             /** Format: date */
             fecha: string;
             descripcion: string;
+        };
+        EvolucionDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            internacionId: string;
+            detalle: string;
+            /** Format: date-time */
+            fecha: string;
         };
         FactorDeRiesgoDto: {
             /** Format: int32 */
@@ -2523,6 +2662,19 @@ export interface components {
         };
         PaginatedListOfEstudioDto: {
             items: components["schemas"]["EstudioDto"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPreviousPage?: boolean;
+            hasNextPage?: boolean;
+        };
+        PaginatedListOfEvolucionDto: {
+            items: components["schemas"]["EvolucionDto"][];
             /** Format: int32 */
             page: number;
             /** Format: int32 */

@@ -52,6 +52,12 @@ export type PendienteDto = Schemas['PendienteDto']
 export type AgregarPendienteRequest = Schemas['AgregarPendienteRequest']
 export type PaginatedListOfPendienteDto = Schemas['PaginatedListOfPendienteDto']
 
+// ---- Evoluciones ----
+
+export type EvolucionDto = Schemas['EvolucionDto']
+export type CrearEvolucionRequest = Schemas['CrearEvolucionRequest']
+export type PaginatedListOfEvolucionDto = Schemas['PaginatedListOfEvolucionDto']
+
 // ---- Internaciones ----
 
 export type InternacionCamaDto = Omit<Schemas['InternacionCamaDto'], 'sector'> & { sector: Manejo }

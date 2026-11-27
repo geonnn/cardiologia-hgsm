@@ -1,11 +1,13 @@
-// Acceso a InternacionesController (api/internaciones), PendientesController y consultas por paciente.
+// Acceso a InternacionesController, EvolucionesController, PendientesController y consultas por paciente.
 import type { AxiosRequestConfig } from 'axios'
 import type {
   AgregarPendienteRequest,
   CamaDto,
   CondicionAlta,
+  CrearEvolucionRequest,
   CrearInternacionRequest,
   EstadoCamaTipo,
+  EvolucionDto,
   InternacionCamaDto,
   InternacionDetalleDto,
   InternacionPacienteDto,
@@ -16,6 +18,7 @@ import type {
   ObraSocialDto,
   PacienteDetalleDto,
   PacienteResumenDto,
+  PaginatedListOfEvolucionDto,
   PaginatedListOfInternacionResumenDto,
   PaginatedListOfPacienteResumenDto,
   PaginatedListOfPendienteDto,
@@ -28,7 +31,9 @@ export type {
   AgregarPendienteRequest,
   CamaDto,
   CondicionAlta,
+  CrearEvolucionRequest,
   EstadoCamaTipo,
+  EvolucionDto,
   InternacionCamaDto,
   InternacionDetalleDto,
   InternacionPacienteDto,
@@ -38,6 +43,7 @@ export type {
   ObraSocialDto,
   PacienteDetalleDto,
   PacienteResumenDto,
+  PaginatedListOfEvolucionDto,
   PaginatedListOfInternacionResumenDto,
   PaginatedListOfPacienteResumenDto,
   PaginatedListOfPendienteDto,
@@ -46,9 +52,18 @@ export type {
 
 export type InternacionResumen = InternacionResumenDto
 export type InternacionDetalle = InternacionDetalleDto
+export type Evolucion = EvolucionDto
 export type Pendiente = PendienteDto
 
 export interface FiltrosInternacionesPaciente {
+  page?: number
+  pageSize?: number
+  fechaDesde?: string
+  fechaHasta?: string
+  ascendente?: boolean
+}
+
+export interface FiltrosEvolucionesInternacion {
   page?: number
   pageSize?: number
   fechaDesde?: string
@@ -123,6 +138,22 @@ export const listarInternacionesPorPacienteRequest = (
 ): AxiosRequestConfig => ({
   method: 'get',
   url: `/pacientes/${pacienteId}/internaciones`,
+  params: {
+    page: params.page,
+    pageSize: params.pageSize,
+    fechaDesde: params.fechaDesde || undefined,
+    fechaHasta: params.fechaHasta || undefined,
+    ascendente: params.ascendente,
+  },
+})
+
+/** HU-24 / RF-39, 39.1, 39.2 — GET api/internaciones/{internacionId}/evoluciones */
+export const listarEvolucionesRequest = (
+  internacionId: string,
+  params: FiltrosEvolucionesInternacion = {},
+): AxiosRequestConfig => ({
+  method: 'get',
+  url: `${BASE_PATH}/${internacionId}/evoluciones`,
   params: {
     page: params.page,
     pageSize: params.pageSize,
@@ -236,6 +267,23 @@ export async function registrarAlta(id: string, payload: RegistrarAltaPayload): 
   }
 
   await api.post(`${BASE_PATH}/${id}/alta`, body)
+}
+
+/** HU-23 / RF-38 — POST api/internaciones/{internacionId}/evoluciones */
+export async function crearEvolucion(
+  internacionId: string,
+  payload: CrearEvolucionRequest,
+): Promise<string> {
+  const body: CrearEvolucionRequest = {
+    detalle: payload.detalle.trim(),
+    fecha: payload.fecha,
+  }
+
+  const { data } = await api.post<{ id: string }>(
+    `${BASE_PATH}/${internacionId}/evoluciones`,
+    body,
+  )
+  return data.id
 }
 
 /** HU-32 / RF-44 — POST api/internaciones/{internacionId}/pendientes */

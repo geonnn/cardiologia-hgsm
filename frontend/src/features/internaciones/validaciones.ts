@@ -31,6 +31,11 @@ export interface ErroresNuevoPendiente {
   descripcion?: string
 }
 
+export interface ErroresNuevaEvolucion {
+  fecha?: string
+  detalle?: string
+}
+
 /** Validación cliente para alta de internación (HU-19 / RF-47). */
 export function validarNuevaInternacion(datos: {
   pacienteId: string
@@ -159,6 +164,27 @@ export function validarNuevoPendiente(datos: {
 
   if (!datos.descripcion.trim()) {
     errores.descripcion = 'La descripción es obligatoria.'
+  }
+
+  return errores
+}
+
+/** Validación cliente para alta de nota de evolución médica (HU-23 / RF-38). */
+export function validarNuevaEvolucion(datos: {
+  fecha: string
+  detalle: string
+}): ErroresNuevaEvolucion {
+  const errores: ErroresNuevaEvolucion = {}
+  const ahora = ahoraInputLocal()
+
+  if (!datos.fecha) {
+    errores.fecha = 'La fecha y hora de evolución es obligatoria.'
+  } else if (datos.fecha > ahora) {
+    errores.fecha = 'La fecha de evolución no puede ser posterior a la fecha actual.'
+  }
+
+  if (!datos.detalle.trim()) {
+    errores.detalle = 'El detalle de la evolución es obligatorio.'
   }
 
   return errores
