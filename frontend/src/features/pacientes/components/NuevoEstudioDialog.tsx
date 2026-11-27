@@ -11,6 +11,13 @@ import {
 } from '@/components/ui/dialog'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useApiQuery } from '@/hooks/useApiQuery'
 import { mensajeDeError } from '@/lib/api'
@@ -18,9 +25,6 @@ import { hoyIso } from '@/lib/fechas'
 import { listarTiposEstudioRequest, type TipoEstudio } from '../api/catalogosApi'
 import type { CrearEstudioPayload } from '../api/pacientesApi'
 import { MAX_LONGITUD_TITULO_ESTUDIO, validarEstudio, type ErroresEstudio } from '../validaciones'
-
-const SELECT_CLASS =
-  'h-10 w-full rounded-lg border border-input bg-card px-2.5 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50'
 
 interface NuevoEstudioDialogProps {
   open: boolean
@@ -116,25 +120,31 @@ function NuevoEstudioForm({
             <FieldLabel htmlFor="estudio-tipo">
               Tipo de estudio <span className="text-destructive">*</span>
             </FieldLabel>
-            <select
-              id="estudio-tipo"
-              className={SELECT_CLASS}
-              value={tipoEfectivo}
+            <Select
+              value={String(tipoEfectivo)}
               disabled={tiposQuery.cargando || tipos.length === 0}
-              onChange={(e) => setTipoEstudioId(e.target.value ? Number(e.target.value) : '')}
+              onValueChange={(v) => setTipoEstudioId(v ? Number(v) : '')}
             >
-              {tiposQuery.cargando ? (
-                <option value="">Cargando tipos…</option>
-              ) : tipos.length === 0 ? (
-                <option value="">No hay tipos de estudio cargados</option>
-              ) : (
-                tipos.map((t) => (
-                  <option key={t.id} value={t.id}>
+              <SelectTrigger
+                id="estudio-tipo"
+                aria-invalid={errores.tipoEstudioId ? true : undefined}
+              >
+                <SelectValue
+                  placeholder={
+                    tiposQuery.cargando
+                      ? 'Cargando tipos…'
+                      : 'No hay tipos de estudio cargados'
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {tipos.map((t) => (
+                  <SelectItem key={t.id} value={String(t.id)}>
                     {t.nombre}
-                  </option>
-                ))
-              )}
-            </select>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {errores.tipoEstudioId && <FieldError>{errores.tipoEstudioId}</FieldError>}
           </Field>
 

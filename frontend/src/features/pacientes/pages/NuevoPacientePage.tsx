@@ -8,6 +8,13 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { useApiQuery } from '@/hooks/useApiQuery'
@@ -36,9 +43,6 @@ import {
   type ErroresContacto,
   type ErroresPaciente,
 } from '../validaciones'
-
-const SELECT_CLASS =
-  'h-10 w-full rounded-lg border border-input bg-card px-2.5 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50'
 
 interface ContactoBorrador extends ContactoInput {
   key: number
@@ -257,15 +261,15 @@ export function NuevoPacientePage() {
                   <FieldLabel htmlFor="nuevo-sexo">
                     Sexo <span className="text-destructive">*</span>
                   </FieldLabel>
-                  <select
-                    id="nuevo-sexo"
-                    className={SELECT_CLASS}
-                    value={sexo}
-                    onChange={(e) => setSexo(e.target.value as Sexo)}
-                  >
-                    <option value="Masculino">Masculino</option>
-                    <option value="Femenino">Femenino</option>
-                  </select>
+                  <Select value={sexo} onValueChange={(v) => setSexo(v as Sexo)}>
+                    <SelectTrigger id="nuevo-sexo">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Masculino">Masculino</SelectItem>
+                      <SelectItem value="Femenino">Femenino</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </Field>
 
                 <Field data-invalid={erroresPaciente.fechaNacimiento ? true : undefined}>
