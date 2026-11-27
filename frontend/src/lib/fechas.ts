@@ -49,6 +49,12 @@ export const ahoraInputLocal = (): string => {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
+/** Convierte un instante ISO (`DateTimeOffset`) a `YYYY-MM-DDTHH:mm` en hora local (para `<input type="datetime-local">`). */
+export const isoAInputLocal = (iso: string): string => {
+  const d = new Date(iso)
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
 /**
  * Convierte el valor de un `<input type="datetime-local">` (`"YYYY-MM-DDTHH:mm"`)
  * a ISO 8601 UTC (`"...Z"`) listo para enviar a campos `DateTimeOffset` de la API.

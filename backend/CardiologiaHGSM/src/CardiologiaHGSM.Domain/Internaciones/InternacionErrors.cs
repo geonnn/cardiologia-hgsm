@@ -2,6 +2,34 @@ namespace CardiologiaHGSM.Domain.Internaciones;
 
 public static class InternacionErrors
 {
+    public static readonly Error NoEncontrada = Error.NotFound(
+        code: "Internacion.NoEncontrada",
+        description: "No se encontró la internación especificada.");
+
+    public static readonly Error PacienteYaInternado = Error.Conflict(
+        code: "Internacion.PacienteYaInternado",
+        description: "El paciente ya tiene una internación activa.");
+
+    public static readonly Error MotivoNoEncontrado = Error.NotFound(
+        code: "Internacion.MotivoNoEncontrado",
+        description: "Uno o más motivos de internación indicados no existen.");
+
+    public static readonly Error ObraSocialNoEncontrada = Error.NotFound(
+        code: "Internacion.ObraSocialNoEncontrada",
+        description: "La obra social especificada no existe.");
+
+    public static readonly Error CamaAislamientoIgualACamaAsignada = Error.Validation(
+        code: "Internacion.CamaAislamientoIgualACamaAsignada",
+        description: "La cama a bloquear por aislamiento no puede ser la misma cama asignada al paciente.");
+
+    public static readonly Error CamaOcupadaSinInternacionActiva = Error.Conflict(
+        code: "Internacion.CamaOcupadaSinInternacionActiva",
+        description: "La cama destino figura ocupada pero no registra una internación activa asociada.");
+
+    public static readonly Error RangoFechasInvalido = Error.Validation(
+        code: "Internacion.RangoFechasInvalido",
+        description: "La fecha desde no puede ser posterior a la fecha hasta.");
+
     public static readonly Error YaFinalizada = Error.Conflict(
         code: "Internacion.YaFinalizada",
         description: "La internación ya se encuentra finalizada.");

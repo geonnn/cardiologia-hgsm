@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { PlusIcon } from 'lucide-react'
+import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
 import { PageTitle, SidebarLayout, SidebarSection } from '@/components/layout'
 import { Button } from '@/components/ui/button'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
+import { RegistrarAltaDialog, registrarAlta, type RegistrarAltaPayload } from '@/features/internaciones'
 import { mensajeDeError } from '@/lib/api'
 import { CamaGrid } from '../components/CamaGrid'
 import { CamaGridSkeleton } from '../components/CamaGridSkeleton'
@@ -16,6 +18,7 @@ import { useCamas } from '../hooks/useCamas'
 import type { AccionCama, Cama, NuevaCama } from '../types'
 
 export function CamasPage() {
+  const navigate = useNavigate()
   const {
     sector,
     filtro,
@@ -33,6 +36,8 @@ export function CamasPage() {
     cambiarEstado,
   } = useCamas()
   const [creandoCama, setCreandoCama] = useState(false)
+  const [altaAbierta, setAltaAbierta] = useState(false)
+  const [camaParaAlta, setCamaParaAlta] = useState<Cama>()
 
   // Si la API rechaza, el error vuelve al formulario (que lo muestra) y el modal queda abierto
   const confirmarNuevaCama = async (datos: NuevaCama) => {
@@ -41,9 +46,37 @@ export function CamasPage() {
     toast.success(`Cama ${datos.numero} de ${datos.sector} creada`)
   }
 
-  const abrirFicha = (cama: Cama) => toast(`Abriendo ficha de ${cama.paciente?.nombreCompleto}…`)
+  const confirmarAlta = async (payload: RegistrarAltaPayload) => {
+    if (!camaParaAlta?.paciente) return
+    await registrarAlta(camaParaAlta.paciente.internacionId, payload)
+    toast.success(`Egreso registrado. La cama ${camaParaAlta.sector} #${camaParaAlta.numero} quedó disponible`)
+    recargar()
+  }
+
+  const abrirFicha = (cama: Cama) => {
+    if (cama.paciente) {
+      navigate(`/internaciones/${cama.paciente.internacionId}`)
+    }
+  }
 
   const ejecutarAccion = async (cama: Cama, accion: AccionCama) => {
+    if (accion.id === 'nueva-internacion') {
+      navigate(`/internaciones/nueva?camaId=${cama.id}`)
+      return
+    }
+    if (accion.id === 'ver-internacion' && cama.paciente) {
+      navigate(`/internaciones/${cama.paciente.internacionId}`)
+      return
+    }
+    if (accion.id === 'ver-ficha' && cama.paciente) {
+      navigate(`/pacientes/${cama.paciente.pacienteId}`)
+      return
+    }
+    if (accion.id === 'fin-internacion' && cama.paciente) {
+      setCamaParaAlta(cama)
+      setAltaAbierta(true)
+      return
+    }
     if (!accion.accionApi) {
       toast(`${accion.label}…`)
       return
@@ -157,6 +190,16 @@ export function CamasPage() {
         camasExistentes={todas}
         onCrear={confirmarNuevaCama}
       />
+
+      {camaParaAlta?.paciente && (
+        <RegistrarAltaDialog
+          open={altaAbierta}
+          pacienteNombre={camaParaAlta.paciente.nombreCompleto}
+          camaDescripcion={`${camaParaAlta.sector} #${camaParaAlta.numero}`}
+          onOpenChange={setAltaAbierta}
+          onConfirmar={confirmarAlta}
+        />
+      )}
     </>
   )
 }

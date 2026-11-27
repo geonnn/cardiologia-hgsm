@@ -11,6 +11,7 @@ type Schemas = components['schemas']
 export type Sexo = Schemas['Sexo']
 export type Manejo = NonNullable<Schemas['Manejo']>
 export type EstadoCamaTipo = NonNullable<Schemas['EstadoCamaTipo']>
+export type CondicionAlta = NonNullable<Schemas['CondicionAlta']>
 export type PacienteOrden = Schemas['PacienteOrden']
 
 // ---- Pacientes y Estudios ----
@@ -50,3 +51,33 @@ export type TipoEstudioDto = Schemas['TipoEstudioDto']
 export type PendienteDto = Schemas['PendienteDto']
 export type AgregarPendienteRequest = Schemas['AgregarPendienteRequest']
 export type PaginatedListOfPendienteDto = Schemas['PaginatedListOfPendienteDto']
+
+// ---- Internaciones ----
+
+export type InternacionCamaDto = Omit<Schemas['InternacionCamaDto'], 'sector'> & { sector: Manejo }
+export type InternacionPacienteDto = Schemas['InternacionPacienteDto']
+export type InternacionResumenDto = Omit<
+  Schemas['InternacionResumenDto'],
+  'manejo' | 'condicionAlta' | 'cama'
+> & {
+  manejo: Manejo
+  condicionAlta: CondicionAlta | null
+  cama: InternacionCamaDto
+}
+export type InternacionDetalleDto = Omit<
+  Schemas['InternacionDetalleDto'],
+  'manejo' | 'condicionAlta' | 'cama'
+> & {
+  manejo: Manejo
+  condicionAlta: CondicionAlta | null
+  cama: InternacionCamaDto
+}
+export type PaginatedListOfInternacionResumenDto = Omit<
+  Schemas['PaginatedListOfInternacionResumenDto'],
+  'items'
+> & {
+  items: InternacionResumenDto[]
+}
+export type CrearInternacionRequest = Schemas['CrearInternacionRequest']
+export type ModificarInternacionRequest = Schemas['ModificarInternacionRequest']
+export type RegistrarAltaRequest = Schemas['RegistrarAltaRequest']

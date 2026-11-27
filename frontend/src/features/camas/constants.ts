@@ -61,6 +61,7 @@ export const ACCIONES_POR_ESTADO: Record<EstadoCama, ReadonlyArray<AccionCama>> 
     { id: 'deshabilitar', label: 'Deshabilitar cama', accionApi: 'deshabilitar', mensaje: 'deshabilitada' }, // RF-29
   ],
   ocupada: [
+    { id: 'ver-internacion', label: 'Ver internación' },
     { id: 'ver-ficha', label: 'Ver ficha del paciente' },
     { id: 'fin-internacion', label: 'Registrar fin de internación' },
   ],

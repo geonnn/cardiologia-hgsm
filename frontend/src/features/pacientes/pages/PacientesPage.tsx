@@ -82,6 +82,9 @@ export function PacientesPage() {
         totalCount={totalCount}
         onPageChange={setPage}
         onVerFicha={(paciente) => navigate(`/pacientes/${paciente.id}`)}
+        onInternar={(paciente) =>
+          navigate(`/internaciones/nueva?pacienteId=${paciente.id}&desde=pacientes`)
+        }
         empty={
           <Empty className="border-2 border-dashed bg-card py-12">
             <EmptyHeader>
