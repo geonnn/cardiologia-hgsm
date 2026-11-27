@@ -1,7 +1,12 @@
 import { createBrowserRouter, Navigate } from 'react-router'
 import { AppShell } from '@/components/layout'
 import { CamasPage } from '@/features/camas'
-import { ObrasSocialesPage, TiposEstudioPage } from '@/features/catalogos'
+import {
+  FactoresDeRiesgoPage,
+  MotivosInternacionPage,
+  ObrasSocialesPage,
+  TiposEstudioPage,
+} from '@/features/catalogos'
 import { DetallePacientePage, NuevoPacientePage, PacientesPage } from '@/features/pacientes'
 
 import { NotFoundPage } from './NotFoundPage'
@@ -24,6 +29,8 @@ export const router = createBrowserRouter([
           { path: 'camas', element: <CamasPage /> },
           { path: 'obras-sociales', element: <ObrasSocialesPage /> },
           { path: 'tipos-estudio', element: <TiposEstudioPage /> },
+          { path: 'motivos-internacion', element: <MotivosInternacionPage /> },
+          { path: 'factores-de-riesgo', element: <FactoresDeRiesgoPage /> },
       {
             path: 'pacientes',
             children: [
