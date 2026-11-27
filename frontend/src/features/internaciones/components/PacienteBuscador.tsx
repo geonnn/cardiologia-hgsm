@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
-import { SearchIcon, UserIcon, XIcon } from 'lucide-react'
+import { PlusIcon, SearchIcon, UserIcon, XIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
@@ -26,6 +26,7 @@ interface PacienteBuscadorProps {
   bloqueado?: boolean
   error?: string
   onSeleccionar: (paciente: PacienteSeleccionado | null) => void
+  onSolicitarNuevoPaciente?: (busquedaActual: string) => void
 }
 
 /** Selector buscable de pacientes desde el padrón (RF-47). */
@@ -34,6 +35,7 @@ export function PacienteBuscador({
   bloqueado = false,
   error,
   onSeleccionar,
+  onSolicitarNuevoPaciente,
 }: PacienteBuscadorProps) {
   const inputId = useId()
   const [busqueda, setBusqueda] = useState('')
@@ -59,11 +61,30 @@ export function PacienteBuscador({
 
   const resultados = query.data?.items ?? []
 
+  const solicitarAltaRapida = () => {
+    setAbierto(false)
+    onSolicitarNuevoPaciente?.(busqueda.trim())
+  }
+
   return (
     <Field ref={containerRef} data-invalid={error ? true : undefined} className="relative gap-2">
-      <FieldLabel htmlFor={inputId}>
-        Paciente <span className="text-destructive">*</span>
-      </FieldLabel>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <FieldLabel htmlFor={inputId}>
+          Paciente <span className="text-destructive">*</span>
+        </FieldLabel>
+        {!seleccionado && !bloqueado && onSolicitarNuevoPaciente && (
+          <Button
+            type="button"
+            variant="link"
+            size="xs"
+            className="h-auto gap-1 p-0 text-xs font-semibold text-brand"
+            onClick={solicitarAltaRapida}
+          >
+            <PlusIcon className="size-3.5" strokeWidth={2.5} />
+            <span>Nuevo paciente</span>
+          </Button>
+        )}
+      </div>
 
       {seleccionado ? (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-muted/35 px-3.5 py-2.5">
@@ -109,8 +130,11 @@ export function PacienteBuscador({
           <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             id={inputId}
-            type="text"
+            type="search"
             autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck={false}
             placeholder="Buscar paciente por DNI, apellido o nombre…"
             value={busqueda}
             onFocus={() => setAbierto(true)}
@@ -135,35 +159,85 @@ export function PacienteBuscador({
                   Buscando pacientes…
                 </li>
               ) : resultados.length > 0 ? (
-                resultados.map((p) => (
-                  <li key={p.id}>
-                    <button
-                      type="button"
-                      className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm transition-colors hover:bg-muted hover:text-primary"
-                      onClick={() => {
-                        onSeleccionar({
-                          id: p.id,
-                          nombre: p.nombre,
-                          apellido: p.apellido,
-                          dni: p.dni,
-                          edad: p.edad,
-                          sexo: p.sexo,
-                        })
-                        setAbierto(false)
-                      }}
+                <>
+                  {!busquedaDebounced && (
+                    <li
+                      role="presentation"
+                      className="border-b px-3 py-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase"
                     >
-                      <span className="truncate font-semibold">
-                        {p.apellido}, {p.nombre}
-                      </span>
-                      <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-                        DNI {p.dni} • {p.edad} años
-                      </span>
-                    </button>
-                  </li>
-                ))
+                      Últimos pacientes registrados
+                    </li>
+                  )}
+                  {resultados.map((p) => {
+                    const yaInternado = Boolean(p.internacionActivaId)
+                    return (
+                      <li key={p.id}>
+                        <button
+                          type="button"
+                          disabled={yaInternado}
+                          title={
+                            yaInternado
+                              ? 'Este paciente ya tiene una internación activa'
+                              : undefined
+                          }
+                          className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm transition-colors hover:bg-muted hover:text-primary disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-transparent disabled:hover:text-inherit"
+                          onClick={() => {
+                            if (yaInternado) return
+                            onSeleccionar({
+                              id: p.id,
+                              nombre: p.nombre,
+                              apellido: p.apellido,
+                              dni: p.dni,
+                              edad: p.edad,
+                              sexo: p.sexo,
+                            })
+                            setAbierto(false)
+                          }}
+                        >
+                          <span className="flex min-w-0 items-center gap-2">
+                            <span className="truncate font-semibold">
+                              {p.apellido}, {p.nombre}
+                            </span>
+                            {yaInternado && (
+                              <Badge
+                                variant="secondary"
+                                className="shrink-0 bg-amber-100 px-1.5 py-0 text-[11px] font-semibold text-amber-900"
+                              >
+                                Ya internado
+                              </Badge>
+                            )}
+                          </span>
+                          <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
+                            DNI {p.dni} • {p.edad} años
+                          </span>
+                        </button>
+                      </li>
+                    )
+                  })}
+                </>
               ) : (
-                <li className="px-3 py-2.5 text-center text-xs text-muted-foreground">
-                  No se encontraron pacientes
+                <li className="flex flex-col items-center gap-2 px-3 py-3 text-center text-xs text-muted-foreground">
+                  <span>
+                    {busquedaDebounced
+                      ? 'No se encontraron pacientes'
+                      : 'No hay pacientes recientes disponibles para internar'}
+                  </span>
+                  {onSolicitarNuevoPaciente && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="xs"
+                      className="border-brand/30 font-semibold text-brand hover:bg-brand/5 hover:text-brand"
+                      onClick={solicitarAltaRapida}
+                    >
+                      <PlusIcon className="size-3.5" strokeWidth={2.5} />
+                      <span>
+                        {busqueda.trim()
+                          ? `Registrar "${busqueda.trim()}" como paciente nuevo`
+                          : 'Registrar paciente nuevo'}
+                      </span>
+                    </Button>
+                  )}
                 </li>
               )}
             </ul>

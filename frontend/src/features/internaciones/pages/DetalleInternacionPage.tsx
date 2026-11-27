@@ -13,7 +13,7 @@ import {
   ShieldAlertIcon,
   UserIcon,
 } from 'lucide-react'
-import { useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -53,7 +53,12 @@ const calcularDiasEntre = (inicioIso: string, finIsoOHoy: string) => {
 export function DetalleInternacionPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [hoyStr] = useState(hoyIso)
+
+  const desdePacientes = searchParams.get('desde') === 'pacientes'
+  const rutaVolver = desdePacientes ? '/pacientes' : '/camas'
+  const textoVolver = desdePacientes ? 'Volver a pacientes' : 'Volver a camas'
 
   const {
     internacion,
@@ -97,7 +102,9 @@ export function DetalleInternacionPage() {
               No se encontró la internación solicitada
             </EmptyTitle>
             <EmptyDescription>
-              Verificá el enlace o volvé al mapa de camas.
+              {desdePacientes
+                ? 'Verificá el enlace o volvé al listado de pacientes.'
+                : 'Verificá el enlace o volvé al mapa de camas.'}
             </EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
@@ -106,10 +113,10 @@ export function DetalleInternacionPage() {
               variant="outline"
               size="lg"
               className="h-10 px-4"
-              onClick={() => navigate('/camas')}
+              onClick={() => navigate(rutaVolver)}
             >
               <ArrowLeftIcon className="size-4" />
-              <span>Volver a camas</span>
+              <span>{textoVolver}</span>
             </Button>
           </EmptyContent>
         </Empty>
@@ -131,10 +138,10 @@ export function DetalleInternacionPage() {
               variant="outline"
               size="lg"
               className="h-10 px-4"
-              onClick={() => navigate('/camas')}
+              onClick={() => navigate(rutaVolver)}
             >
               <ArrowLeftIcon className="size-4" />
-              <span>Volver a camas</span>
+              <span>{textoVolver}</span>
             </Button>
             <Button
               type="button"
@@ -168,9 +175,9 @@ export function DetalleInternacionPage() {
     <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-4">
       {/* Navegación superior */}
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <Button type="button" variant="outline" size="sm" onClick={() => navigate('/camas')}>
+        <Button type="button" variant="outline" size="sm" onClick={() => navigate(rutaVolver)}>
           <ArrowLeftIcon className="size-4" />
-          <span>Volver a camas</span>
+          <span>{textoVolver}</span>
         </Button>
 
         <Button
@@ -266,7 +273,7 @@ export function DetalleInternacionPage() {
               <span className="tabular-nums">
                 •{' '}
                 <strong className="text-foreground">
-                  {diasEstadia === 0 ? 'Ingresó hoy' : `${diasEstadia} ${diasEstadia === 1 ? 'día' : 'días'}`}
+                  {diasEstadia === 0 ? 'Ingresó hoy' : (diasEstadia === 1) ? `Ingresó ayer` : `Ingresó hace ${diasEstadia} días`}
                 </strong>
               </span>
               {internacion.fechaFin && (

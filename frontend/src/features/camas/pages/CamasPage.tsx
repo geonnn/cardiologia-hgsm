@@ -59,6 +59,10 @@ export function CamasPage() {
     }
   }
 
+  const iniciarInternacion = (cama: Cama) => {
+    navigate(`/internaciones/nueva?camaId=${cama.id}`)
+  }
+
   const ejecutarAccion = async (cama: Cama, accion: AccionCama) => {
     if (accion.id === 'nueva-internacion') {
       navigate(`/internaciones/nueva?camaId=${cama.id}`)
@@ -112,6 +116,7 @@ export function CamasPage() {
       <CamaGrid
         camas={visibles}
         onAbrirFicha={abrirFicha}
+        onIniciarInternacion={iniciarInternacion}
         onAccion={ejecutarAccion}
         empty={
           <Empty className="col-span-full border-2 border-dashed">

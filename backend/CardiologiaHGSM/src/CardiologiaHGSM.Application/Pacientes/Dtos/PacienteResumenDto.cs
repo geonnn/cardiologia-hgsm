@@ -11,9 +11,13 @@ public sealed record PacienteResumenDto(
     DateOnly FechaNacimiento,
     int Edad,
     Sexo Sexo,
-    DateTimeOffset FechaCarga)
+    DateTimeOffset FechaCarga,
+    Guid? InternacionActivaId)
 {
-    public static PacienteResumenDto FromEntity(Paciente paciente, DateOnly hoy) => new(
+    public static PacienteResumenDto FromEntity(
+        Paciente paciente,
+        DateOnly hoy,
+        Guid? internacionActivaId = null) => new(
         paciente.Id,
         paciente.Nombre,
         paciente.Apellido,
@@ -21,6 +25,7 @@ public sealed record PacienteResumenDto(
         paciente.FechaNacimiento,
         paciente.CalcularEdad(hoy),
         paciente.Sexo,
-        paciente.FechaCarga
+        paciente.FechaCarga,
+        internacionActivaId
     );
 }

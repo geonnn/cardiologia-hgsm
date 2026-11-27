@@ -17,11 +17,14 @@ import {
 
 const PAGE_SIZE = 10
 
+export type EstadoInternacionFiltro = 'todos' | 'activos' | 'sin_activa'
+
 /**
  * Estado del listado paginado de pacientes contra PacientesController (RF-26 / 26.1 / 26.2 / 26.3).
  */
 export function usePacientes() {
   const [busqueda, setBusqueda] = useState('')
+  const [estadoInternacion, setEstadoInternacion] = useState<EstadoInternacionFiltro>('todos')
   const [motivoId, setMotivoId] = useState<number | undefined>(undefined)
   const [factorId, setFactorId] = useState<number | undefined>(undefined)
   const [sexo, setSexo] = useState<Sexo | ''>('')
@@ -37,6 +40,9 @@ export function usePacientes() {
   const motivosQuery = useApiQuery<MotivoInternacion[]>(listarMotivosInternacionRequest())
   const factoresQuery = useApiQuery<FactorDeRiesgo[]>(listarFactoresDeRiesgoRequest())
 
+  const conInternacionActiva =
+    estadoInternacion === 'todos' ? undefined : estadoInternacion === 'activos'
+
   const pacientesQuery = useApiQuery<PaginatedList<PacienteResumen>>(
     listarPacientesRequest({
       page,
@@ -45,6 +51,7 @@ export function usePacientes() {
       sexo: sexo || undefined,
       factorDeRiesgoId: factorId,
       motivoInternacionId: motivoId,
+      conInternacionActiva,
       fechaCargaDesde: fechaCargaDesde || undefined,
       fechaCargaHasta: fechaCargaHasta || undefined,
       ordenarPor,
@@ -62,6 +69,11 @@ export function usePacientes() {
 
   const actualizarBusqueda = (valor: string) => {
     setBusqueda(valor)
+    setPage(1)
+  }
+
+  const actualizarEstadoInternacion = (valor: EstadoInternacionFiltro) => {
+    setEstadoInternacion(valor)
     setPage(1)
   }
 
@@ -102,6 +114,7 @@ export function usePacientes() {
 
   const limpiarFiltros = () => {
     setBusqueda('')
+    setEstadoInternacion('todos')
     setMotivoId(undefined)
     setFactorId(undefined)
     setSexo('')
@@ -116,6 +129,7 @@ export function usePacientes() {
 
   const tieneFiltrosActivos = Boolean(
     busqueda.trim() ||
+      estadoInternacion !== 'todos' ||
       motivoId !== undefined ||
       factorId !== undefined ||
       sexo ||
@@ -128,6 +142,8 @@ export function usePacientes() {
   return {
     busqueda,
     setBusqueda: actualizarBusqueda,
+    estadoInternacion,
+    setEstadoInternacion: actualizarEstadoInternacion,
     motivoId,
     setMotivoId: actualizarMotivo,
     factorId,

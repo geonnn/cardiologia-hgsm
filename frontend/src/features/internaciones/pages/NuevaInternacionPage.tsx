@@ -36,6 +36,7 @@ import {
   type PacienteDetalleDto,
 } from '../api/internacionesApi'
 import { MotivosCombobox } from '../components/MotivosCombobox'
+import { NuevoPacienteRapidoDialog } from '../components/NuevoPacienteRapidoDialog'
 import { PacienteBuscador, type PacienteSeleccionado } from '../components/PacienteBuscador'
 import { MANEJOS, MAX_LONGITUD_AISLAMIENTO } from '../constants'
 import { validarNuevaInternacion, type ErroresNuevaInternacion } from '../validaciones'
@@ -64,6 +65,8 @@ export function NuevaInternacionPage() {
 
   // Estado del formulario
   const [pacienteElegido, setPacienteElegido] = useState<PacienteSeleccionado | null>(null)
+  const [nuevoPacienteAbierto, setNuevoPacienteAbierto] = useState(false)
+  const [busquedaInicialPaciente, setBusquedaInicialPaciente] = useState('')
   const [camaId, setCamaId] = useState(camaIdInicial)
   const [manejoManual, setManejoManual] = useState<Manejo | null>(null)
   const [fechaInternacion, setFechaInternacion] = useState(ahoraStr)
@@ -243,13 +246,22 @@ export function NuevaInternacionPage() {
                     seleccionado={pacienteEfectivo}
                     bloqueado={Boolean(pacienteIdInicial && pacientePrefijadoQuery.data)}
                     error={errores.pacienteId}
-                    onSeleccionar={setPacienteElegido}
+                    onSeleccionar={(paciente) => {
+                      setPacienteElegido(paciente)
+                      if (paciente && errores.pacienteId) {
+                        setErrores((prev) => ({ ...prev, pacienteId: undefined }))
+                      }
+                    }}
+                    onSolicitarNuevoPaciente={(textoBuscado) => {
+                      setBusquedaInicialPaciente(textoBuscado)
+                      setNuevoPacienteAbierto(true)
+                    }}
                   />
 
                   <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-3">
                     <Field data-invalid={errores.camaId ? true : undefined}>
                       <FieldLabel htmlFor="nueva-int-cama">
-                        Cama disponible <span className="text-destructive">*</span>
+                        Cama<span className="text-destructive">*</span>
                       </FieldLabel>
                       <Select
                         value={camaSeleccionada ? camaId : ''}
@@ -302,7 +314,7 @@ export function NuevaInternacionPage() {
 
                     <Field>
                       <FieldLabel htmlFor="nueva-int-manejo">
-                        Tipo de tratamiento <span className="text-destructive">*</span>
+                        Manejo de la internación<span className="text-destructive">*</span>
                       </FieldLabel>
                       <Select
                         value={manejoEfectivo}
@@ -520,6 +532,17 @@ export function NuevaInternacionPage() {
           </CardFooter>
         </form>
       </Card>
+
+      <NuevoPacienteRapidoDialog
+        open={nuevoPacienteAbierto}
+        valorInicial={busquedaInicialPaciente}
+        onOpenChange={setNuevoPacienteAbierto}
+        onCreado={(pacienteCreado) => {
+          setPacienteElegido(pacienteCreado)
+          setErrores((prev) => ({ ...prev, pacienteId: undefined }))
+          toast.success('Paciente registrado y seleccionado')
+        }}
+      />
     </div>
   )
 }

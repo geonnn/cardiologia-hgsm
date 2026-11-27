@@ -57,6 +57,11 @@ public class PacienteRepository : RepositoryBase<Paciente, Guid>, IPacienteRepos
                 i.PacienteId == p.Id &&
                 i.MotivosInternacion.Any(m => m.Id == motivoId)));
 
+        if (filtro.ConInternacionActiva is { } conInternacionActiva)
+            query = conInternacionActiva
+                ? query.Where(p => _context.Internaciones.Any(i => i.PacienteId == p.Id && i.FechaFin == null))
+                : query.Where(p => !_context.Internaciones.Any(i => i.PacienteId == p.Id && i.FechaFin == null));
+
         if (filtro.FechaCargaDesde is { } fechaDesde)
         {
             var desdeUtc = fechaDesde.InicioDelDiaUtc();

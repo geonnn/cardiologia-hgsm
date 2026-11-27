@@ -24,6 +24,8 @@ export function PacientesPage() {
   const {
     busqueda,
     setBusqueda,
+    estadoInternacion,
+    setEstadoInternacion,
     motivoId,
     setMotivoId,
     factorId,
@@ -82,8 +84,8 @@ export function PacientesPage() {
         totalCount={totalCount}
         onPageChange={setPage}
         onVerFicha={(paciente) => navigate(`/pacientes/${paciente.id}`)}
-        onInternar={(paciente) =>
-          navigate(`/internaciones/nueva?pacienteId=${paciente.id}&desde=pacientes`)
+        onVerInternacion={(internacionId) =>
+          navigate(`/internaciones/${internacionId}?desde=pacientes`)
         }
         empty={
           <Empty className="border-2 border-dashed bg-card py-12">
@@ -174,6 +176,8 @@ export function PacientesPage() {
           <PacientesFiltros
             busqueda={busqueda}
             onBusquedaChange={setBusqueda}
+            estadoInternacion={estadoInternacion}
+            onEstadoInternacionChange={setEstadoInternacion}
             ordenarPor={ordenarPor}
             onOrdenarPorChange={setOrdenarPor}
             descendente={descendente}

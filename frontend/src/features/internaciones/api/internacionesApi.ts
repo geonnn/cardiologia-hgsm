@@ -231,15 +231,26 @@ export const listarObrasSocialesRequest = (): AxiosRequestConfig => ({
   url: '/obras-sociales',
 })
 
-export const buscarPacientesRequest = (busqueda: string): AxiosRequestConfig => ({
-  method: 'get',
-  url: '/pacientes',
-  params: {
-    busqueda: busqueda.trim() || undefined,
-    page: 1,
-    pageSize: 8,
-  },
-})
+export const buscarPacientesRequest = (busqueda: string): AxiosRequestConfig => {
+  const termino = busqueda.trim()
+  return {
+    method: 'get',
+    url: '/pacientes',
+    params: termino
+      ? {
+          busqueda: termino,
+          page: 1,
+          pageSize: 8,
+        }
+      : {
+          conInternacionActiva: false,
+          ordenarPor: 'FechaCarga',
+          descendente: true,
+          page: 1,
+          pageSize: 6,
+        },
+  }
+}
 
 export const obtenerPacientePorIdRequest = (id: string): AxiosRequestConfig => ({
   method: 'get',

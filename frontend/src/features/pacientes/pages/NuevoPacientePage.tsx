@@ -1,5 +1,5 @@
 import { useRef, useState, type FormEvent } from 'react'
-import { AlertTriangleIcon, ArrowLeftIcon, PlusIcon, XIcon } from 'lucide-react'
+import { AlertTriangleIcon, ArrowLeftIcon, BedDoubleIcon, PlusIcon, XIcon } from 'lucide-react'
 import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
 import { PageTitle } from '@/components/layout'
@@ -75,6 +75,7 @@ export function NuevoPacientePage() {
   const [erroresContactos, setErroresContactos] = useState<Record<number, ErroresContacto>>({})
   const [errorServidor, setErrorServidor] = useState<string | null>(null)
   const [enviando, setEnviando] = useState(false)
+  const [destinoEnvio, setDestinoEnvio] = useState<'listado' | 'internar'>('listado')
 
   const catalogosError = factoresQuery.error ?? medicosQuery.error
 
@@ -101,8 +102,7 @@ export function NuevoPacientePage() {
     setContactos((prev) => prev.map((c) => (c.key === key ? { ...c, [campo]: valor } : c)))
   }
 
-  const enviar = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const guardar = async (destino: 'listado' | 'internar') => {
     if (enviando) return
     setErrorServidor(null)
 
@@ -132,13 +132,14 @@ export function NuevoPacientePage() {
       return
     }
 
+    setDestinoEnvio(destino)
     setEnviando(true)
     try {
       const medicoId = medicoDeCabecera.trim()
         ? await obtenerOCrearMedicoDeCabecera(medicoDeCabecera.trim())
         : null
 
-      await crearPaciente({
+      const nuevoId = await crearPaciente({
         nombre: nombre.trim(),
         apellido: apellido.trim(),
         dni: dni.trim(),
@@ -156,12 +157,21 @@ export function NuevoPacientePage() {
       })
 
       toast.success('Paciente registrado correctamente')
-      navigate('/pacientes')
+      if (destino === 'internar') {
+        navigate(`/internaciones/nueva?pacienteId=${nuevoId}&desde=pacientes`)
+      } else {
+        navigate('/pacientes')
+      }
     } catch (err: unknown) {
       setErrorServidor(mensajeDeError(err))
     } finally {
       setEnviando(false)
     }
+  }
+
+  const enviar = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    void guardar('listado')
   }
 
   return (
@@ -211,7 +221,7 @@ export function NuevoPacientePage() {
                   <Input
                     id="nuevo-nombre"
                     maxLength={MAX_LONGITUD_NOMBRE}
-                    placeholder="Nombre"
+                    placeholder=""
                     className="h-10"
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
@@ -227,7 +237,7 @@ export function NuevoPacientePage() {
                   <Input
                     id="nuevo-apellido"
                     maxLength={MAX_LONGITUD_APELLIDO}
-                    placeholder="Apellido"
+                    placeholder=""
                     className="h-10"
                     value={apellido}
                     onChange={(e) => setApellido(e.target.value)}
@@ -248,7 +258,7 @@ export function NuevoPacientePage() {
                     id="nuevo-dni"
                     minLength={MIN_LONGITUD_DNI}
                     maxLength={MAX_LONGITUD_DNI}
-                    placeholder="DNI"
+                    placeholder=""
                     className="h-10"
                     value={dni}
                     onChange={(e) => setDni(e.target.value)}
@@ -476,7 +486,7 @@ export function NuevoPacientePage() {
             </div>
           </CardContent>
 
-          <CardFooter className="flex justify-end gap-3 border-t bg-muted/30 px-6 py-4">
+          <CardFooter className="flex flex-wrap justify-end gap-3 border-t bg-muted/30 px-6 py-4">
             <Button
               type="button"
               variant="outline"
@@ -488,13 +498,30 @@ export function NuevoPacientePage() {
               Cancelar
             </Button>
             <Button
+              type="button"
+              variant="default"
+              size="lg"
+              className="h-10 px-5 font-semibold"
+              onClick={() => void guardar('internar')}
+              disabled={enviando}
+            >
+              <BedDoubleIcon className="size-4" />
+              <span>
+                {enviando && destinoEnvio === 'internar'
+                  ? 'Guardando paciente…'
+                  : 'Registrar e internar'}
+              </span>
+            </Button>
+            <Button
               type="submit"
               variant="brand"
               size="lg"
               className="h-10 px-5 font-semibold"
               disabled={enviando}
             >
-              {enviando ? 'Guardando paciente…' : 'Registrar paciente'}
+              {enviando && destinoEnvio === 'listado'
+                ? 'Guardando paciente…'
+                : 'Registrar paciente'}
             </Button>
           </CardFooter>
         </form>

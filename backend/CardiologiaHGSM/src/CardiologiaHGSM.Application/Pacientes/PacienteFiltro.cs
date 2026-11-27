@@ -10,6 +10,7 @@ public sealed record PacienteFiltro(
     Guid? MedicoDeCabeceraId = null,
     int? FactorDeRiesgoId = null,
     int? MotivoInternacionId = null,
+    bool? ConInternacionActiva = null,
     DateOnly? FechaCargaDesde = null,
     DateOnly? FechaCargaHasta = null,
     PacienteOrden OrdenarPor = PacienteOrden.Alfabetico,

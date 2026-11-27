@@ -19,17 +19,22 @@ interface CamaCardProps {
   cama: Cama
   /** Clic en una tarjeta con paciente. */
   onAbrirFicha: (cama: Cama) => void
+  /** Clic en una tarjeta disponible para iniciar internación directa. */
+  onIniciarInternacion: (cama: Cama) => void
   onAccion: (cama: Cama, accion: AccionCama) => void
 }
 
 /**
- * Tarjeta de una cama. Clic en la tarjeta: abre la ficha si hay paciente;
- * si no, despliega el menú de acciones.
+ * Tarjeta de una cama.
+ * - Ocupada: clic abre la ficha de internación.
+ * - Disponible: clic abre directamente el formulario de nueva internación con la cama seleccionada.
+ * - Aislamiento / Deshabilitada: clic despliega el menú de acciones.
  */
-export function CamaCard({ cama, onAbrirFicha, onAccion }: CamaCardProps) {
+export function CamaCard({ cama, onAbrirFicha, onIniciarInternacion, onAccion }: CamaCardProps) {
   const [menuAbierto, setMenuAbierto] = useState(false)
   const { numero, sector, estado, paciente } = cama
   const config = ESTADO_CONFIG[estado]
+  const esDisponible = estado === 'disponible'
 
   return (
     <Card
@@ -64,8 +69,18 @@ export function CamaCard({ cama, onAbrirFicha, onAccion }: CamaCardProps) {
       <button
         type="button"
         className="absolute inset-0 rounded-2xl focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-        aria-label={paciente ? `Abrir ficha de ${paciente.nombreCompleto}` : `Ver acciones de la cama ${numero}`}
-        onClick={() => (paciente ? onAbrirFicha(cama) : setMenuAbierto(true))}
+        aria-label={
+          paciente
+            ? `Abrir ficha de ${paciente.nombreCompleto}`
+            : esDisponible
+              ? `Iniciar internación en la cama ${numero} de ${sector}`
+              : `Ver acciones de la cama ${numero}`
+        }
+        onClick={() => {
+          if (paciente) onAbrirFicha(cama)
+          else if (esDisponible) onIniciarInternacion(cama)
+          else setMenuAbierto(true)
+        }}
       />
     </Card>
   )

@@ -75,6 +75,7 @@ export interface FiltrosPacientes {
   sexo?: Sexo
   factorDeRiesgoId?: number
   motivoInternacionId?: number
+  conInternacionActiva?: boolean
   medicoDeCabeceraId?: string
   fechaCargaDesde?: string
   fechaCargaHasta?: string
@@ -97,6 +98,7 @@ export const listarPacientesRequest = (params: FiltrosPacientes = {}): AxiosRequ
     sexo: params.sexo || undefined,
     factorDeRiesgoId: params.factorDeRiesgoId,
     motivoInternacionId: params.motivoInternacionId,
+    conInternacionActiva: params.conInternacionActiva,
     medicoDeCabeceraId: params.medicoDeCabeceraId || undefined,
     fechaCargaDesde: params.fechaCargaDesde || undefined,
     fechaCargaHasta: params.fechaCargaHasta || undefined,
