@@ -1,6 +1,6 @@
 import { ahoraInputLocal } from '@/lib/fechas'
 import type { CondicionAlta } from './api/internacionesApi'
-import { MAX_LONGITUD_AISLAMIENTO } from './constants'
+import { MAX_LONGITUD_AISLAMIENTO, MAX_LONGITUD_TITULO_PENDIENTE } from './constants'
 
 export interface ErroresNuevaInternacion {
   pacienteId?: string
@@ -24,6 +24,11 @@ export interface ErroresModificarInternacion {
 export interface ErroresRegistrarAlta {
   condicionAlta?: string
   fechaFin?: string
+}
+
+export interface ErroresNuevoPendiente {
+  titulo?: string
+  descripcion?: string
 }
 
 /** Validación cliente para alta de internación (HU-19 / RF-47). */
@@ -133,6 +138,27 @@ export function validarRegistrarAlta(datos: {
     new Date(datos.fechaFin).getTime() < new Date(datos.fechaIngresoIso).getTime()
   ) {
     errores.fechaFin = 'La fecha de egreso no puede ser anterior a la fecha de ingreso.'
+  }
+
+  return errores
+}
+
+/** Validación cliente para alta de pendiente asistencial (HU-32 / RF-44). */
+export function validarNuevoPendiente(datos: {
+  titulo: string
+  descripcion: string
+}): ErroresNuevoPendiente {
+  const errores: ErroresNuevoPendiente = {}
+  const titulo = datos.titulo.trim()
+
+  if (!titulo) {
+    errores.titulo = 'El título es obligatorio.'
+  } else if (titulo.length > MAX_LONGITUD_TITULO_PENDIENTE) {
+    errores.titulo = `El título no puede superar los ${MAX_LONGITUD_TITULO_PENDIENTE} caracteres.`
+  }
+
+  if (!datos.descripcion.trim()) {
+    errores.descripcion = 'La descripción es obligatoria.'
   }
 
   return errores

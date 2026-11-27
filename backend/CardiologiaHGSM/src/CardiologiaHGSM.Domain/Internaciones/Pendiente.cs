@@ -49,6 +49,15 @@ public class Pendiente
         return Result.Success;
     }
 
+    public ErrorOr<Success> DesmarcarRealizado()
+    {
+        if (!this.EstaRealizado)
+            return InternacionErrors.PendienteNoRealizado;
+
+        this.FechaResolucion = null;
+        return Result.Success;
+    }
+
     private static List<Error> ValidarDatos(string titulo, string descripcion)
     {
         var errores = new List<Error>();

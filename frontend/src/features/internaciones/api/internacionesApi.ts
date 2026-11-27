@@ -1,6 +1,7 @@
-// Acceso a InternacionesController (api/internaciones) y consultas por paciente (api/pacientes/{id}/internaciones*).
+// Acceso a InternacionesController (api/internaciones), PendientesController y consultas por paciente.
 import type { AxiosRequestConfig } from 'axios'
 import type {
+  AgregarPendienteRequest,
   CamaDto,
   CondicionAlta,
   CrearInternacionRequest,
@@ -17,11 +18,14 @@ import type {
   PacienteResumenDto,
   PaginatedListOfInternacionResumenDto,
   PaginatedListOfPacienteResumenDto,
+  PaginatedListOfPendienteDto,
+  PendienteDto,
   RegistrarAltaRequest,
 } from '@/api/types'
 import { api } from '@/lib/api'
 
 export type {
+  AgregarPendienteRequest,
   CamaDto,
   CondicionAlta,
   EstadoCamaTipo,
@@ -36,14 +40,26 @@ export type {
   PacienteResumenDto,
   PaginatedListOfInternacionResumenDto,
   PaginatedListOfPacienteResumenDto,
+  PaginatedListOfPendienteDto,
+  PendienteDto,
 }
 
 export type InternacionResumen = InternacionResumenDto
 export type InternacionDetalle = InternacionDetalleDto
+export type Pendiente = PendienteDto
 
 export interface FiltrosInternacionesPaciente {
   page?: number
   pageSize?: number
+  fechaDesde?: string
+  fechaHasta?: string
+  ascendente?: boolean
+}
+
+export interface FiltrosPendientesInternacion {
+  page?: number
+  pageSize?: number
+  realizado?: boolean
   fechaDesde?: string
   fechaHasta?: string
   ascendente?: boolean
@@ -110,6 +126,23 @@ export const listarInternacionesPorPacienteRequest = (
   params: {
     page: params.page,
     pageSize: params.pageSize,
+    fechaDesde: params.fechaDesde || undefined,
+    fechaHasta: params.fechaHasta || undefined,
+    ascendente: params.ascendente,
+  },
+})
+
+/** HU-33 / RF-45, 45.1, 45.2 — GET api/internaciones/{internacionId}/pendientes */
+export const listarPendientesRequest = (
+  internacionId: string,
+  params: FiltrosPendientesInternacion = {},
+): AxiosRequestConfig => ({
+  method: 'get',
+  url: `${BASE_PATH}/${internacionId}/pendientes`,
+  params: {
+    page: params.page,
+    pageSize: params.pageSize,
+    realizado: params.realizado,
     fechaDesde: params.fechaDesde || undefined,
     fechaHasta: params.fechaHasta || undefined,
     ascendente: params.ascendente,
@@ -203,4 +236,37 @@ export async function registrarAlta(id: string, payload: RegistrarAltaPayload): 
   }
 
   await api.post(`${BASE_PATH}/${id}/alta`, body)
+}
+
+/** HU-32 / RF-44 — POST api/internaciones/{internacionId}/pendientes */
+export async function agregarPendiente(
+  internacionId: string,
+  payload: AgregarPendienteRequest,
+): Promise<string> {
+  const body: AgregarPendienteRequest = {
+    titulo: payload.titulo.trim(),
+    descripcion: payload.descripcion.trim(),
+  }
+
+  const { data } = await api.post<{ id: string }>(
+    `${BASE_PATH}/${internacionId}/pendientes`,
+    body,
+  )
+  return data.id
+}
+
+/** HU-34 / RF-46 — POST api/internaciones/{internacionId}/pendientes/{pendienteId}/realizar */
+export async function registrarRealizacionPendiente(
+  internacionId: string,
+  pendienteId: string,
+): Promise<void> {
+  await api.post(`${BASE_PATH}/${internacionId}/pendientes/${pendienteId}/realizar`)
+}
+
+/** Reversión de RF-46 — POST api/internaciones/{internacionId}/pendientes/{pendienteId}/desmarcar */
+export async function desmarcarRealizacionPendiente(
+  internacionId: string,
+  pendienteId: string,
+): Promise<void> {
+  await api.post(`${BASE_PATH}/${internacionId}/pendientes/${pendienteId}/desmarcar`)
 }

@@ -1,13 +1,11 @@
 using CardiologiaHGSM.Application.Common.Interfaces;
-using CardiologiaHGSM.Application.Pacientes;
 using CardiologiaHGSM.Domain.Internaciones;
-using CardiologiaHGSM.Domain.Pacientes;
 using ErrorOr;
 
 namespace CardiologiaHGSM.Application.Internaciones.Commands.AgregarPendiente;
 
 public class AgregarPendienteHandler(
-    IPacienteRepository pacienteRepository,
+    IInternacionRepository internacionRepository,
     IPendienteRepository pendienteRepository,
     IUnitOfWork unitOfWork
 ) : ICommandHandler<AgregarPendienteCommand, Guid>
@@ -16,15 +14,15 @@ public class AgregarPendienteHandler(
         AgregarPendienteCommand command,
         CancellationToken ct = default)
     {
-        if (!await pacienteRepository.ExisteAsync(command.PacienteId, ct))
-            return PacienteErrors.NoEncontrado;
+        var internacion = await internacionRepository.GetByIdAsync(command.InternacionId, ct);
+        if (internacion is null)
+            return InternacionErrors.NoEncontrada;
 
-        // Solo se pueden agregar pendientes a un paciente internado (RF-44).
-        var internacionId = await pendienteRepository.ObtenerInternacionActivaIdAsync(command.PacienteId, ct);
-        if (internacionId is null)
-            return InternacionErrors.PacienteSinInternacionActiva;
+        // Solo se pueden agregar pendientes a una internación activa (RF-44).
+        if (!internacion.EstaActiva)
+            return InternacionErrors.YaFinalizada;
 
-        var pendienteResult = Pendiente.Crear(internacionId.Value, command.Titulo, command.Descripcion);
+        var pendienteResult = Pendiente.Crear(internacion.Id, command.Titulo, command.Descripcion);
         if (pendienteResult.IsError)
             return pendienteResult.Errors;
 
