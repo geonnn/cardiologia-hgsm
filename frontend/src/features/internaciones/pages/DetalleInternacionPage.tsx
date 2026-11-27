@@ -29,6 +29,7 @@ import {
 import { formatearFechaHora, hoyIso } from '@/lib/fechas'
 import { cn } from '@/lib/utils'
 import { EditarInternacionDialog } from '../components/EditarInternacionDialog'
+import { EvolucionesInternacionPanel } from '../components/EvolucionesInternacionPanel'
 import { PendientesInternacionPanel } from '../components/PendientesInternacionPanel'
 import { RegistrarAltaDialog } from '../components/RegistrarAltaDialog'
 import { CONDICION_ALTA_POR_VALOR } from '../constants'
@@ -489,24 +490,11 @@ export function DetalleInternacionPage() {
         </div>
       )}
 
-      {/* TABS preparados para próximos módulos */}
       {activeTab === 'evoluciones' && (
-        <Card className="py-6">
-          <CardContent>
-            <Empty className="border-2 border-dashed py-10">
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <FileTextIcon />
-                </EmptyMedia>
-                <EmptyTitle className="font-extrabold">Evoluciones clínicas</EmptyTitle>
-                <EmptyDescription>
-                  Próximo módulo: registro cronológico y búsqueda de evoluciones médicas de esta
-                  internación (RF-38 / RF-39).
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          </CardContent>
-        </Card>
+        <EvolucionesInternacionPanel
+          internacionId={internacion.id}
+          estaActiva={internacion.estaActiva}
+        />
       )}
 
       {activeTab === 'tratamientos' && (
