@@ -110,18 +110,14 @@ export function CatalogoPage({ config }: { config: CatalogoConfig }) {
                 {busquedaAplicada ? textos.sinCoincidencias(busquedaAplicada) : textos.vacio}
               </EmptyTitle>
             </EmptyHeader>
-            <EmptyContent>
-              {busquedaAplicada ? (
+            {/* El único botón de alta es el que está al lado del buscador */}
+            {busquedaAplicada && (
+              <EmptyContent>
                 <Button variant="outline" size="lg" className="h-11 px-4" onClick={() => setBusqueda('')}>
                   Limpiar búsqueda
                 </Button>
-              ) : (
-                <Button variant="brand" size="lg" className="h-11 px-4" onClick={abrirAlta}>
-                  <PlusIcon data-icon="inline-start" />
-                  {textos.nuevo}
-                </Button>
-              )}
-            </EmptyContent>
+              </EmptyContent>
+            )}
           </Empty>
         }
       />

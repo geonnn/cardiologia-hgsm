@@ -4,7 +4,9 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ClipboardListIcon,
+  HeartPulseIcon,
   LogOutIcon,
+  StethoscopeIcon,
   UsersIcon,
 } from 'lucide-react'
 import { NavLink } from 'react-router'
@@ -23,6 +25,8 @@ const NAV_ITEMS = [
   { to: '/pacientes', label: 'Pacientes', icon: UsersIcon },
   { to: '/obras-sociales', label: 'Obras Sociales', icon: Building2Icon },
   { to: '/tipos-estudio', label: 'Tipos de Estudio', icon: ClipboardListIcon },
+  { to: '/motivos-internacion', label: 'Motivos de Internación', icon: StethoscopeIcon },
+  { to: '/factores-de-riesgo', label: 'Factores de Riesgo', icon: HeartPulseIcon },
 ] as const
 
 /** Barra lateral de navegación principal (colapsable a riel de íconos en desktop y drawer en mobile). */
