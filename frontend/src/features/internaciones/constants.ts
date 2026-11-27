@@ -3,6 +3,9 @@ import type { CondicionAlta, Manejo } from './api/internacionesApi'
 /** Longitud máxima alineada con `Internacion.MaxLongitudAislamiento` en el dominio. */
 export const MAX_LONGITUD_AISLAMIENTO = 50
 
+/** Longitud máxima alineada con `Pendiente.MaxLongitudTitulo` en el dominio. */
+export const MAX_LONGITUD_TITULO_PENDIENTE = 32
+
 export const MANEJOS: ReadonlyArray<Manejo> = ['UCO', 'Sala']
 
 export interface CondicionAltaConfig {
