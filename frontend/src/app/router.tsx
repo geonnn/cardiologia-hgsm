@@ -7,6 +7,7 @@ import {
   ObrasSocialesPage,
   TiposEstudioPage,
 } from '@/features/catalogos'
+import { DetalleInternacionPage, NuevaInternacionPage } from '@/features/internaciones'
 import { DetallePacientePage, NuevoPacientePage, PacientesPage } from '@/features/pacientes'
 
 import { NotFoundPage } from './NotFoundPage'
@@ -31,12 +32,19 @@ export const router = createBrowserRouter([
           { path: 'tipos-estudio', element: <TiposEstudioPage /> },
           { path: 'motivos-internacion', element: <MotivosInternacionPage /> },
           { path: 'factores-de-riesgo', element: <FactoresDeRiesgoPage /> },
-      {
+          {
             path: 'pacientes',
             children: [
               { index: true, element: <PacientesPage /> },
               { path: 'nuevo', element: <NuevoPacientePage /> },
               { path: ':id', element: <DetallePacientePage /> },
+            ],
+          },
+          {
+            path: 'internaciones',
+            children: [
+              { path: 'nueva', element: <NuevaInternacionPage /> },
+              { path: ':id', element: <DetalleInternacionPage /> },
             ],
           },
           { path: '*', element: <NotFoundPage /> },
