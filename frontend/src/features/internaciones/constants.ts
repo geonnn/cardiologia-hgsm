@@ -6,6 +6,9 @@ export const MAX_LONGITUD_AISLAMIENTO = 50
 /** Longitud máxima alineada con `Pendiente.MaxLongitudTitulo` en el dominio. */
 export const MAX_LONGITUD_TITULO_PENDIENTE = 32
 
+/** Ventana máxima de ± meses alineada con `Tratamiento.MaxMesesDesfasaje` en el dominio. */
+export const MAX_MESES_DESFASAJE_TRATAMIENTO = 2
+
 export const MANEJOS: ReadonlyArray<Manejo> = ['UCO', 'Sala']
 
 export interface CondicionAltaConfig {

@@ -1,6 +1,10 @@
 import { ahoraInputLocal } from '@/lib/fechas'
 import type { CondicionAlta } from './api/internacionesApi'
-import { MAX_LONGITUD_AISLAMIENTO, MAX_LONGITUD_TITULO_PENDIENTE } from './constants'
+import {
+  MAX_LONGITUD_AISLAMIENTO,
+  MAX_LONGITUD_TITULO_PENDIENTE,
+  MAX_MESES_DESFASAJE_TRATAMIENTO,
+} from './constants'
 
 export interface ErroresNuevaInternacion {
   pacienteId?: string
@@ -34,6 +38,11 @@ export interface ErroresNuevoPendiente {
 export interface ErroresNuevaEvolucion {
   fecha?: string
   detalle?: string
+}
+
+export interface ErroresTratamiento {
+  descripcion?: string
+  fecha?: string
 }
 
 /** Validación cliente para alta de internación (HU-19 / RF-47). */
@@ -185,6 +194,46 @@ export function validarNuevaEvolucion(datos: {
 
   if (!datos.detalle.trim()) {
     errores.detalle = 'El detalle de la evolución es obligatorio.'
+  }
+
+  return errores
+}
+
+const sumarMeses = (base: Date, meses: number) => {
+  const destino = new Date(base.getTime())
+  const diaOriginal = destino.getDate()
+  destino.setDate(1)
+  destino.setMonth(destino.getMonth() + meses)
+  const ultimoDiaMes = new Date(destino.getFullYear(), destino.getMonth() + 1, 0).getDate()
+  destino.setDate(Math.min(diaOriginal, ultimoDiaMes))
+  return destino
+}
+
+/** Validación cliente para alta y modificación de tratamientos (HU-25 / RF-40 y HU-27 / RF-42). */
+export function validarTratamiento(datos: {
+  descripcion: string
+  fecha: string
+  validarFecha?: boolean
+}): ErroresTratamiento {
+  const errores: ErroresTratamiento = {}
+
+  if (!datos.descripcion.trim()) {
+    errores.descripcion = 'La descripción del tratamiento es obligatoria.'
+  }
+
+  if (datos.validarFecha !== false && datos.fecha) {
+    const fecha = new Date(datos.fecha)
+    const ahora = new Date()
+    const limiteInferior = sumarMeses(ahora, -MAX_MESES_DESFASAJE_TRATAMIENTO)
+    const limiteSuperior = sumarMeses(ahora, MAX_MESES_DESFASAJE_TRATAMIENTO)
+
+    if (
+      Number.isNaN(fecha.getTime()) ||
+      fecha.getTime() < limiteInferior.getTime() ||
+      fecha.getTime() > limiteSuperior.getTime()
+    ) {
+      errores.fecha = `La fecha del tratamiento no puede diferir en más de ${MAX_MESES_DESFASAJE_TRATAMIENTO} meses respecto a la fecha actual.`
+    }
   }
 
   return errores

@@ -1,4 +1,4 @@
-// Acceso a InternacionesController, EvolucionesController, PendientesController y consultas por paciente.
+// Acceso a InternacionesController, EvolucionesController, TratamientosController, PendientesController y consultas por paciente.
 import type { AxiosRequestConfig } from 'axios'
 import type {
   AgregarPendienteRequest,
@@ -6,6 +6,7 @@ import type {
   CondicionAlta,
   CrearEvolucionRequest,
   CrearInternacionRequest,
+  CrearTratamientoRequest,
   EstadoCamaTipo,
   EvolucionDto,
   InternacionCamaDto,
@@ -14,6 +15,7 @@ import type {
   InternacionResumenDto,
   Manejo,
   ModificarInternacionRequest,
+  ModificarTratamientoRequest,
   MotivoInternacionDto,
   ObraSocialDto,
   PacienteDetalleDto,
@@ -22,8 +24,10 @@ import type {
   PaginatedListOfInternacionResumenDto,
   PaginatedListOfPacienteResumenDto,
   PaginatedListOfPendienteDto,
+  PaginatedListOfTratamientoDto,
   PendienteDto,
   RegistrarAltaRequest,
+  TratamientoDto,
 } from '@/api/types'
 import { api } from '@/lib/api'
 
@@ -32,6 +36,7 @@ export type {
   CamaDto,
   CondicionAlta,
   CrearEvolucionRequest,
+  CrearTratamientoRequest,
   EstadoCamaTipo,
   EvolucionDto,
   InternacionCamaDto,
@@ -39,6 +44,7 @@ export type {
   InternacionPacienteDto,
   InternacionResumenDto,
   Manejo,
+  ModificarTratamientoRequest,
   MotivoInternacionDto,
   ObraSocialDto,
   PacienteDetalleDto,
@@ -47,12 +53,15 @@ export type {
   PaginatedListOfInternacionResumenDto,
   PaginatedListOfPacienteResumenDto,
   PaginatedListOfPendienteDto,
+  PaginatedListOfTratamientoDto,
   PendienteDto,
+  TratamientoDto,
 }
 
 export type InternacionResumen = InternacionResumenDto
 export type InternacionDetalle = InternacionDetalleDto
 export type Evolucion = EvolucionDto
+export type Tratamiento = TratamientoDto
 export type Pendiente = PendienteDto
 
 export interface FiltrosInternacionesPaciente {
@@ -64,6 +73,14 @@ export interface FiltrosInternacionesPaciente {
 }
 
 export interface FiltrosEvolucionesInternacion {
+  page?: number
+  pageSize?: number
+  fechaDesde?: string
+  fechaHasta?: string
+  ascendente?: boolean
+}
+
+export interface FiltrosTratamientosInternacion {
   page?: number
   pageSize?: number
   fechaDesde?: string
@@ -154,6 +171,22 @@ export const listarEvolucionesRequest = (
 ): AxiosRequestConfig => ({
   method: 'get',
   url: `${BASE_PATH}/${internacionId}/evoluciones`,
+  params: {
+    page: params.page,
+    pageSize: params.pageSize,
+    fechaDesde: params.fechaDesde || undefined,
+    fechaHasta: params.fechaHasta || undefined,
+    ascendente: params.ascendente,
+  },
+})
+
+/** HU-26 / RF-41, 41.1, 41.2 — GET api/internaciones/{internacionId}/tratamientos */
+export const listarTratamientosRequest = (
+  internacionId: string,
+  params: FiltrosTratamientosInternacion = {},
+): AxiosRequestConfig => ({
+  method: 'get',
+  url: `${BASE_PATH}/${internacionId}/tratamientos`,
   params: {
     page: params.page,
     pageSize: params.pageSize,
@@ -284,6 +317,45 @@ export async function crearEvolucion(
     body,
   )
   return data.id
+}
+
+/** HU-25 / RF-40 — POST api/internaciones/{internacionId}/tratamientos */
+export async function crearTratamiento(
+  internacionId: string,
+  payload: CrearTratamientoRequest,
+): Promise<string> {
+  const body: CrearTratamientoRequest = {
+    descripcion: payload.descripcion.trim(),
+    fecha: payload.fecha ?? null,
+  }
+
+  const { data } = await api.post<{ id: string }>(
+    `${BASE_PATH}/${internacionId}/tratamientos`,
+    body,
+  )
+  return data.id
+}
+
+/** HU-27 / RF-42 — PUT api/internaciones/{internacionId}/tratamientos/{tratamientoId} */
+export async function modificarTratamiento(
+  internacionId: string,
+  tratamientoId: string,
+  payload: ModificarTratamientoRequest,
+): Promise<void> {
+  const body: ModificarTratamientoRequest = {
+    descripcion: payload.descripcion.trim(),
+    fecha: payload.fecha ?? null,
+  }
+
+  await api.put(`${BASE_PATH}/${internacionId}/tratamientos/${tratamientoId}`, body)
+}
+
+/** HU-28 / RF-43 — DELETE api/internaciones/{internacionId}/tratamientos/{tratamientoId} */
+export async function eliminarTratamiento(
+  internacionId: string,
+  tratamientoId: string,
+): Promise<void> {
+  await api.delete(`${BASE_PATH}/${internacionId}/tratamientos/${tratamientoId}`)
 }
 
 /** HU-32 / RF-44 — POST api/internaciones/{internacionId}/pendientes */
