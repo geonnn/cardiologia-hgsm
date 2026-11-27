@@ -121,19 +121,21 @@ export function PacientesFiltros({
           </Field>
 
           {/* 2. Estado de internación */}
-          <fieldset className="flex flex-col gap-1.5">
-            <legend className="text-xs font-semibold text-primary">Estado de internación</legend>
-            <div className="grid grid-cols-3 gap-1 rounded-lg border bg-muted/40 p-1">
+          <fieldset className="flex flex-col">
+            <legend className="mb-1.5 text-xs leading-snug font-semibold text-primary">
+              Estado de internación
+            </legend>
+            <div className="grid h-9 grid-cols-3 gap-0.5 rounded-lg border border-input bg-card p-0.5">
               {OPCIONES_ESTADO_INTERNACION.map((opcion) => {
                 const activo = estadoInternacion === opcion.value
                 return (
                   <label
                     key={opcion.value}
                     className={cn(
-                      'relative flex h-8 cursor-pointer items-center justify-center rounded-md px-1.5 text-xs font-semibold transition-colors has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/50',
+                      'relative flex h-full cursor-pointer items-center justify-center rounded-md px-1.5 text-xs transition-colors has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/50',
                       activo
-                        ? 'bg-primary text-primary-foreground shadow-xs'
-                        : 'text-muted-foreground hover:bg-card hover:text-foreground',
+                        ? 'bg-primary font-semibold text-primary-foreground shadow-xs'
+                        : 'font-medium text-muted-foreground hover:bg-muted/60 hover:text-foreground',
                     )}
                   >
                     <input
