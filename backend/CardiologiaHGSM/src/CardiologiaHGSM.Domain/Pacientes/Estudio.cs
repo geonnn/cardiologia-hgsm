@@ -12,7 +12,7 @@ public class Estudio
     public int TipoEstudioId { get; private set; }
     public TipoEstudio TipoEstudio { get; private set; } = null!;
     public string Titulo { get; private set; } = null!;
-    public DateTime Fecha { get; private set; }
+    public DateOnly Fecha { get; private set; }
     public string Descripcion { get; private set; } = null!;
 
     private Estudio() { }
@@ -21,10 +21,12 @@ public class Estudio
         Guid pacienteId,
         int tipoEstudioId,
         string titulo,
-        DateTime fecha,
-        string descripcion)
+        DateOnly fecha,
+        string descripcion,
+        DateOnly? hoy = null)
     {
-        var errores = ValidarDatos(titulo, fecha, descripcion);
+        var fechaReferencia = hoy ?? DateOnly.FromDateTime(DateTimeOffset.Now.DateTime);
+        var errores = ValidarDatos(titulo, fecha, descripcion, fechaReferencia);
         if (errores.Count > 0)
             return errores;
 
@@ -39,14 +41,14 @@ public class Estudio
         };
     }
 
-    private static List<Error> ValidarDatos(string titulo, DateTime fecha, string descripcion)
+    private static List<Error> ValidarDatos(string titulo, DateOnly fecha, string descripcion, DateOnly hoy)
     {
         var errores = new List<Error>();
 
         if (ValidarTitulo(titulo) is { } errorTitulo)
             errores.Add(errorTitulo);
 
-        if (ValidarFecha(fecha) is { } errorFecha)
+        if (ValidarFecha(fecha, hoy) is { } errorFecha)
             errores.Add(errorFecha);
 
         if (ValidarDescripcion(descripcion) is { } errorDescripcion)
@@ -67,8 +69,8 @@ public class Estudio
         return null;
     }
 
-    private static Error? ValidarFecha(DateTime fecha) =>
-        fecha > DateTime.UtcNow ? EstudioErrors.FechaFutura : null;
+    private static Error? ValidarFecha(DateOnly fecha, DateOnly hoy) =>
+        fecha > hoy ? EstudioErrors.FechaFutura : null;
 
     private static Error? ValidarDescripcion(string? descripcion) =>
         string.IsNullOrWhiteSpace(descripcion) ? EstudioErrors.DescripcionRequerida : null;

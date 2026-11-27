@@ -8,14 +8,19 @@ public class Tratamiento
     public Guid InternacionId { get; private set; }
     public Internacion Internacion { get; private set; } = null!;
     public string Descripcion { get; private set; } = null!;
-    public DateTime Fecha { get; private set; }
+    public DateTimeOffset Fecha { get; private set; }
 
     private Tratamiento() { }
 
-    public static ErrorOr<Tratamiento> Crear(Guid internacionId, string descripcion, DateTime? fecha = null)
+    public static ErrorOr<Tratamiento> Crear(
+        Guid internacionId,
+        string descripcion,
+        DateTimeOffset? fecha = null,
+        DateTimeOffset? ahora = null)
     {
-        var fechaEfectiva = fecha ?? DateTime.UtcNow;
-        var errores = ValidarDatos(descripcion, fechaEfectiva);
+        var referencia = (ahora ?? DateTimeOffset.UtcNow).ToUniversalTime();
+        var fechaEfectiva = (fecha ?? referencia).ToUniversalTime();
+        var errores = ValidarDatos(descripcion, fechaEfectiva, referencia);
         if (errores.Count > 0)
             return errores;
 
@@ -28,36 +33,41 @@ public class Tratamiento
         };
     }
 
-    public ErrorOr<Success> Modificar(string descripcion, DateTime? fecha = null)
+    public ErrorOr<Success> Modificar(
+        string descripcion,
+        DateTimeOffset? fecha = null,
+        DateTimeOffset? ahora = null)
     {
-        var errores = ValidarDatos(descripcion, fecha);
+        var referencia = (ahora ?? DateTimeOffset.UtcNow).ToUniversalTime();
+        var fechaUtc = fecha?.ToUniversalTime();
+        var errores = ValidarDatos(descripcion, fechaUtc, referencia);
         if (errores.Count > 0)
             return errores;
 
         this.Descripcion = descripcion.Trim();
-        if (fecha.HasValue)
-            this.Fecha = fecha.Value;
+        if (fechaUtc.HasValue)
+            this.Fecha = fechaUtc.Value;
 
         return Result.Success;
     }
 
-    public static bool EsFechaValida(DateTime fecha, DateTime? referencia = null)
+    public static bool EsFechaValida(DateTimeOffset fecha, DateTimeOffset? referencia = null)
     {
-        var ahora = referencia ?? DateTime.UtcNow;
+        var ahora = (referencia ?? DateTimeOffset.UtcNow).ToUniversalTime();
         var limiteInferior = ahora.AddMonths(-MaxMesesDesfasaje);
         var limiteSuperior = ahora.AddMonths(MaxMesesDesfasaje);
 
         return fecha >= limiteInferior && fecha <= limiteSuperior;
     }
 
-    private static List<Error> ValidarDatos(string descripcion, DateTime? fecha)
+    private static List<Error> ValidarDatos(string descripcion, DateTimeOffset? fecha, DateTimeOffset ahora)
     {
         var errores = new List<Error>();
 
         if (ValidarDescripcion(descripcion) is { } errorDescripcion)
             errores.Add(errorDescripcion);
 
-        if (fecha.HasValue && ValidarFecha(fecha.Value) is { } errorFecha)
+        if (fecha.HasValue && ValidarFecha(fecha.Value, ahora) is { } errorFecha)
             errores.Add(errorFecha);
 
         return errores;
@@ -66,6 +76,6 @@ public class Tratamiento
     private static Error? ValidarDescripcion(string? descripcion) =>
         string.IsNullOrWhiteSpace(descripcion) ? InternacionErrors.TratamientoDescripcionRequerida : null;
 
-    private static Error? ValidarFecha(DateTime fecha) =>
-        !EsFechaValida(fecha) ? InternacionErrors.TratamientoFechaFueraDeRango : null;
+    private static Error? ValidarFecha(DateTimeOffset fecha, DateTimeOffset ahora) =>
+        !EsFechaValida(fecha, ahora) ? InternacionErrors.TratamientoFechaFueraDeRango : null;
 }

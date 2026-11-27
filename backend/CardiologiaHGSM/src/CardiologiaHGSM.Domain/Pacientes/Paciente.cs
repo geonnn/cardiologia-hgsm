@@ -16,7 +16,7 @@ public class Paciente
     public DateOnly FechaNacimiento { get; private set; }
     public Sexo Sexo { get; private set; }
     public string? Antecedentes { get; private set; }
-    public DateTime FechaCarga { get; private set; }
+    public DateTimeOffset FechaCarga { get; private set; }
 
     public MedicoDeCabecera? MedicoDeCabecera { get; private set; }
     public Guid? MedicoDeCabeceraId { get; private set; }
@@ -36,9 +36,12 @@ public class Paciente
         DateOnly fechaNacimiento,
         Sexo sexo,
         string? antecedentes = null,
-        Guid? medicoDeCabeceraId = null)
+        Guid? medicoDeCabeceraId = null,
+        DateTimeOffset? fechaCarga = null,
+        DateOnly? hoy = null)
     {
-        var errores = ValidarDatosPersonales(nombre, apellido, fechaNacimiento);
+        var fechaReferencia = hoy ?? DateOnly.FromDateTime(DateTimeOffset.Now.DateTime);
+        var errores = ValidarDatosPersonales(nombre, apellido, fechaNacimiento, fechaReferencia);
         if (errores.Count > 0)
             return errores;
 
@@ -52,17 +55,17 @@ public class Paciente
             Sexo = sexo,
             Antecedentes = antecedentes,
             MedicoDeCabeceraId = medicoDeCabeceraId,
-            FechaCarga = DateTime.UtcNow
+            FechaCarga = (fechaCarga ?? DateTimeOffset.UtcNow).ToUniversalTime()
         };
     }
 
-    public int CalcularEdad(DateOnly? fechaReferencia = null)
+    public int CalcularEdad(DateOnly? hoy = null)
     {
-        var hoy = fechaReferencia ?? DateOnly.FromDateTime(DateTime.UtcNow);
+        var fechaReferencia = hoy ?? DateOnly.FromDateTime(DateTimeOffset.Now.DateTime);
         var nacimiento = this.FechaNacimiento;
-        var edad = hoy.Year - nacimiento.Year;
+        var edad = fechaReferencia.Year - nacimiento.Year;
 
-        if (nacimiento > hoy.AddYears(-edad))
+        if (nacimiento > fechaReferencia.AddYears(-edad))
             edad--;
 
         return Math.Max(0, edad);
@@ -75,9 +78,11 @@ public class Paciente
         DateOnly fechaNacimiento,
         Sexo sexo,
         string? antecedentes = null,
-        Guid? medicoDeCabeceraId = null)
+        Guid? medicoDeCabeceraId = null,
+        DateOnly? hoy = null)
     {
-        var errores = ValidarDatosPersonales(nombre, apellido, fechaNacimiento);
+        var fechaReferencia = hoy ?? DateOnly.FromDateTime(DateTimeOffset.Now.DateTime);
+        var errores = ValidarDatosPersonales(nombre, apellido, fechaNacimiento, fechaReferencia);
         if (errores.Count > 0)
             return errores;
 
@@ -150,7 +155,7 @@ public class Paciente
         _factoresDeRiesgo.AddRange(factores);
     }
 
-    private static List<Error> ValidarDatosPersonales(string nombre, string apellido, DateOnly fechaNacimiento)
+    private static List<Error> ValidarDatosPersonales(string nombre, string apellido, DateOnly fechaNacimiento, DateOnly hoy)
     {
         var errores = new List<Error>();
 
@@ -160,7 +165,7 @@ public class Paciente
         if (ValidarApellido(apellido) is { } errorApellido)
             errores.Add(errorApellido);
 
-        if (ValidarFechaNacimiento(fechaNacimiento) is { } errorFecha)
+        if (ValidarFechaNacimiento(fechaNacimiento, hoy) is { } errorFecha)
             errores.Add(errorFecha);
 
         return errores;
@@ -190,8 +195,8 @@ public class Paciente
         return null;
     }
 
-    private static Error? ValidarFechaNacimiento(DateOnly fechaNacimiento) =>
-        fechaNacimiento > DateOnly.FromDateTime(DateTime.UtcNow)
+    private static Error? ValidarFechaNacimiento(DateOnly fechaNacimiento, DateOnly hoy) =>
+        fechaNacimiento > hoy
             ? PacienteErrors.FechaNacimientoFutura
             : null;
 }

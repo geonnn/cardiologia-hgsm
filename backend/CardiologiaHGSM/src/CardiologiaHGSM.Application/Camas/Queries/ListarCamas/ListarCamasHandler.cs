@@ -11,10 +11,10 @@ public class ListarCamasHandler(
     public async Task<ErrorOr<IReadOnlyList<CamaDto>>> HandleAsync(ListarCamasQuery query, CancellationToken ct = default)
     {
         var camas = await camaRepository.ListarConInternacionActivaAsync(query.Sector, query.Estado, ct);
-        var ahora = DateTime.UtcNow;
+        var hoy = DateOnly.FromDateTime(DateTimeOffset.Now.DateTime);
 
         return camas
-            .Select(c => CamaDto.FromEntity(c, ahora))
+            .Select(c => CamaDto.FromEntity(c, hoy))
             .ToList();
     }
 }

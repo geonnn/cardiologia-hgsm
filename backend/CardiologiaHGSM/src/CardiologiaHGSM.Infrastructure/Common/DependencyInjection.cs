@@ -9,6 +9,7 @@ using CardiologiaHGSM.Infrastructure.Repositories.Catalogos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using CardiologiaHGSM.Application.Internaciones;
 
 namespace CardiologiaHGSM.Infrastructure.Common;
 
@@ -44,6 +45,8 @@ public static class DependencyInjection
 
         services.AddScoped<IMedicoDeCabeceraRepository, MedicoDeCabeceraRepository>();
         services.AddScoped<ICatalogoRepository<MedicoDeCabecera, Guid>, MedicoDeCabeceraRepository>();
+
+        services.AddScoped<IPendienteRepository,PendienteRepository>();
 
         return services;
     }

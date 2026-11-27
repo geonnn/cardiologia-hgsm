@@ -58,10 +58,16 @@ public class PacienteRepository : RepositoryBase<Paciente, Guid>, IPacienteRepos
                 i.MotivosInternacion.Any(m => m.Id == motivoId)));
 
         if (filtro.FechaCargaDesde is { } fechaDesde)
-            query = query.Where(p => p.FechaCarga >= fechaDesde);
+        {
+            var desdeUtc = fechaDesde.InicioDelDiaUtc();
+            query = query.Where(p => p.FechaCarga >= desdeUtc);
+        }
 
         if (filtro.FechaCargaHasta is { } fechaHasta)
-            query = query.Where(p => p.FechaCarga <= fechaHasta);
+        {
+            var hastaUtcExclusivo = fechaHasta.AddDays(1).InicioDelDiaUtc();
+            query = query.Where(p => p.FechaCarga < hastaUtcExclusivo);
+        }
 
         query = (filtro.OrdenarPor, filtro.Descendente) switch
         {

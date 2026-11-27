@@ -16,6 +16,6 @@ public class ObtenerPacientePorIdHandler(
         if (paciente is null)
             return PacienteErrors.NoEncontrado;
 
-        return PacienteDetalleDto.FromEntity(paciente);
+        return PacienteDetalleDto.FromEntity(paciente, DateOnly.FromDateTime(DateTimeOffset.Now.DateTime));
     }
 }

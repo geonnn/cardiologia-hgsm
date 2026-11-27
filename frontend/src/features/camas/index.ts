@@ -1,0 +1,9 @@
+// API pública de la feature: importar desde '@/features/camas'.
+export { CamasPage } from './pages/CamasPage'
+export { CamaCard } from './components/CamaCard'
+export { EstadoBadge } from './components/EstadoBadge'
+export { NuevaCamaForm } from './components/NuevaCamaForm'
+export { SectorSelector } from './components/SectorSelector'
+export { ESTADO_CONFIG, ESTADOS, SECTORES } from './constants'
+export type { Cama, EstadoCama, FiltroEstado, NuevaCama, PacienteInternado, Sector, Sexo } from './types'
+export { validarNuevaCama } from './validaciones'
